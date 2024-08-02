@@ -39,8 +39,8 @@
 </template>
 
 <script setup lang="ts">
-  import { useMusicPlayerStore } from '../stores/MusicPlayer' // Importez le store Pinia
-  import audioService from '../services/api'
+  import { useMusicPlayerStore } from '@/stores/MusicPlayer'
+  import audioService from '@/services/api'
 
   const musicPlayer = useMusicPlayerStore()
   musicPlayer.fetchCurrentTrack()

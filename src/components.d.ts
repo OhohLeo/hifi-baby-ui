@@ -7,6 +7,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    FileUpload: typeof import('./components/FileUpload.vue')['default']
     MusicPlayer: typeof import('./components/MusicPlayer.vue')['default']
     PlayList: typeof import('./components/PlayList.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

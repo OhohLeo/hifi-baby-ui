@@ -30,9 +30,9 @@
 </template>
 
 <script setup lang="ts">
-  import { usePlaylistStore } from '../stores/PlayList'
-  import { useMusicPlayerStore } from '../stores/MusicPlayer'
-  import audioService from '../services/api'
+  import { usePlaylistStore } from '@/stores/PlayList'
+  import { useMusicPlayerStore } from '@/stores/MusicPlayer'
+  import audioService from '@/services/api'
 
   const playlistStore = usePlaylistStore()
   const musicPlayerStore = useMusicPlayerStore()
