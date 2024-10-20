@@ -11,7 +11,7 @@
               :title="track.name"
             >
               <template #prepend>
-                <v-icon @click="playTrack(track.id)">
+                <v-icon @click="playOrPauseTrack(track.id)">
                   {{
                     musicPlayerStore.isCurrentTrack(track.id) ?
                       musicPlayerStore.currentStateIcon  : "mdi-music"
@@ -27,21 +27,31 @@
       </v-row>
     </v-container>
   </div>
-</template>
+</template> 
 
 <script setup lang="ts">
   import { usePlaylistStore } from '../stores/PlayList'
-  import { useMusicPlayerStore } from '../stores/MusicPlayer'
+  import { STATE_PLAY, STATE_PAUSE, useMusicPlayerStore } from '../stores/MusicPlayer'
   import audioService from '../services/api'
 
   const playlistStore = usePlaylistStore()
   const musicPlayerStore = useMusicPlayerStore()
 
-  playlistStore.fetchTracks()
+  playlistStore.fetchTracks() 
 
-  const playTrack = async (trackID: string) => {
-    const track = playlistStore.tracks.find(t => t.id === trackID)
-    if (track) {
+  const playOrPauseTrack = async (trackID: string) => {
+    const track = playlistStore.tracks.find((t: { id: string }) => t.id === trackID)
+    if (track) { 
+      if (musicPlayerStore.track?.id == track.id) {
+        // Selected music is currently playing or paused
+        switch (musicPlayerStore.currentState) {
+          case STATE_PLAY: await musicPlayerStore.pause()
+          case STATE_PAUSE: await musicPlayerStore.resume()
+        }
+
+        return
+      }
+
       await musicPlayerStore.play(track)
     }
   }
