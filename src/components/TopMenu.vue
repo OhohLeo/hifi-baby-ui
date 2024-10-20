@@ -6,8 +6,6 @@
       <v-container class="d-flex">
         <v-tabs v-model="tabs" align-tabs="title">
           <v-tab text="Songs" value="songs"></v-tab>
-          <v-tab text="Streams" value="streams"></v-tab>
-          <v-tab text="Podcasts" value="poscasts"></v-tab>
         </v-tabs>
       </v-container>
       <v-fab class="mr-4" color="blue-accent-2" icon="mdi-plus" location="bottom right" size="60" absolute offset
