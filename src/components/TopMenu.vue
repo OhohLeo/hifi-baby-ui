@@ -41,13 +41,15 @@
   </v-dialog>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 import audioService from '../services/api'
+import { usePlaylistStore } from '../stores/PlayList'
 
 const dialog = ref(false)
 const selectedFile = ref(null)
 const message = ref('')
+const playlistStore = usePlaylistStore()
 
 const openDialog = () => {
   message.value = '';
@@ -63,6 +65,7 @@ const submitFile = async () => {
   try {
     const response = await audioService.addTrack(selectedFile.value)
     if (response.status == 201) {
+      playlistStore.fetchTracks() 
       message.value = ""
       dialog.value = false
     } else {
@@ -76,7 +79,7 @@ const submitFile = async () => {
 }
 </script>
 
-<script>
+<script lang="ts">
 export default {
   data: () => ({
     tabs: null,

@@ -13,8 +13,8 @@
               <template #prepend>
                 <v-icon @click="playTrack(track.index)">
                   {{
-                    (musicPlayerStore.isCurrentTrack(track.index) &&
-                      musicPlayerStore.isPlaying) ? 'mdi-play' : 'mdi-music'
+                    musicPlayerStore.isCurrentTrack(track.index) ?
+                      musicPlayerStore.currentStateIcon  : "mdi-music"
                   }}
                 </v-icon>
               </template>
@@ -49,6 +49,7 @@
   // Ajout de la fonction de suppression de track
   const removeTrack = async (trackIndex: number) => {
     await audioService.removeTrack(trackIndex)
-    playlistStore.fetchTracks() // Recharger les tracks après suppression
+    playlistStore.fetchTracks() 
+    musicPlayerStore.fetchCurrentTrack()
   }
 </script>
