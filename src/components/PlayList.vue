@@ -7,19 +7,19 @@
             <v-list-subheader>SONGS</v-list-subheader>
             <v-list-item
               v-for="track in playlistStore.tracks"
-              :key="track.index"
+              :key="track.id"
               :title="track.name"
             >
               <template #prepend>
-                <v-icon @click="playTrack(track.index)">
+                <v-icon @click="playTrack(track.id)">
                   {{
-                    musicPlayerStore.isCurrentTrack(track.index) ?
+                    musicPlayerStore.isCurrentTrack(track.id) ?
                       musicPlayerStore.currentStateIcon  : "mdi-music"
                   }}
                 </v-icon>
               </template>
               <template #append>
-                <v-icon @click="removeTrack(track.index)">mdi-delete</v-icon>
+                <v-icon @click="removeTrack(track.id)">mdi-delete</v-icon>
               </template>
             </v-list-item>
           </v-list>
@@ -39,16 +39,16 @@
 
   playlistStore.fetchTracks()
 
-  const playTrack = async (trackIndex: number) => {
-    const track = playlistStore.tracks.find(t => t.index === trackIndex)
+  const playTrack = async (trackID: string) => {
+    const track = playlistStore.tracks.find(t => t.id === trackID)
     if (track) {
       await musicPlayerStore.play(track)
     }
   }
 
   // Ajout de la fonction de suppression de track
-  const removeTrack = async (trackIndex: number) => {
-    await audioService.removeTrack(trackIndex)
+  const removeTrack = async (trackID: string) => {
+    await audioService.removeTrack(trackID)
     playlistStore.fetchTracks() 
     musicPlayerStore.fetchCurrentTrack()
   }

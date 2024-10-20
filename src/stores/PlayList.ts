@@ -7,16 +7,18 @@ export const usePlaylistStore = defineStore('playlist', {
     tracks: [] as TrackModel[],
   }),
   getters: {
-    sortedTracks: state => state.tracks.sort((a, b) => a.index - b.index),
+    sortedTracks: (state) => {
+      return state.tracks.slice().sort((a, b) => a.name.localeCompare(b.name));
+    }
   },
   actions: {
-    addTrack (track: TrackModel) {
+    addTrack(track: TrackModel) {
       this.tracks.push(track)
     },
-    removeTrack (index: number) {
-      this.tracks = this.tracks.filter(t => t.index !== index)
+    removeTrack(trackID: string) {
+      this.tracks = this.tracks.filter(t => t.id !== trackID)
     },
-    async fetchTracks () {
+    async fetchTracks() {
       this.tracks = await audioService.listTracks()
     },
   },

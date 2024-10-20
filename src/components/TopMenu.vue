@@ -87,13 +87,7 @@ export default {
 
   computed: {
     activeFab() {
-      switch (this.tabs) {
-        case 'songs':
-        case 'streams':
-        case 'podcasts':
-        default:
-          return {}
-      }
+      return {}
     },
   },
 }

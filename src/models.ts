@@ -1,5 +1,5 @@
 export interface TrackModel {
-  index: number
+  id: string
   name: string
   format: string
 }

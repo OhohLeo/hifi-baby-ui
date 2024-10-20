@@ -18,7 +18,7 @@ export const useMusicPlayerStore = defineStore('musicPlayer', {
   getters: {
     hasTrack: state => state.track != null,
     isCurrentTrack: state => {
-      return (trackIndex: number) => state.track != null && state.track.index === trackIndex
+      return (trackID: string) => state.track != null && state.track.id === trackID
     },
     isPlaying: state => {
       return (state.currentState == STATE_PLAY)
@@ -59,7 +59,7 @@ export const useMusicPlayerStore = defineStore('musicPlayer', {
       this.isMuted = playerState.isMuted
     },
     async play(track: TrackModel) {
-      await audioService.playTrack(track.index)
+      await audioService.playTrack(track.id)
       this.track = track
       this.currentState = STATE_PLAY
     },

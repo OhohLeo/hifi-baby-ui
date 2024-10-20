@@ -10,7 +10,7 @@ const apiClient = axios.create({
 })
 
 const audioService = {
-  addTrack (file: File) {
+  addTrack(file: File) {
     const formData = new FormData()
     formData.append('file', file)
     return apiClient.post('/', formData, {
@@ -19,36 +19,36 @@ const audioService = {
       },
     })
   },
-  removeTrack (trackIndex: number) {
-    return apiClient.delete(`/${trackIndex}`)
+  removeTrack(trackID: string) {
+    return apiClient.delete(`/${trackID}`)
   },
-  playTrack (trackIndex: number) {
-    return apiClient.post(`/play/${trackIndex}`)
+  playTrack(trackID: string) {
+    return apiClient.post(`/play/${trackID}`)
   },
-  pauseTrack  () {
+  pauseTrack() {
     return apiClient.post('/pause')
   },
-  resumeTrack  () {
+  resumeTrack() {
     return apiClient.post('/resume')
   },
-  stopTrack  () {
+  stopTrack() {
     return apiClient.post('/stop')
   },
-  async listTracks  () {
+  async listTracks() {
     const response = await apiClient.get('/tracks')
     return response.data
   },
-  async getCurrentPlayerState  () {
+  async getCurrentPlayerState() {
     const response = await apiClient.get('/state')
     return response.data
   },
-  increaseVolume  () {
+  increaseVolume() {
     return apiClient.post('/volume/up')
   },
-  decreaseVolume  () {
+  decreaseVolume() {
     return apiClient.post('/volume/down')
   },
-  muteVolume (isMuted: boolean) {
+  muteVolume(isMuted: boolean) {
     return apiClient.post('/volume/mute', null, {
       params: { enable: isMuted },
     })
