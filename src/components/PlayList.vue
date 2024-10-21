@@ -45,8 +45,14 @@
       if (musicPlayerStore.track?.id == track.id) {
         // Selected music is currently playing or paused
         switch (musicPlayerStore.currentState) {
-          case STATE_PLAY: await musicPlayerStore.pause()
-          case STATE_PAUSE: await musicPlayerStore.resume()
+          case STATE_PLAY: {
+            await musicPlayerStore.pause()
+            return
+          }
+          case STATE_PAUSE: {
+            await musicPlayerStore.resume()
+            return
+          }
         }
 
         return
