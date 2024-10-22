@@ -21,13 +21,12 @@
               </template>
               <template #append>
                 <v-container>
-                  <v-row align="center" justify="start">
-                    <v-col class="py-1 pe-0" cols="auto">
-                      <v-chip closable>
-                        <v-icon icon="mdi-music" start></v-icon>
-                        {{ 'test' }}
-                      </v-chip>
-                    </v-col>
+                  <v-row align="center">
+                    <v-chip
+                      prepend-icon="mdi-tag-multiple"
+                      @click="openTagDialog"
+                      >+</v-chip
+                    >
                   </v-row>
                 </v-container>
                 <v-icon @click="removeTrack(track.id)">mdi-delete</v-icon>
@@ -38,6 +37,21 @@
       </v-row>
     </v-container>
   </div>
+
+  <v-dialog v-model="dialog" max-width="500">
+    <v-card>
+      <v-card-item>
+        <v-card-title>Add Tag</v-card-title>
+        <v-spacer class=""></v-spacer>
+      </v-card-item>
+      <v-alert v-if="message" type="error">
+        {{ message }}
+      </v-alert>
+      <v-card-actions>
+        <v-btn class="mt-3" color="primary" variant="text"> Submit </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script setup lang="ts">
@@ -79,10 +93,17 @@ const playOrPauseTrack = async (trackID: string) => {
   }
 }
 
-// Ajout de la fonction de suppression de track
 const removeTrack = async (trackID: string) => {
   await audioService.removeTrack(trackID)
   playlistStore.fetchTracks()
   musicPlayerStore.fetchCurrentTrack()
+}
+
+const dialog = ref(false)
+const message = ref('')
+
+const openTagDialog = () => {
+  dialog.value = true
+  message.value = ''
 }
 </script>

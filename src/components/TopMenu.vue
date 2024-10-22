@@ -3,15 +3,32 @@
     <v-app-bar-title>Hifi Baby</v-app-bar-title>
 
     <template v-slot:extension>
-      <v-container class="d-flex">
-        <v-tabs v-model="tabs" align-tabs="title">
-          <v-tab text="Songs" value="songs"></v-tab>
+      <v-container>
+        <v-tabs align-tabs="center" height="60" grow stacked>
+          <v-tab
+            to="/"
+            prepend-icon="mdi-music"
+            text="Songs"
+            value="songs"
+          ></v-tab>
+          <v-tab
+            to="/tags"
+            prepend-icon="mdi-tag-multiple"
+            text="Tags"
+            value="tags"
+          ></v-tab>
+          <v-tab
+            to="/settings"
+            prepend-icon="mdi-cog"
+            text="Settings"
+            value="settings"
+          ></v-tab>
         </v-tabs>
       </v-container>
       <v-fab
         class="mr-4"
         color="blue-accent-2"
-        icon="mdi-plus"
+        icon="mdi-music-note-plus"
         location="bottom right"
         size="60"
         absolute
@@ -21,82 +38,14 @@
       </v-fab>
     </template>
   </v-app-bar>
-
-  <v-dialog v-model="dialog" max-width="500">
-    <v-card>
-      <v-card-item>
-        <v-card-title> Import Song </v-card-title>
-        <v-spacer class=""></v-spacer>
-        <v-card-text>
-          <v-file-input
-            v-model="selectedFile"
-            label="Audio file input"
-            variant="outlined"
-            prepend-icon="mdi-music-note"
-            accept=".mp3, .wav, .ogg, .flac"
-          >
-          </v-file-input>
-        </v-card-text>
-      </v-card-item>
-      <v-alert v-if="message" type="error">
-        {{ message }}
-      </v-alert>
-      <v-card-actions>
-        <v-btn class="mt-3" color="primary" variant="text" @click="submitFile">
-          Submit
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+  <AddSongDialog v-model:isOpen="isDialogOpen" />
 </template>
 
 <script setup lang="ts">
-import audioService from '../services/api'
-import { usePlaylistStore } from '../stores/PlayList'
+import { ref } from 'vue'
 
-const dialog = ref(false)
-const selectedFile = ref(null)
-const message = ref('')
-const playlistStore = usePlaylistStore()
-
+const isDialogOpen = ref(false)
 const openDialog = () => {
-  message.value = ''
-  dialog.value = true
-}
-
-const submitFile = async () => {
-  if (!selectedFile.value) {
-    message.value = 'Select an audio file.'
-    return
-  }
-
-  try {
-    const response = await audioService.addTrack(selectedFile.value)
-    if (response.status == 201) {
-      playlistStore.fetchTracks()
-      message.value = ''
-      dialog.value = false
-    } else {
-      console.error(response)
-      message.value = 'Issue when downloading audio file'
-    }
-  } catch (error) {
-    console.error(error)
-    message.value = 'Issue when sending audio file.'
-  }
-}
-</script>
-
-<script lang="ts">
-export default {
-  data: () => ({
-    tabs: null,
-  }),
-
-  computed: {
-    activeFab() {
-      return {}
-    },
-  },
+  isDialogOpen.value = true
 }
 </script>
