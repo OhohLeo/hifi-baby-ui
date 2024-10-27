@@ -8,6 +8,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AddSongDialog: typeof import('./components/AddSongDialog.vue')['default']
+    AddTagDialog: typeof import('./components/AddTagDialog.vue')['default']
     MusicPlayer: typeof import('./components/MusicPlayer.vue')['default']
     PlayList: typeof import('./components/PlayList.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
