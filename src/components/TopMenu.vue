@@ -11,33 +11,24 @@
           stacked
           v-model="selectedTab"
           @update:model-value="updateFabIcon"
+          :hide-slider="!canDisplaySlider"
         >
-          <v-tab
-            to="/"
-            prepend-icon="mdi-music"
-            text="Songs"
-            :value="tabs.songs"
-          ></v-tab>
-          <v-tab
-            to="/tags"
-            prepend-icon="mdi-tag-multiple"
-            text="Tags"
-            :value="tabs.tags"
-          ></v-tab>
-          <v-tab
-            to="/settings"
-            prepend-icon="mdi-cog"
-            text="Settings"
-            :value="tabs.settings"
+         <v-tab
+            v-for="(tab, key) in tabs"
+            :key="key"
+            :to="tab.to"
+            :prepend-icon="tab.icon"
+            :text="tab.name"
+            :value="tab.value"
+            @click="openTab"
           ></v-tab>
         </v-tabs>
       </v-container>
       <v-fab
-        v-if="selectedTab !== tabs.settings"
+        :active="canDisplayFab"
         class="mr-4"
         color="blue-accent-2"
         :icon="fabIcon"
-        location="bottom right"
         size="60"
         absolute
         offset
@@ -45,33 +36,42 @@
       >
       </v-fab>
     </template>
+    <v-spacer></v-spacer>
+    <v-btn icon :to="'/settings'" aria-label="Settings" @click="openSettings">
+      <v-icon>mdi-cog</v-icon>
+    </v-btn>
   </v-app-bar>
+
   <AddSongDialog
-    v-if="selectedTab == tabs.songs"
     v-model:isOpen="isDialogOpen"
   />
-  <AddTagDialog v-if="selectedTab == tabs.tags" v-model:isOpen="isDialogOpen" />
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 
 const tabs = {
-  songs: 'songs',
-  tags: 'tags',
-  settings: 'settings',
+  songs: { name: 'Songs', icon: 'mdi-music', value: 'songs', to: '/' },
+  radios: { name: 'Radios', icon: 'mdi-music', value: 'radios', to: '/' },
 }
 
 const selectedTab = ref('songs')
 const fabIcon = ref('mdi-music-note-plus')
 
+const canDisplayFab = ref(true)
+const canDisplaySlider = ref(true)
+const openTab = () => {
+  canDisplayFab.value = true
+  canDisplaySlider.value = true 
+}
+const openSettings = () => {
+  canDisplayFab.value = false
+  canDisplaySlider.value = false
+}
 const updateFabIcon = () => {
   switch (selectedTab.value) {
     case 'songs':
       fabIcon.value = 'mdi-music-note-plus'
-      break
-    case 'tags':
-      fabIcon.value = 'mdi-tag-plus'
       break
   }
 }
