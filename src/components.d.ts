@@ -9,12 +9,17 @@ declare module 'vue' {
   export interface GlobalComponents {
     AddSongDialog: typeof import('./components/AddSongDialog.vue')['default']
     AddTagDialog: typeof import('./components/AddTagDialog.vue')['default']
+    Audio: typeof import('./components/settings/Audio.vue')['default']
+    Bluetooth: typeof import('./components/settings/Bluetooth.vue')['default']
+    Interface: typeof import('./components/settings/Interface.vue')['default']
+    Layout: typeof import('./components/settings/Layout.vue')['default']
     MusicPlayer: typeof import('./components/MusicPlayer.vue')['default']
+    Network: typeof import('./components/settings/Network.vue')['default']
     PlayList: typeof import('./components/PlayList.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    Settings: typeof import('./components/Settings.vue')['default']
-    Tags: typeof import('./components/Tags.vue')['default']
+    Settings: typeof import('./components/settings/Settings.vue')['default']
+    Tags: typeof import('./components/settings/Tags.vue')['default']
     TopMenu: typeof import('./components/TopMenu.vue')['default']
   }
 }

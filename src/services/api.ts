@@ -1,22 +1,31 @@
 import axios from 'axios'
+import localStorageService from '@/services/storage'
 
-export const baseURL = 'http://localhost:3000/audio' // Export de la baseURL
+function getDomainName(): string {
+  let storedDomainName = localStorageService.get<string>('domainName')
+  let domainName = storedDomainName != '' ? storedDomainName : 'hifi-baby.local'
+  return 'http://' + domainName + ':3000/audio'
+}
 
 const apiClient = axios.create({
-  baseURL,
+  baseURL: getDomainName(),
   headers: {
-    'Content-Type': 'application/json',
-  },
+    'Content-Type': 'application/json'
+  }
 })
 
 const audioService = {
+  setBaseURL(newBaseURL: string) {
+    apiClient.defaults.baseURL = 'http://' + newBaseURL + ':3000/audio'
+  },
+
   addTrack(file: File) {
     const formData = new FormData()
     formData.append('file', file)
     return apiClient.post('/', formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+        'Content-Type': 'multipart/form-data'
+      }
     })
   },
   removeTrack(trackID: string) {
@@ -50,9 +59,9 @@ const audioService = {
   },
   muteVolume(isMuted: boolean) {
     return apiClient.post('/volume/mute', null, {
-      params: { enable: isMuted },
+      params: { enable: isMuted }
     })
-  },
+  }
 }
 
 export default audioService
