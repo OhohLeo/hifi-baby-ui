@@ -36,10 +36,10 @@ import Network from '@/components/settings/Network.vue'
 import Audio from '@/components/settings/Audio.vue'
 import Bluetooth from '@/components/settings/Bluetooth.vue'
 import Tags from '@/components/settings/Tags.vue'
-import Interface from '@/components/settings/Interface.vue'
+import Device from '@/components/settings/Device.vue'
 
 const menuItems = [
-  { title: 'Interface', icon: 'mdi-overscan', component: Interface },
+  { title: 'Device', icon: 'mdi-monitor', component: Device },
   { title: 'Audio', icon: 'mdi-volume-high', component: Audio },
   { title: 'Bluetooth', icon: 'mdi-bluetooth', component: Bluetooth },
   { title: 'Network', icon: 'mdi-wifi', component: Network },

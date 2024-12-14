@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
-import type { TrackModel } from '../models'
-import audioService from '../services/api' // Assurez-vous que le chemin d'importation est correct
+import type { TrackModel } from '@/models'
+import audioService from '@/services/audio.service'
 
 export const usePlaylistStore = defineStore('playlist', {
   state: () => ({

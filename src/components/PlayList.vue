@@ -61,7 +61,7 @@ import {
   STATE_PAUSE,
   useMusicPlayerStore,
 } from '../stores/MusicPlayer'
-import audioService from '../services/api'
+import audioService from '../services/audio.service'
 
 const playlistStore = usePlaylistStore()
 const musicPlayerStore = useMusicPlayerStore()

@@ -2,7 +2,7 @@
   <v-container>
     <h3>Network Parameters</h3>
     <br />
-    <p>Set domain name and check connectivity :</p>
+    <p>Set domain name</p>
     <div class="d-flex">
       <v-text-field
         class="ma-2 pa-2"
@@ -26,8 +26,9 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import audioService from '@/services/api'
-import localStorageService from '@/services/storage'
+import setBaseURL from '@/services/api.service'
+import settingsService from '@/services/settings.service'
+import localStorageService from '@/services/storage.service'
 
 const STATUS_SUCCESS = { color: 'green', icon: 'mdi-check-circle' }
 const STATUS_ERROR = { color: 'red', icon: 'mdi-alert-circle' }
@@ -35,7 +36,7 @@ const STATUS_DEFAULT = { color: 'primary', icon: 'mdi-play-circle' }
 
 let storedDomainName = localStorageService.get('domainName')
 const domainName = ref(
-  storedDomainName != '' ? storedDomainName : 'hifi-baby.local123'
+  storedDomainName != '' ? storedDomainName : 'hifi-baby.local'
 )
 const testResult = ref(null)
 const testStatus = ref(STATUS_DEFAULT)
@@ -48,9 +49,9 @@ const validateDomainName = async () => {
     return
   }
 
-  audioService.setBaseURL(domainName.value)
-  audioService
-    .getCurrentPlayerState()
+  setBaseURL(domainName.value)
+  settingsService
+    .getSettings()
     .then(() => {
       localStorageService.set('domainName', domainName.value)
       testStatus.value = STATUS_SUCCESS

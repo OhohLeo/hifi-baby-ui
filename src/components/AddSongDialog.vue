@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import audioService from '../services/api'
+import audioService from '../services/audio.service'
 import { usePlaylistStore } from '../stores/PlayList'
 import { defineProps } from 'vue'
 
