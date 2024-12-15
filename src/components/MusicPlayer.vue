@@ -47,7 +47,7 @@
 </template>
 
 <script setup lang="ts">
-import { useMusicPlayerStore } from '../stores/MusicPlayer' // Importez le store Pinia
+import { useMusicPlayerStore } from '../stores/music-player' // Importez le store Pinia
 import audioService from '../services/audio.service'
 
 const musicPlayer = useMusicPlayerStore()

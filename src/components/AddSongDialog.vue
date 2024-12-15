@@ -29,7 +29,7 @@
 
 <script setup lang="ts">
 import audioService from '../services/audio.service'
-import { usePlaylistStore } from '../stores/PlayList'
+import { usePlaylistStore } from '../stores/playlist'
 import { defineProps } from 'vue'
 
 const dialog = ref(false)

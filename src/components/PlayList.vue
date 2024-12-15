@@ -55,12 +55,12 @@
 </template>
 
 <script setup lang="ts">
-import { usePlaylistStore } from '../stores/PlayList'
+import { usePlaylistStore } from '../stores/playlist'
 import {
   STATE_PLAY,
   STATE_PAUSE,
   useMusicPlayerStore,
-} from '../stores/MusicPlayer'
+} from '../stores/music-player'
 import audioService from '../services/audio.service'
 
 const playlistStore = usePlaylistStore()

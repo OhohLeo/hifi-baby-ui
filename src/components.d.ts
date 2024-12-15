@@ -12,7 +12,6 @@ declare module 'vue' {
     Audio: typeof import('./components/settings/Audio.vue')['default']
     Bluetooth: typeof import('./components/settings/Bluetooth.vue')['default']
     Device: typeof import('./components/settings/Device.vue')['default']
-    Layout: typeof import('./components/settings/Layout.vue')['default']
     MusicPlayer: typeof import('./components/MusicPlayer.vue')['default']
     Network: typeof import('./components/settings/Network.vue')['default']
     PlayList: typeof import('./components/PlayList.vue')['default']
