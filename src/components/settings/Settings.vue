@@ -17,7 +17,12 @@
         </v-col>
 
         <v-col cols="8">
-          <component :is="selectedSetting?.component" v-if="selectedSetting" />
+          <component
+            v-if="selectedSetting"
+            :is="selectedSetting?.component"
+            :settings="settings"
+            :settings-ok="settingsOk"
+          />
         </v-col>
       </v-row>
     </v-container>
@@ -37,6 +42,7 @@ import Audio from '@/components/settings/Audio.vue'
 import Bluetooth from '@/components/settings/Bluetooth.vue'
 import Tags from '@/components/settings/Tags.vue'
 import Device from '@/components/settings/Device.vue'
+import settingsService from '@/services/settings.service'
 
 const menuItems = [
   { title: 'Device', icon: 'mdi-monitor', component: Device },
@@ -47,8 +53,15 @@ const menuItems = [
 ]
 const selectedSetting = shallowRef(null)
 
-// Fonction pour sélectionner un élément
 const selectSetting = (item) => {
   selectedSetting.value = item
 }
+
+const settings = ref({})
+const settingsOk = ref(false)
+
+settingsService.getSettings().then((result) => {
+  settings.value = result
+  settingsOk.value = true
+})
 </script>

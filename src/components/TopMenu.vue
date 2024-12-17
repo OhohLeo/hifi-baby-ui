@@ -1,7 +1,10 @@
 <template>
   <v-app-bar :elevation="7" rounded scroll-behavior="elevate">
     <v-app-bar-title>Hifi Baby</v-app-bar-title>
-
+    <v-spacer></v-spacer>
+    <v-btn icon :to="'/settings'" aria-label="Settings" @click="openSettings">
+      <v-icon>mdi-cog</v-icon>
+    </v-btn>
     <template v-slot:extension>
       <v-container>
         <v-tabs
@@ -13,7 +16,7 @@
           @update:model-value="updateFabIcon"
           :hide-slider="!canDisplaySlider"
         >
-         <v-tab
+          <v-tab
             v-for="(tab, key) in tabs"
             :key="key"
             :to="tab.to"
@@ -36,15 +39,9 @@
       >
       </v-fab>
     </template>
-    <v-spacer></v-spacer>
-    <v-btn icon :to="'/settings'" aria-label="Settings" @click="openSettings">
-      <v-icon>mdi-cog</v-icon>
-    </v-btn>
   </v-app-bar>
 
-  <AddSongDialog
-    v-model:isOpen="isDialogOpen"
-  />
+  <AddSongDialog v-model:isOpen="isDialogOpen" />
 </template>
 
 <script setup lang="ts">
@@ -52,7 +49,7 @@ import { ref } from 'vue'
 
 const tabs = {
   songs: { name: 'Songs', icon: 'mdi-music', value: 'songs', to: '/' },
-  radios: { name: 'Radios', icon: 'mdi-music', value: 'radios', to: '/' },
+  radios: { name: 'Radios', icon: 'mdi-music', value: 'radios', to: '/' }
 }
 
 const selectedTab = ref('songs')
@@ -62,7 +59,7 @@ const canDisplayFab = ref(true)
 const canDisplaySlider = ref(true)
 const openTab = () => {
   canDisplayFab.value = true
-  canDisplaySlider.value = true 
+  canDisplaySlider.value = true
 }
 const openSettings = () => {
   canDisplayFab.value = false

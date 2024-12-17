@@ -21,8 +21,6 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps } from 'vue'
-
 const dialog = ref(false)
 const message = ref('')
 const props = defineProps({
