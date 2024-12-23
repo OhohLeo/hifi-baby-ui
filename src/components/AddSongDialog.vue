@@ -3,7 +3,7 @@
     <v-card>
       <v-card-item>
         <v-card-title>Add Song</v-card-title>
-        <v-spacer></v-spacer>
+        <v-spacer />
         <v-card-text>
           <v-file-input
             v-model="selectedFile"
@@ -11,30 +11,28 @@
             variant="outlined"
             prepend-icon="mdi-music-note-plus"
             accept=".mp3, .wav, .ogg, .flac"
-          >
-          </v-file-input>
+          />
         </v-card-text>
       </v-card-item>
       <v-alert v-if="message" type="error">
         {{ message }}
       </v-alert>
       <v-card-actions>
-        <v-btn class="mt-3" color="primary" variant="text" @click="submit">
-          Submit
-        </v-btn>
+        <v-btn class="mt-3" color="primary" variant="text" @click="submit"> Submit </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 
 <script setup lang="ts">
+import { ref, watch } from 'vue'
 import audioService from '../services/audio.service'
 import { usePlaylistStore } from '../stores/playlist'
 
 const dialog = ref(false)
 const message = ref('')
 const props = defineProps({
-  isOpen: Boolean,
+  isOpen: Boolean
 })
 const emit = defineEmits(['update:isOpen'])
 

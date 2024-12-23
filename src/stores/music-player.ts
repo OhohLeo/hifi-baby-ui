@@ -2,10 +2,9 @@ import { defineStore } from 'pinia'
 import type { MusicPlayerModel, TrackModel } from '../models'
 import audioService from '@/services/audio.service'
 
-export const
-  STATE_PLAY = "play",
-  STATE_PAUSE = "pause",
-  STATE_STOP = "stop"
+export const STATE_PLAY = 'play',
+  STATE_PAUSE = 'pause',
+  STATE_STOP = 'stop'
 
 export const useMusicPlayerStore = defineStore('musicPlayer', {
   state: () => ({
@@ -16,34 +15,34 @@ export const useMusicPlayerStore = defineStore('musicPlayer', {
     volume: 0.5, // Volume initial à 50%
   }),
   getters: {
-    hasTrack: state => state.track != null,
-    isCurrentTrack: state => {
+    hasTrack: (state) => state.track != null,
+    isCurrentTrack: (state) => {
       return (trackID: string) => state.track != null && state.track.id === trackID
     },
-    isPlaying: state => {
-      return (state.currentState == STATE_PLAY)
+    isPlaying: (state) => {
+      return state.currentState == STATE_PLAY
     },
-    isStopped: state => {
-      return (state.currentState == STATE_STOP)
+    isStopped: (state) => {
+      return state.currentState == STATE_STOP
     },
     currentStateIcon() {
       switch (this.currentState) {
         case STATE_PLAY: {
-          return "mdi-play"
+          return 'mdi-play'
         }
         case STATE_PAUSE: {
-          return "mdi-pause"
+          return 'mdi-pause'
         }
         case STATE_STOP: {
-          return "mdi-stop"
+          return 'mdi-stop'
         }
       }
-      return "mdi-music"
+      return 'mdi-music'
     },
   },
   actions: {
     async fetchCurrentTrack() {
-      audioService.getCurrentPlayerState().then(currentPlayerState => {
+      audioService.getCurrentPlayerState().then((currentPlayerState) => {
         this.updatePlayerState(currentPlayerState)
       })
     },

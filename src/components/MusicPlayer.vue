@@ -28,18 +28,10 @@
           />
         </v-col>
         <v-col cols="auto">
-          <v-btn
-            icon="mdi-volume-minus"
-            size="x-large"
-            @click="decreaseVolume"
-          />
+          <v-btn icon="mdi-volume-minus" size="x-large" @click="decreaseVolume" />
         </v-col>
         <v-col cols="auto">
-          <v-btn
-            icon="mdi-volume-plus"
-            size="x-large"
-            @click="increaseVolume"
-          />
+          <v-btn icon="mdi-volume-plus" size="x-large" @click="increaseVolume" />
         </v-col>
       </v-row>
     </v-container>

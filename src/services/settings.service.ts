@@ -1,5 +1,5 @@
 import { apiClient } from '@/services/api.service'
-import { Settings } from '@/models'
+import type { Settings } from '@/models'
 
 const settingsService = {
   async getSettings() {
@@ -9,7 +9,7 @@ const settingsService = {
 
   setSettings(settings: Settings) {
     return apiClient.put('/settings', settings)
-  }
+  },
 }
 
 export default settingsService

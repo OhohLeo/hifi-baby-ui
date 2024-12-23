@@ -3,28 +3,28 @@
     <v-card>
       <v-card-item>
         <v-card-title>Add Tag</v-card-title>
-        <v-spacer></v-spacer>
+        <v-spacer />
         <v-card-text>
-          <v-text-field label="Label" variant="outlined"></v-text-field>
+          <v-text-field label="Label" variant="outlined" />
         </v-card-text>
       </v-card-item>
       <v-alert v-if="message" type="error">
         {{ message }}
       </v-alert>
       <v-card-actions>
-        <v-btn class="mt-3" color="primary" variant="text" @click="submit">
-          Submit
-        </v-btn>
+        <v-btn class="mt-3" color="primary" variant="text" @click="submit"> Submit </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 
 <script setup lang="ts">
+import { ref, watch } from 'vue'
+
 const dialog = ref(false)
 const message = ref('')
 const props = defineProps({
-  isOpen: Boolean,
+  isOpen: Boolean
 })
 const emit = defineEmits(['update:isOpen'])
 

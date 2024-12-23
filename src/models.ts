@@ -1,9 +1,9 @@
 export interface AudioSettings {
-  baseVolume: Number
-  defaultVolume: Number
-  minVolume: Number
-  maxVolume: Number
-  volumeStep: Number
+  baseVolume: number
+  defaultVolume: number
+  minVolume: number
+  maxVolume: number
+  volumeStep: number
   silentEnabled: boolean
 }
 
@@ -12,7 +12,7 @@ export interface NetworkSettings {
   password: string
   encryptionType: string
   dhcpEnabled: boolean
-  ip: string 
+  ip: string
   ipMask: string
   ipGateway: string
 }

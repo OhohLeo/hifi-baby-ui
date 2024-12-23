@@ -7,8 +7,8 @@
   </div>
 </template>
 
-<script setup>
-import { useSettingsProps } from '@/composables/useSettingsProps'
+<script setup lang="ts">
+import { useSettingsProps } from '../../composables/useSettingsProps'
 
 defineProps(useSettingsProps())
 </script>

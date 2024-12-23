@@ -9,16 +9,16 @@ declare module 'vue' {
   export interface GlobalComponents {
     AddSongDialog: typeof import('./components/AddSongDialog.vue')['default']
     AddTagDialog: typeof import('./components/AddTagDialog.vue')['default']
-    Audio: typeof import('./components/settings/Audio.vue')['default']
-    Bluetooth: typeof import('./components/settings/Bluetooth.vue')['default']
-    Device: typeof import('./components/settings/Device.vue')['default']
     MusicPlayer: typeof import('./components/MusicPlayer.vue')['default']
-    Network: typeof import('./components/settings/Network.vue')['default']
     PlayList: typeof import('./components/PlayList.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    Settings: typeof import('./components/settings/Settings.vue')['default']
-    Tags: typeof import('./components/settings/Tags.vue')['default']
+    SettingsAudio: typeof import('./components/settings/SettingsAudio.vue')['default']
+    SettingsBluetooth: typeof import('./components/settings/SettingsBluetooth.vue')['default']
+    SettingsDevice: typeof import('./components/settings/SettingsDevice.vue')['default']
+    SettingsMenu: typeof import('./components/settings/SettingsMenu.vue')['default']
+    SettingsNetwork: typeof import('./components/settings/SettingsNetwork.vue')['default']
+    SettingsTags: typeof import('./components/settings/SettingsTags.vue')['default']
     TopMenu: typeof import('./components/TopMenu.vue')['default']
   }
 }

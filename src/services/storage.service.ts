@@ -11,7 +11,7 @@ const localStorageService = {
   },
   clear(): void {
     localStorage.clear()
-  }
+  },
 }
 
 export default localStorageService

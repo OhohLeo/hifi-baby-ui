@@ -6,8 +6,8 @@ const audioService = {
     formData.append('file', file)
     return apiClient.post('/audio', formData, {
       headers: {
-        'Content-Type': 'multipart/form-data'
-      }
+        'Content-Type': 'multipart/form-data',
+      },
     })
   },
   removeTrack(trackID: string) {
@@ -41,9 +41,9 @@ const audioService = {
   },
   muteVolume(isMuted: boolean) {
     return apiClient.post('/audio/volume/mute', null, {
-      params: { enable: isMuted }
+      params: { enable: isMuted },
     })
-  }
+  },
 }
 
 export default audioService

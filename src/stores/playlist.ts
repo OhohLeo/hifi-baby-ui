@@ -8,15 +8,15 @@ export const usePlaylistStore = defineStore('playlist', {
   }),
   getters: {
     sortedTracks: (state) => {
-      return state.tracks.slice().sort((a, b) => a.name.localeCompare(b.name));
-    }
+      return state.tracks.slice().sort((a, b) => a.name.localeCompare(b.name))
+    },
   },
   actions: {
     addTrack(track: TrackModel) {
       this.tracks.push(track)
     },
     removeTrack(trackID: string) {
-      this.tracks = this.tracks.filter(t => t.id !== trackID)
+      this.tracks = this.tracks.filter((t) => t.id !== trackID)
     },
     async fetchTracks() {
       this.tracks = await audioService.listTracks()

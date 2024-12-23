@@ -1,20 +1,20 @@
 <template>
   <v-app-bar :elevation="7" rounded scroll-behavior="elevate">
     <v-app-bar-title>Hifi Baby</v-app-bar-title>
-    <v-spacer></v-spacer>
+    <v-spacer />
     <v-btn icon :to="'/settings'" aria-label="Settings" @click="openSettings">
       <v-icon>mdi-cog</v-icon>
     </v-btn>
-    <template v-slot:extension>
+    <template #extension>
       <v-container>
         <v-tabs
+          v-model="selectedTab"
           align-tabs="center"
           height="60"
           grow
           stacked
-          v-model="selectedTab"
-          @update:model-value="updateFabIcon"
           :hide-slider="!canDisplaySlider"
+          @update:model-value="updateFabIcon"
         >
           <v-tab
             v-for="(tab, key) in tabs"
@@ -24,7 +24,7 @@
             :text="tab.name"
             :value="tab.value"
             @click="openTab"
-          ></v-tab>
+          />
         </v-tabs>
       </v-container>
       <v-fab
@@ -36,12 +36,11 @@
         absolute
         offset
         @click="openDialog"
-      >
-      </v-fab>
+      />
     </template>
   </v-app-bar>
 
-  <AddSongDialog v-model:isOpen="isDialogOpen" />
+  <AddSongDialog v-model:is-open="isDialogOpen" />
 </template>
 
 <script setup lang="ts">
