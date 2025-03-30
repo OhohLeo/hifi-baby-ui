@@ -28,18 +28,10 @@
           />
         </v-col>
         <v-col cols="auto">
-          <v-btn
-            icon="mdi-volume-minus"
-            size="x-large"
-            @click="decreaseVolume"
-          />
+          <v-btn icon="mdi-volume-minus" size="x-large" @click="decreaseVolume" />
         </v-col>
         <v-col cols="auto">
-          <v-btn
-            icon="mdi-volume-plus"
-            size="x-large"
-            @click="increaseVolume"
-          />
+          <v-btn icon="mdi-volume-plus" size="x-large" @click="increaseVolume" />
         </v-col>
       </v-row>
     </v-container>
@@ -47,8 +39,8 @@
 </template>
 
 <script setup lang="ts">
-import { useMusicPlayerStore } from '../stores/MusicPlayer' // Importez le store Pinia
-import audioService from '../services/api'
+import { useMusicPlayerStore } from '../stores/music-player' // Importez le store Pinia
+import audioService from '../services/audio.service'
 
 const musicPlayer = useMusicPlayerStore()
 musicPlayer.fetchCurrentTrack()

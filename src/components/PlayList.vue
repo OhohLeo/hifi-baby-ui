@@ -5,11 +5,7 @@
         <v-col cols="12" md="8">
           <v-list>
             <v-list-subheader>SONGS</v-list-subheader>
-            <v-list-item
-              v-for="track in playlistStore.tracks"
-              :key="track.id"
-              :title="track.name"
-            >
+            <v-list-item v-for="track in playlistStore.tracks" :key="track.id" :title="track.name">
               <template #prepend>
                 <v-icon @click="playOrPauseTrack(track.id)">
                   {{
@@ -22,14 +18,10 @@
               <template #append>
                 <v-container>
                   <v-row align="center">
-                    <v-chip
-                      prepend-icon="mdi-tag-multiple"
-                      @click="openTagDialog"
-                      >+</v-chip
-                    >
+                    <v-chip prepend-icon="mdi-tag-multiple" @click="openTagDialog"> + </v-chip>
                   </v-row>
                 </v-container>
-                <v-icon @click="removeTrack(track.id)">mdi-delete</v-icon>
+                <v-icon @click="removeTrack(track.id)"> mdi-delete </v-icon>
               </template>
             </v-list-item>
           </v-list>
@@ -42,7 +34,7 @@
     <v-card>
       <v-card-item>
         <v-card-title>Add Tag</v-card-title>
-        <v-spacer class=""></v-spacer>
+        <v-spacer class="" />
       </v-card-item>
       <v-alert v-if="message" type="error">
         {{ message }}
@@ -55,13 +47,10 @@
 </template>
 
 <script setup lang="ts">
-import { usePlaylistStore } from '../stores/PlayList'
-import {
-  STATE_PLAY,
-  STATE_PAUSE,
-  useMusicPlayerStore,
-} from '../stores/MusicPlayer'
-import audioService from '../services/api'
+import { ref } from 'vue'
+import { usePlaylistStore } from '../stores/playlist'
+import { STATE_PLAY, STATE_PAUSE, useMusicPlayerStore } from '../stores/music-player'
+import audioService from '../services/audio.service'
 
 const playlistStore = usePlaylistStore()
 const musicPlayerStore = useMusicPlayerStore()
@@ -69,9 +58,7 @@ const musicPlayerStore = useMusicPlayerStore()
 playlistStore.fetchTracks()
 
 const playOrPauseTrack = async (trackID: string) => {
-  const track = playlistStore.tracks.find(
-    (t: { id: string }) => t.id === trackID
-  )
+  const track = playlistStore.tracks.find((t: { id: string }) => t.id === trackID)
   if (track) {
     if (musicPlayerStore.track?.id == track.id) {
       // Selected music is currently playing or paused

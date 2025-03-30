@@ -1,3 +1,29 @@
+export interface AudioSettings {
+  baseVolume: number
+  defaultVolume: number
+  minVolume: number
+  maxVolume: number
+  volumeStep: number
+  silentEnabled: boolean
+}
+
+export interface NetworkSettings {
+  ssid: string
+  password: string
+  encryptionType: string
+  dhcpEnabled: boolean
+  ip: string
+  ipMask: string
+  ipGateway: string
+}
+
+export interface Settings {
+  id: string
+  name: string
+  audio: AudioSettings
+  network: NetworkSettings
+}
+
 export interface TrackModel {
   id: string
   name: string

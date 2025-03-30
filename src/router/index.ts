@@ -7,8 +7,8 @@
 // Composables
 import { createRouter, createWebHistory } from 'vue-router'
 import PlayList from '@/components/PlayList.vue'
-import Settings from '@/components/settings/Settings.vue'
-import DefaultLayout from '@/layouts/default.vue'
+import SettingsMenu from '@/components/settings/SettingsMenu.vue'
+import DefaultLayout from '@/layouts/hifiBaby.vue'
 
 const routes = [
   {
@@ -18,20 +18,20 @@ const routes = [
       {
         path: '/',
         name: 'Playlist',
-        component: PlayList
+        component: PlayList,
       },
       {
         path: '/settings',
         name: 'Settings',
-        component: Settings
-      }
-    ]
-  }
+        component: SettingsMenu,
+      },
+    ],
+  },
 ]
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes: routes
+  routes: routes,
 })
 
 // Workaround for https://github.com/vitejs/vite/issues/11804
