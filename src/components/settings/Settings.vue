@@ -7,8 +7,8 @@
             <v-list-item
               v-for="item in menuItems"
               :key="item.title"
-              @click="selectSetting(item)"
               class="cursor-pointer"
+              @click="selectSetting(item)"
             >
               <v-icon>{{ item.icon }}</v-icon>
               <v-list-item-title>{{ item.title }}</v-list-item-title>
@@ -17,18 +17,15 @@
         </v-col>
 
         <v-col cols="8">
-          <component :is="selectedSetting?.component" v-if="selectedSetting" />
+          <component
+            :is="selectedSetting?.component"
+            v-if="selectedSetting"
+          />
         </v-col>
       </v-row>
     </v-container>
   </v-app>
 </template>
-
-<style>
-.cursor-pointer {
-  cursor: pointer;
-}
-</style>
 
 <script setup>
 import { shallowRef } from 'vue'
@@ -52,3 +49,9 @@ const selectSetting = (item) => {
   selectedSetting.value = item
 }
 </script>
+
+<style>
+.cursor-pointer {
+  cursor: pointer;
+}
+</style>

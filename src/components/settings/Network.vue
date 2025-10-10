@@ -5,8 +5,8 @@
     <p>Set domain name and check connectivity :</p>
     <div class="d-flex">
       <v-text-field
-        class="ma-2 pa-2"
         v-model="domainName"
+        class="ma-2 pa-2"
         label="domain name"
         placeholder="Enter domain name"
         outlined
@@ -17,7 +17,9 @@
         :color="testStatus.color"
         @click="validateDomainName"
       >
-        <v-icon left>{{ testStatus.icon }}</v-icon>
+        <v-icon left>
+          {{ testStatus.icon }}
+        </v-icon>
         Validate
       </v-btn>
     </div>
@@ -33,11 +35,10 @@ const STATUS_SUCCESS = { color: 'green', icon: 'mdi-check-circle' }
 const STATUS_ERROR = { color: 'red', icon: 'mdi-alert-circle' }
 const STATUS_DEFAULT = { color: 'primary', icon: 'mdi-play-circle' }
 
-let storedDomainName = localStorageService.get('domainName')
+const storedDomainName = localStorageService.get('domainName')
 const domainName = ref(
-  storedDomainName != '' ? storedDomainName : 'hifi-baby.local123'
+  storedDomainName !== '' ? storedDomainName : 'hifi-baby.local123'
 )
-const testResult = ref(null)
 const testStatus = ref(STATUS_DEFAULT)
 
 const validateDomainName = async () => {

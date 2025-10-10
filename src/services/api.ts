@@ -2,8 +2,8 @@ import axios from 'axios'
 import localStorageService from '@/services/storage'
 
 function getDomainName(): string {
-  let storedDomainName = localStorageService.get<string>('domainName')
-  let domainName = storedDomainName != '' ? storedDomainName : 'hifi-baby.local'
+  const storedDomainName = localStorageService.get<string>('domainName')
+  const domainName = storedDomainName !== '' ? storedDomainName : 'hifi-baby.local'
   return 'http://' + domainName + ':3000/audio'
 }
 

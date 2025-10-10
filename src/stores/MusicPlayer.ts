@@ -21,10 +21,10 @@ export const useMusicPlayerStore = defineStore('musicPlayer', {
       return (trackID: string) => state.track != null && state.track.id === trackID
     },
     isPlaying: state => {
-      return (state.currentState == STATE_PLAY)
+      return (state.currentState === STATE_PLAY)
     },
     isStopped: state => {
-      return (state.currentState == STATE_STOP)
+      return (state.currentState === STATE_STOP)
     },
     currentStateIcon() {
       switch (this.currentState) {
