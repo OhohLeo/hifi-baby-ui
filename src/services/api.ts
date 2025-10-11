@@ -1,14 +1,12 @@
 import axios from 'axios'
 import localStorageService from '@/services/storage'
 
-function getDomainName(): string {
-  const storedDomainName = localStorageService.get<string>('domainName')
-  const domainName = storedDomainName !== '' ? storedDomainName : 'hifi-baby.local'
-  return 'http://' + domainName + ':3000/audio'
+function getBaseURL(): string {
+  return localStorageService.get<string>('baseURL') || 'http://localhost:3000'
 }
 
 const apiClient = axios.create({
-  baseURL: getDomainName(),
+  baseURL: getBaseURL(),
   headers: {
     'Content-Type': 'application/json'
   }
@@ -16,7 +14,7 @@ const apiClient = axios.create({
 
 const audioService = {
   setBaseURL(newBaseURL: string) {
-    apiClient.defaults.baseURL = 'http://' + newBaseURL + ':3000/audio'
+    apiClient.defaults.baseURL = newBaseURL
   },
 
   addTrack(file: File) {

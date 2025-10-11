@@ -42,89 +42,84 @@
               {{ playlistStore.tracks.length === 1 ? 'Song' : 'Songs' }}
             </v-list-subheader>
 
-            <transition-group
-              name="list"
-              tag="div"
+            <v-list-item
+              v-for="track in playlistStore.tracks"
+              :key="track.id"
+              :title="track.name"
+              class="track-item elevation-1 mb-2"
+              :class="{
+                'track-active': musicPlayerStore.isCurrentTrack(track.id),
+              }"
+              role="listitem"
             >
-              <v-list-item
-                v-for="track in playlistStore.tracks"
-                :key="track.id"
-                :title="track.name"
-                class="track-item elevation-1 mb-2"
-                :class="{
-                  'track-active': musicPlayerStore.isCurrentTrack(track.id),
-                }"
-                role="listitem"
-              >
-                <template #prepend>
+              <template #prepend>
+                <v-btn
+                  icon
+                  variant="text"
+                  size="small"
+                  :aria-label="
+                    musicPlayerStore.isCurrentTrack(track.id)
+                      ? musicPlayerStore.isPlaying
+                        ? 'Pause track'
+                        : 'Resume track'
+                      : 'Play track'
+                  "
+                  class="play-button"
+                  @click="playOrPauseTrack(track.id)"
+                >
+                  <v-icon>
+                    {{
+                      musicPlayerStore.isCurrentTrack(track.id)
+                        ? musicPlayerStore.currentStateIcon
+                        : 'mdi-play-circle-outline'
+                    }}
+                  </v-icon>
+                </v-btn>
+              </template>
+
+              <template #title>
+                <span class="track-title">{{ track.name }}</span>
+              </template>
+
+              <template #subtitle>
+                <span
+                  v-if="track.format"
+                  class="text-caption text-secondary"
+                >
+                  {{ track.format.toUpperCase() }}
+                </span>
+              </template>
+
+              <template #append>
+                <div class="track-actions">
                   <v-btn
                     icon
                     variant="text"
                     size="small"
-                    :aria-label="
-                      musicPlayerStore.isCurrentTrack(track.id)
-                        ? musicPlayerStore.isPlaying
-                          ? 'Pause track'
-                          : 'Resume track'
-                        : 'Play track'
-                    "
-                    class="play-button"
-                    @click="playOrPauseTrack(track.id)"
+                    aria-label="Add tags"
+                    class="mr-1"
+                    @click="openTagDialog(track.id)"
                   >
-                    <v-icon>
-                      {{
-                        musicPlayerStore.isCurrentTrack(track.id)
-                          ? musicPlayerStore.currentStateIcon
-                          : 'mdi-play-circle-outline'
-                      }}
+                    <v-icon size="small">
+                      mdi-tag-plus-outline
                     </v-icon>
                   </v-btn>
-                </template>
 
-                <template #title>
-                  <span class="track-title">{{ track.name }}</span>
-                </template>
-
-                <template #subtitle>
-                  <span
-                    v-if="track.format"
-                    class="text-caption text-secondary"
+                  <v-btn
+                    icon
+                    variant="text"
+                    size="small"
+                    :aria-label="`Delete ${track.name}`"
+                    color="error"
+                    @click="removeTrack(track.id)"
                   >
-                    {{ track.format.toUpperCase() }}
-                  </span>
-                </template>
-
-                <template #append>
-                  <div class="track-actions">
-                    <v-btn
-                      icon
-                      variant="text"
-                      size="small"
-                      aria-label="Add tags"
-                      class="mr-1"
-                      @click="openTagDialog(track.id)"
-                    >
-                      <v-icon size="small">
-                        mdi-tag-plus-outline
-                      </v-icon>
-                    </v-btn>
-
-                    <v-btn
-                      icon
-                      variant="text"
-                      size="small"
-                      :aria-label="`Delete ${track.name}`"
-                      color="error"
-                      @click="removeTrack(track.id)"
-                    >
-                      <v-icon size="small">
-                        mdi-delete-outline
-                      </v-icon>
-                    </v-btn>
-                  </div>
-                </template>
-              </v-list-item>
-            </transition-group>
+                    <v-icon size="small">
+                      mdi-delete-outline
+                    </v-icon>
+                  </v-btn>
+                </div>
+              </template>
+            </v-list-item>
           </v-list>
         </v-col>
       </v-row>
@@ -309,26 +304,6 @@ const submitTag = () => {
   &:hover {
     transform: scale(1.2);
   }
-}
-
-// List Transitions
-.list-enter-active,
-.list-leave-active {
-  transition: all var(--transition-base);
-}
-
-.list-enter-from {
-  opacity: 0;
-  transform: translateX(-30px);
-}
-
-.list-leave-to {
-  opacity: 0;
-  transform: translateX(30px);
-}
-
-.list-move {
-  transition: transform var(--transition-base);
 }
 
 .dialog-card {

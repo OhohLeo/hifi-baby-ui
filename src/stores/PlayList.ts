@@ -19,7 +19,21 @@ export const usePlaylistStore = defineStore('playlist', {
       this.tracks = this.tracks.filter(t => t.id !== trackID)
     },
     async fetchTracks() {
-      this.tracks = await audioService.listTracks()
+      try {
+        const response = await audioService.listTracks()
+        // Validate response is an array and filter out invalid tracks
+        if (Array.isArray(response)) {
+          this.tracks = response.filter(track =>
+            track && track.id && track.name
+          )
+        } else {
+          console.error('fetchTracks: Expected array but got:', typeof response)
+          this.tracks = []
+        }
+      } catch (error) {
+        console.error('fetchTracks: Error fetching tracks:', error)
+        this.tracks = []
+      }
     },
   },
 })

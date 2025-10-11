@@ -3,7 +3,7 @@
     <v-main>
       <router-view v-slot="{ Component, route }">
         <transition
-          :name="route.meta.transition || 'fade'"
+          :name="(route.meta.transition as string) || 'fade'"
           mode="out-in"
         >
           <div :key="route.path">
