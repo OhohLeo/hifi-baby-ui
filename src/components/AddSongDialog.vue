@@ -13,7 +13,7 @@
         >
           mdi-music-note-plus
         </v-icon>
-        Add New Song
+        {{ $t('addSongDialog.title') }}
       </v-card-title>
 
       <v-divider />
@@ -21,7 +21,7 @@
       <v-card-text class="pa-6">
         <v-file-input
           v-model="selectedFile"
-          label="Choose audio file"
+          :label="$t('addSongDialog.chooseAudioFile')"
           variant="outlined"
           prepend-inner-icon="mdi-file-music-outline"
           accept=".mp3, .wav, .ogg, .flac, .m4a, .aac"
@@ -75,7 +75,7 @@
           :disabled="isUploading"
           @click="close"
         >
-          Cancel
+          {{ $t('addSongDialog.cancel') }}
         </v-btn>
         <v-btn
           color="accent"
@@ -84,7 +84,7 @@
           :disabled="!selectedFile || isUploading"
           @click="submit"
         >
-          Upload
+          {{ $t('addSongDialog.upload') }}
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -92,8 +92,11 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
 import audioService from '../services/api'
 import { usePlaylistStore } from '../stores/PlayList'
+
+const { t } = useI18n()
 
 const message = ref('')
 const successMessage = ref('')
@@ -134,7 +137,7 @@ const submit = async () => {
   try {
     const response = await audioService.addTrack(selectedFile.value)
     if (response.status === 201) {
-      successMessage.value = 'Song uploaded successfully!'
+      successMessage.value = t('addSongDialog.success')
       await playlistStore.fetchTracks()
 
       // Close after a short delay to show success message
@@ -143,11 +146,11 @@ const submit = async () => {
       }, 1500)
     } else {
       console.error(response)
-      message.value = 'There was an issue uploading the audio file. Please try again.'
+      message.value = t('addSongDialog.error')
     }
   } catch (error) {
     console.error(error)
-    message.value = 'Failed to upload the audio file. Please check your connection and try again.'
+    message.value = t('addSongDialog.errorConnection')
   } finally {
     isUploading.value = false
   }

@@ -25,7 +25,7 @@
               class="track-info"
             >
               <h3 class="text-h6 track-name mb-1">
-                {{ musicPlayer.track ? musicPlayer.track.name : 'No track playing' }}
+                {{ musicPlayer.track ? musicPlayer.track.name : $t('musicPlayer.noTrackPlaying') }}
               </h3>
               <p
                 v-if="musicPlayer.track?.format"
@@ -184,8 +184,11 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
 import { useMusicPlayerStore } from '../stores/MusicPlayer'
 import audioService from '../services/api'
+
+const { t } = useI18n()
 
 const musicPlayer = useMusicPlayerStore()
 musicPlayer.fetchCurrentTrack()

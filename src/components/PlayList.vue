@@ -23,10 +23,10 @@
               mdi-music-note-off
             </v-icon>
             <h2 class="text-h5 mb-2">
-              No songs yet
+              {{ $t('playlist.noSongs') }}
             </h2>
             <p class="text-body-1 text-secondary mb-4">
-              Add your first track to start enjoying your music
+              {{ $t('playlist.addFirstTrack') }}
             </p>
           </v-card>
 
@@ -39,7 +39,7 @@
           >
             <v-list-subheader class="text-overline">
               {{ playlistStore.tracks.length }}
-              {{ playlistStore.tracks.length === 1 ? 'Song' : 'Songs' }}
+              {{ playlistStore.tracks.length === 1 ? $t('playlist.song') : $t('playlist.songs') }}
             </v-list-subheader>
 
             <v-list-item
@@ -96,7 +96,7 @@
                     icon
                     variant="text"
                     size="small"
-                    aria-label="Add tags"
+                    :aria-label="$t('playlist.addTags')"
                     class="mr-1"
                     @click="openTagDialog(track.id)"
                   >
@@ -109,7 +109,7 @@
                     icon
                     variant="text"
                     size="small"
-                    :aria-label="`Delete ${track.name}`"
+                    :aria-label="`${$t('playlist.delete')} ${track.name}`"
                     color="error"
                     @click="removeTrack(track.id)"
                   >
@@ -137,7 +137,7 @@
         <v-icon class="mr-2">
           mdi-tag-multiple
         </v-icon>
-        Add Tag
+        {{ $t('addTagDialog.title') }}
       </v-card-title>
 
       <v-divider />
@@ -165,14 +165,14 @@
           variant="text"
           @click="dialog = false"
         >
-          Cancel
+          {{ $t('settings.cancel') }}
         </v-btn>
         <v-btn
           color="accent"
           variant="flat"
           @click="submitTag"
         >
-          Submit
+          {{ $t('addTagDialog.submit') }}
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -180,6 +180,7 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
 import { usePlaylistStore } from '../stores/PlayList'
 import {
   STATE_PLAY,
@@ -187,6 +188,8 @@ import {
   useMusicPlayerStore,
 } from '../stores/MusicPlayer'
 import audioService from '../services/api'
+
+const { t } = useI18n()
 
 const playlistStore = usePlaylistStore()
 const musicPlayerStore = useMusicPlayerStore()
@@ -220,9 +223,7 @@ const playOrPauseTrack = async (trackID: string) => {
 
 const removeTrack = async (trackID: string) => {
   if (
-    confirm(
-      `Are you sure you want to delete this track? This action cannot be undone.`
-    )
+    confirm(t('playlist.confirmDelete'))
   ) {
     await audioService.removeTrack(trackID)
     playlistStore.fetchTracks()

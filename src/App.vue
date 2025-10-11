@@ -12,12 +12,18 @@
         </transition>
       </router-view>
     </v-main>
+
+    <!-- Global Settings Modal -->
+    <Settings />
   </v-app>
 </template>
 
 <script lang="ts" setup>
 // Import global styles
 import './styles/settings.scss'
+
+// Import global Settings modal
+import Settings from '@/components/settings/Settings.vue'
 </script>
 
 <style lang="scss">

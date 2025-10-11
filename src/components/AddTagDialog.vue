@@ -6,11 +6,11 @@
   >
     <v-card>
       <v-card-item>
-        <v-card-title>Add Tag</v-card-title>
+        <v-card-title>{{ $t('addTagDialog.title') }}</v-card-title>
         <v-spacer />
         <v-card-text>
           <v-text-field
-            label="Label"
+            :label="$t('addTagDialog.label')"
             variant="outlined"
           />
         </v-card-text>
@@ -28,7 +28,7 @@
           variant="text"
           @click="submit"
         >
-          Submit
+          {{ $t('addTagDialog.submit') }}
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -37,6 +37,9 @@
 
 <script setup lang="ts">
 import { defineProps } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const dialog = ref(false)
 const message = ref('')

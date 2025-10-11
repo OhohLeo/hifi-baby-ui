@@ -1,0 +1,44 @@
+{
+  "topMenu": {
+    "songs": "Morceaux",
+    "radios": "Radios",
+    "settings": "Paramètres",
+    "language": "Langue"
+  },
+  "playlist": {
+    "noSongs": "Aucun morceau pour l'instant",
+    "addFirstTrack": "Ajoutez votre premier morceau pour commencer à profiter de votre musique",
+    "song": "Morceau",
+    "songs": "Morceaux",
+    "delete": "Supprimer",
+    "addTags": "Ajouter des tags",
+    "confirmDelete": "Êtes-vous sûr de vouloir supprimer ce morceau ? Cette action est irréversible."
+  },
+  "addSongDialog": {
+    "title": "Ajouter un nouveau morceau",
+    "chooseAudioFile": "Choisir un fichier audio",
+    "cancel": "Annuler",
+    "upload": "Téléverser",
+    "success": "Morceau téléversé avec succès !",
+    "error": "Un problème est survenu lors du téléversement du fichier audio. Veuillez réessayer.",
+    "errorConnection": "Échec du téléversement du fichier audio. Veuillez vérifier votre connexion et réessayer."
+  },
+  "musicPlayer": {
+    "noTrackPlaying": "Aucun morceau en lecture"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "network": "Réseau",
+    "audio": "Audio",
+    "bluetooth": "Bluetooth",
+    "interface": "Interface",
+    "tags": "Tags",
+    "cancel": "Annuler",
+    "validate": "Valider"
+  },
+  "addTagDialog": {
+    "title": "Ajouter un Tag",
+    "label": "Label",
+    "submit": "Valider"
+  }
+}

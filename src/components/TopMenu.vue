@@ -34,6 +34,20 @@
 
     <v-spacer />
 
+    <!-- Language Selector -->
+    <div class="language-selector-container">
+      <v-select
+        v-model="locale"
+        :items="locales"
+        item-title="title"
+        item-value="value"
+        variant="solo"
+        hide-details
+        class="language-selector"
+        aria-label="Select language"
+      />
+    </div>
+
     <!-- Dark Mode Toggle -->
     <v-btn
       icon
@@ -46,8 +60,7 @@
 
     <v-btn
       icon
-      :to="'/settings'"
-      aria-label="Settings"
+      :aria-label="$t('topMenu.settings')"
       @click="openSettings"
     >
       <v-icon>mdi-cog</v-icon>
@@ -74,12 +87,30 @@
 import { ref, watch, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useTheme } from '@/composables/useTheme'
+import { useSettingsModal } from '@/composables/useSettingsModal'
+import { useI18n } from 'vue-i18n'
+
+const { t, locale } = useI18n()
 
 const route = useRoute()
 const router = useRouter()
 
+// Language management
+const locales = [
+  { title: 'EN', value: 'en' },
+  { title: 'FR', value: 'fr' },
+]
+
+watch(locale, (newLocale) => {
+  localStorage.setItem('locale', newLocale)
+})
+
+
 // Theme management - keep object intact for proper reactivity
 const theme = useTheme()
+
+// Settings modal management
+const settingsModal = useSettingsModal()
 
 // Computed property for theme icon based on current theme state
 const themeIcon = computed(() => {
@@ -91,10 +122,10 @@ function handleThemeToggle() {
   theme.toggleTheme()
 }
 
-const tabs = {
-  songs: { name: 'Songs', icon: 'mdi-music', value: 'songs', disabled: false },
-  radios: { name: 'Radios', icon: 'mdi-music', value: 'radios', disabled: true },
-}
+const tabs = computed(() => ({
+  songs: { name: t('topMenu.songs'), icon: 'mdi-music', value: 'songs', disabled: false },
+  radios: { name: t('topMenu.radios'), icon: 'mdi-radio-tower', value: 'radios', disabled: true },
+}))
 
 // Initialize based on current route
 const isOnSettings = route.path === '/settings'
@@ -104,21 +135,27 @@ const fabIcon = ref('mdi-music-note-plus')
 const canDisplayFab = ref(!isOnSettings)
 const canDisplaySlider = ref(!isOnSettings)
 
-// Watch route changes to show/hide FAB based on current page
-watch(() => route.path, (newPath) => {
+// Watch route changes to open settings modal and manage UI state
+watch(() => route.path, (newPath, oldPath) => {
   if (newPath === '/settings') {
-    canDisplayFab.value = false
-    canDisplaySlider.value = false
-    selectedTab.value = null // Deselect tab when on settings to allow re-selection
-  } else {
-    canDisplayFab.value = true
-    canDisplaySlider.value = true
-    selectedTab.value = 'songs'
+    // Open settings modal and redirect back to previous page
+    settingsModal.openModal()
+    if (oldPath && oldPath !== '/settings') {
+      router.replace(oldPath)
+    } else {
+      router.replace('/')
+    }
   }
+
+  // Update UI state based on route
+  const isSettings = newPath === '/settings'
+  canDisplayFab.value = !isSettings
+  canDisplaySlider.value = !isSettings
+  selectedTab.value = isSettings ? null : 'songs'
 })
 
-const openSettings = () => {
-  router.push('/settings')
+function openSettings() {
+  settingsModal.openModal()
 }
 
 function handleTabChange(tabValue: unknown) {
@@ -161,10 +198,22 @@ const openDialog = () => {
 
   .theme-toggle {
     transition: all var(--transition-base);
-
+    margin-right:12px;
     &:hover {
       transform: rotate(180deg);
     }
+  }
+}
+
+.language-selector-container {
+  width: 90px;
+  margin-right: 12px;
+}
+
+.language-selector {
+  :deep(.v-field) {
+    border-radius: var(--radius-lg) !important;
+    box-shadow: none !important;
   }
 }
 

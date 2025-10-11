@@ -1,0 +1,44 @@
+{
+  "topMenu": {
+    "songs": "Songs",
+    "radios": "Radios",
+    "settings": "Settings",
+    "language": "Language"
+  },
+  "playlist": {
+    "noSongs": "No songs yet",
+    "addFirstTrack": "Add your first track to start enjoying your music",
+    "song": "Song",
+    "songs": "Songs",
+    "delete": "Delete",
+    "addTags": "Add tags",
+    "confirmDelete": "Are you sure you want to delete this track? This action cannot be undone."
+  },
+  "addSongDialog": {
+    "title": "Add New Song",
+    "chooseAudioFile": "Choose audio file",
+    "cancel": "Cancel",
+    "upload": "Upload",
+    "success": "Song uploaded successfully!",
+    "error": "There was an issue uploading the audio file. Please try again.",
+    "errorConnection": "Failed to upload the audio file. Please check your connection and try again."
+  },
+  "musicPlayer": {
+    "noTrackPlaying": "No track playing"
+  },
+  "settings": {
+    "title": "Settings",
+    "network": "Network",
+    "audio": "Audio",
+    "bluetooth": "Bluetooth",
+    "interface": "Interface",
+    "tags": "Tags",
+    "cancel": "Cancel",
+    "validate": "Validate"
+  },
+  "addTagDialog": {
+    "title": "Add Tag",
+    "label": "Label",
+    "submit": "Submit"
+  }
+}
