@@ -12,7 +12,10 @@
     "songs": "Songs",
     "delete": "Delete",
     "addTags": "Add tags",
-    "confirmDelete": "Are you sure you want to delete this track? This action cannot be undone."
+    "confirmDelete": "Are you sure you want to delete this track? This action cannot be undone.",
+    "search": "Search for a song...",
+    "noResults": "No results found",
+    "tryDifferentQuery": "Try a different search query."
   },
   "addSongDialog": {
     "title": "Add New Song",

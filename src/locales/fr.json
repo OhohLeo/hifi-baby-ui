@@ -12,7 +12,10 @@
     "songs": "Morceaux",
     "delete": "Supprimer",
     "addTags": "Ajouter des tags",
-    "confirmDelete": "Êtes-vous sûr de vouloir supprimer ce morceau ? Cette action est irréversible."
+    "confirmDelete": "Êtes-vous sûr de vouloir supprimer ce morceau ? Cette action est irréversible.",
+    "search": "Rechercher un morceau...",
+    "noResults": "Aucun résultat trouvé",
+    "tryDifferentQuery": "Essayez une autre recherche."
   },
   "addSongDialog": {
     "title": "Ajouter un nouveau morceau",

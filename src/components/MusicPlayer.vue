@@ -38,6 +38,38 @@
         </v-col>
       </v-row>
 
+      <!-- Progress Slider -->
+      <v-row
+        align="center"
+        justify="center"
+        no-gutters
+        class="mb-2"
+      >
+        <v-col
+          cols="auto"
+          class="text-caption text-secondary"
+        >
+          {{ formattedCurrentTime }}
+        </v-col>
+        <v-col class="px-2">
+          <v-slider
+            v-model="currentPosition"
+            :max="musicPlayer.track?.duration || 0"
+            readonly
+            hide-details
+            color="accent"
+            track-color="surface-variant"
+            thumb-color="accent"
+          />
+        </v-col>
+        <v-col
+          cols="auto"
+          class="text-caption text-secondary"
+        >
+          {{ formattedDuration }}
+        </v-col>
+      </v-row>
+
       <!-- Playback Controls -->
       <v-row
         align="center"
@@ -184,14 +216,63 @@
 </template>
 
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n'
+import { ref, computed, watch, onUnmounted } from 'vue'
 import { useMusicPlayerStore } from '../stores/MusicPlayer'
 import audioService from '../services/api'
 
-const { t } = useI18n()
-
 const musicPlayer = useMusicPlayerStore()
+const currentPosition = ref(0)
+const interval = ref<number | null>(null)
+
 musicPlayer.fetchCurrentTrack()
+
+const formatTime = (seconds: number) => {
+  if (isNaN(seconds) || seconds < 0) {
+    return '0:00'
+  }
+  const minutes = Math.floor(seconds / 60)
+  const secs = Math.floor(seconds % 60)
+  return `${minutes}:${secs.toString().padStart(2, '0')}`
+}
+
+const formattedCurrentTime = computed(() => formatTime(currentPosition.value))
+const formattedDuration = computed(() => formatTime(musicPlayer.track?.duration || 0))
+
+const stopTimer = () => {
+  if (interval.value) {
+    clearInterval(interval.value)
+    interval.value = null
+  }
+}
+
+const startTimer = () => {
+  stopTimer() // Ensure no multiple timers
+  interval.value = setInterval(() => {
+    if (musicPlayer.track && currentPosition.value < musicPlayer.track.duration) {
+      currentPosition.value++
+    } else {
+      stopTimer()
+    }
+  }, 1000)
+}
+
+watch(
+  [() => musicPlayer.track, () => musicPlayer.isPlaying],
+  ([track, isPlaying]) => {
+    stopTimer()
+    if (track) {
+      currentPosition.value = musicPlayer.position || 0
+      if (isPlaying) {
+        startTimer()
+      }
+    } else {
+      currentPosition.value = 0
+    }
+  },
+  { deep: true }
+)
+
+onUnmounted(stopTimer)
 
 const togglePlayPause = async () => {
   if (musicPlayer.isPlaying) {

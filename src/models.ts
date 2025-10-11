@@ -3,12 +3,14 @@ export interface TrackModel {
   name: string
   format: string
   tags: string[]
+  duration: number
 }
 
 export interface MusicPlayerModel {
   currentTrack: TrackModel | null
   isPlaying: boolean
   isMuted: boolean
+  position: number
 }
 
 export interface TimeParameters {

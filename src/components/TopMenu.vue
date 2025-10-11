@@ -219,7 +219,7 @@ const openDialog = () => {
 
 .fab-button {
   position: fixed !important;
-  bottom: 100px !important;
+  bottom: 160px !important;
   right: 24px !important;
   z-index: 2000 !important;
 }

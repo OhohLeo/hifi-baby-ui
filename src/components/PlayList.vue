@@ -30,97 +30,129 @@
             </p>
           </v-card>
 
-          <!-- Track List -->
-          <v-list
-            v-else
-            class="track-list"
-            role="list"
-            aria-label="Song playlist"
-          >
-            <v-list-subheader class="text-overline">
-              {{ playlistStore.tracks.length }}
-              {{ playlistStore.tracks.length === 1 ? $t('playlist.song') : $t('playlist.songs') }}
-            </v-list-subheader>
+          <div v-else>
+            <!-- Search Input -->
+            <v-text-field
+              v-model="searchQuery"
+              :label="$t('playlist.search')"
+              prepend-inner-icon="mdi-magnify"
+              variant="outlined"
+              clearable
+              class="mb-4"
+            />
 
-            <v-list-item
-              v-for="track in playlistStore.tracks"
-              :key="track.id"
-              :title="track.name"
-              class="track-item elevation-1 mb-2"
-              :class="{
-                'track-active': musicPlayerStore.isCurrentTrack(track.id),
-              }"
-              role="listitem"
+            <!-- Track List -->
+            <v-list
+              v-if="filteredTracks.length > 0"
+              class="track-list"
+              role="list"
+              aria-label="Song playlist"
             >
-              <template #prepend>
-                <v-btn
-                  icon
-                  variant="text"
-                  size="small"
-                  :aria-label="
-                    musicPlayerStore.isCurrentTrack(track.id)
-                      ? musicPlayerStore.isPlaying
-                        ? 'Pause track'
-                        : 'Resume track'
-                      : 'Play track'
-                  "
-                  class="play-button"
-                  @click="playOrPauseTrack(track.id)"
-                >
-                  <v-icon>
-                    {{
+              <v-list-subheader class="text-overline">
+                {{ filteredTracks.length }}
+                {{ filteredTracks.length === 1 ? $t('playlist.song') : $t('playlist.songs') }}
+              </v-list-subheader>
+
+              <v-list-item
+                v-for="track in filteredTracks"
+                :key="track.id"
+                :title="track.name"
+                class="track-item elevation-1 mb-2"
+                :class="{
+                  'track-active': musicPlayerStore.isCurrentTrack(track.id),
+                }"
+                role="listitem"
+              >
+                <template #prepend>
+                  <v-btn
+                    icon
+                    variant="text"
+                    size="small"
+                    :aria-label="
                       musicPlayerStore.isCurrentTrack(track.id)
-                        ? musicPlayerStore.currentStateIcon
-                        : 'mdi-play-circle-outline'
-                    }}
-                  </v-icon>
-                </v-btn>
-              </template>
-
-              <template #title>
-                <span class="track-title">{{ track.name }}</span>
-              </template>
-
-              <template #subtitle>
-                <span
-                  v-if="track.format"
-                  class="text-caption text-secondary"
-                >
-                  {{ track.format.toUpperCase() }}
-                </span>
-              </template>
-
-              <template #append>
-                <div class="track-actions">
-                  <v-btn
-                    icon
-                    variant="text"
-                    size="small"
-                    :aria-label="$t('playlist.addTags')"
-                    class="mr-1"
-                    @click="openTagDialog(track.id)"
+                        ? musicPlayerStore.isPlaying
+                          ? 'Pause track'
+                          : 'Resume track'
+                        : 'Play track'
+                    "
+                    class="play-button"
+                    @click="playOrPauseTrack(track.id)"
                   >
-                    <v-icon size="small">
-                      mdi-tag-plus-outline
+                    <v-icon>
+                      {{
+                        musicPlayerStore.isCurrentTrack(track.id)
+                          ? musicPlayerStore.currentStateIcon
+                          : 'mdi-play-circle-outline'
+                      }}
                     </v-icon>
                   </v-btn>
+                </template>
 
-                  <v-btn
-                    icon
-                    variant="text"
-                    size="small"
-                    :aria-label="`${$t('playlist.delete')} ${track.name}`"
-                    color="error"
-                    @click="removeTrack(track.id)"
+                <template #title>
+                  <span class="track-title">{{ track.name }}</span>
+                </template>
+
+                <template #subtitle>
+                  <span
+                    v-if="track.format"
+                    class="text-caption text-secondary"
                   >
-                    <v-icon size="small">
-                      mdi-delete-outline
-                    </v-icon>
-                  </v-btn>
-                </div>
-              </template>
-            </v-list-item>
-          </v-list>
+                    {{ track.format.toUpperCase() }}
+                  </span>
+                </template>
+
+                <template #append>
+                  <div class="track-actions">
+                    <v-btn
+                      icon
+                      variant="text"
+                      size="small"
+                      :aria-label="$t('playlist.addTags')"
+                      class="mr-1"
+                      @click="openTagDialog(track.id)"
+                    >
+                      <v-icon size="small">
+                        mdi-tag-plus-outline
+                      </v-icon>
+                    </v-btn>
+
+                    <v-btn
+                      icon
+                      variant="text"
+                      size="small"
+                      :aria-label="`${$t('playlist.delete')} ${track.name}`"
+                      color="error"
+                      @click="removeTrack(track.id)"
+                    >
+                      <v-icon size="small">
+                        mdi-delete-outline
+                      </v-icon>
+                    </v-btn>
+                  </div>
+                </template>
+              </v-list-item>
+            </v-list>
+            <!-- No Search Results -->
+            <v-card
+              v-else
+              class="empty-state pa-8 text-center"
+              variant="flat"
+            >
+              <v-icon
+                size="64"
+                color="secondary"
+                class="mb-4"
+              >
+                mdi-magnify-close
+              </v-icon>
+              <h2 class="text-h5 mb-2">
+                {{ $t('playlist.noResults') }}
+              </h2>
+              <p class="text-body-1 text-secondary mb-4">
+                {{ $t('playlist.tryDifferentQuery') }}
+              </p>
+            </v-card>
+          </div>
         </v-col>
       </v-row>
     </v-container>
@@ -180,6 +212,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { usePlaylistStore } from '../stores/PlayList'
 import {
@@ -193,6 +226,16 @@ const { t } = useI18n()
 
 const playlistStore = usePlaylistStore()
 const musicPlayerStore = useMusicPlayerStore()
+
+const searchQuery = ref('')
+const filteredTracks = computed(() => {
+  if (!searchQuery.value) {
+    return playlistStore.tracks
+  }
+  return playlistStore.tracks.filter(track =>
+    track.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+  )
+})
 
 playlistStore.fetchTracks()
 
