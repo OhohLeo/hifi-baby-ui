@@ -70,5 +70,24 @@ export default defineConfig({
   },
   server: {
     port: 3000,
+    host: '0.0.0.0', // Allow access from mobile devices on same network
   },
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+    // Optimize for mobile
+    target: 'es2018',
+    minify: 'terser',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vue-vendor': ['vue', 'vue-router', 'pinia'],
+          'vuetify-vendor': ['vuetify'],
+        }
+      }
+    }
+  },
+  optimizeDeps: {
+    include: ['@capacitor/core']
+  }
 })
