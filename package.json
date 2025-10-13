@@ -4,14 +4,23 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
+    "build:web": "vue-tsc --noEmit && vite build",
+    "build:android": "npm run build:web && npx cap sync android && npx cap open android",
     "preview": "vite preview",
     "lint": "eslint . --fix",
     "lint:check": "eslint .",
     "lint:fix": "eslint . --fix",
     "type-check": "vue-tsc --noEmit -p tsconfig.json",
-    "validate": "npm run lint:check && npm run type-check"
+    "validate": "npm run lint:check && npm run type-check",
+    "cap:sync": "npx cap sync",
+    "cap:sync:android": "npx cap sync android",
+    "cap:open:android": "npx cap open android",
+    "cap:run:android": "npx cap run android"
   },
   "dependencies": {
+    "@capacitor/android": "^7.4.3",
+    "@capacitor/cli": "^7.4.3",
+    "@capacitor/core": "^7.4.3",
     "@mdi/font": "7.4.47",
     "axios": "^1.7.2",
     "core-js": "^3.37.1",
@@ -37,6 +46,7 @@
     "globals": "^15.13.0",
     "pinia": "^2.1.7",
     "sass": "1.77.6",
+    "terser": "^5.44.0",
     "typescript": "^5.4.2",
     "typescript-eslint": "^8.18.0",
     "unplugin-auto-import": "^0.17.6",
