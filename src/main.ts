@@ -13,6 +13,9 @@ import App from './App.vue'
 // Composables
 import { createApp } from 'vue'
 
+// Mobile enhancements
+import '@/styles/mobile-enhancements.scss'
+
 const app = createApp(App)
 
 registerPlugins(app)

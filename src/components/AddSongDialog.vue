@@ -160,7 +160,10 @@ const fileInfo = ref<{ name: string; size: number; sizeFormatted: string } | nul
 const playlistStore = usePlaylistStore()
 
 const selectedFileName = computed(() => {
-  if (!selectedFile.value) return ''
+  if (!selectedFile.value) {
+     return ''
+  }
+  
   return selectedFile.value.name
 })
 

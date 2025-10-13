@@ -1,0 +1,235 @@
+/**
+ * Mobile-specific CSS enhancements
+ * Optimizes UI/UX for touch devices and native platforms
+ */
+
+// Touch target sizes - ensure minimum 44x44px for accessibility
+@media (max-width: 600px) {
+  .v-btn {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .v-btn--icon {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .v-list-item {
+    min-height: 48px;
+  }
+
+  .v-chip {
+    min-height: 32px;
+  }
+}
+
+// Disable hover effects on touch devices
+@media (hover: none) and (pointer: coarse) {
+  .track-item:hover,
+  .control-btn:hover,
+  .v-btn:hover,
+  .v-list-item:hover {
+    transform: none !important;
+    background-color: inherit !important;
+  }
+
+  // Remove hover transitions on touch devices
+  .track-item,
+  .control-btn,
+  .v-btn,
+  .v-list-item {
+    transition: none !important;
+  }
+}
+
+// Safe area insets for notched devices (iOS, modern Android)
+@supports (padding: env(safe-area-inset-top)) {
+  // Top navigation
+  .v-app-bar,
+  .v-toolbar {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  // Bottom player controls
+  .music-player-footer,
+  .v-footer {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  // Modal dialogs
+  .v-dialog {
+    margin-top: env(safe-area-inset-top);
+    margin-bottom: env(safe-area-inset-bottom);
+  }
+
+  // Settings modal
+  .v-navigation-drawer {
+    padding-top: env(safe-area-inset-top);
+  }
+}
+
+// Mobile spacing improvements
+@media (max-width: 600px) {
+  // Increase padding for better readability
+  .v-card-text {
+    padding: 16px !important;
+  }
+
+  .v-container {
+    padding: 12px !important;
+  }
+
+  // Larger font sizes for mobile
+  .text-h6 {
+    font-size: 1.125rem !important;
+  }
+
+  .text-subtitle-1 {
+    font-size: 1rem !important;
+  }
+
+  // Better spacing for lists
+  .v-list-item {
+    padding: 12px 16px !important;
+  }
+
+  // Increase input sizes
+  .v-text-field .v-field {
+    min-height: 48px;
+  }
+
+  // Larger icons for mobile
+  .v-icon {
+    &.v-icon--size-default {
+      font-size: 24px;
+    }
+  }
+}
+
+// Prevent text selection on buttons/controls (better mobile UX)
+.v-btn,
+.v-chip,
+.control-btn,
+.v-list-item {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+// Smooth scrolling on mobile
+@media (max-width: 600px) {
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  // Hide scrollbar on mobile for cleaner look
+  .v-navigation-drawer__content,
+  .v-list {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+}
+
+// Loading states - better visibility on mobile
+.v-progress-circular,
+.v-progress-linear {
+  @media (max-width: 600px) {
+    transform: scale(1.2);
+  }
+}
+
+// Fix for iOS input zoom
+@media (max-width: 600px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+// Better dialog presentation on mobile
+@media (max-width: 600px) {
+  .v-dialog {
+    margin: 16px;
+    max-width: calc(100% - 32px) !important;
+  }
+
+  .v-card {
+    max-width: 100%;
+  }
+}
+
+// Optimize file input for mobile
+@media (max-width: 600px) {
+  .v-file-input {
+    .v-input__control {
+      min-height: 56px;
+    }
+  }
+}
+
+// Better alert spacing on mobile
+@media (max-width: 600px) {
+  .v-alert {
+    margin-bottom: 12px;
+    padding: 12px 16px;
+  }
+}
+
+// Snackbar positioning for mobile
+@media (max-width: 600px) {
+  .v-snackbar {
+    bottom: calc(env(safe-area-inset-bottom) + 80px) !important;
+  }
+}
+
+// Improve button groups on mobile
+@media (max-width: 600px) {
+  .v-btn-group {
+    .v-btn {
+      flex: 1;
+    }
+  }
+}
+
+// Settings page mobile optimization
+@media (max-width: 600px) {
+  .settings-container {
+    padding: 0 !important;
+  }
+
+  .settings-content {
+    padding: 12px;
+  }
+}
+
+// Playlist mobile optimization
+@media (max-width: 600px) {
+  .track-item {
+    padding: 12px !important;
+    margin-bottom: 8px;
+  }
+
+  .track-controls {
+    gap: 8px;
+  }
+}
+
+// Music player footer mobile optimization
+@media (max-width: 600px) {
+  .music-player-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+  }
+}

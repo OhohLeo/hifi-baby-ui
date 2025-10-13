@@ -4,11 +4,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Hifi Baby UI is a web-based music player interface built for the [Hifi Baby](https://github.com/ohohleo/hifi-baby) project. It communicates with a backend audio service running at `http://hifi-baby.local:3000/audio` to control music playback.
+Hifi Baby UI is a **cross-platform music player interface** built for the [Hifi Baby](https://github.com/ohohleo/hifi-baby) project. It runs on **web, Android, and iOS** using Capacitor. The app communicates with a backend audio service running at `http://hifi-baby.local:3000/audio` to control music playback.
 
-**Tech Stack**: Vue 3, Vuetify 3, TypeScript, Vite, Pinia
+**Tech Stack**: Vue 3, Vuetify 3, TypeScript, Vite, Pinia, Capacitor
+
+**Platforms**: Web, Android, iOS (native via Capacitor)
 
 ## Development Commands
+
+### Web Development
 
 ```bash
 # Install dependencies
@@ -19,12 +23,26 @@ npm run dev
 
 # Build for production (includes TypeScript type checking)
 npm run build
+npm run build:web  # Explicit web build
 
 # Preview production build
 npm preview
 
 # Lint and auto-fix code
 npm run lint
+```
+
+### Cross-Platform Development
+
+```bash
+# Build and open Android project in Android Studio
+npm run build:android
+
+# Capacitor commands
+npm run cap:sync                # Sync web assets to all platforms
+npm run cap:sync:android        # Sync to Android only
+npm run cap:open:android        # Open in Android Studio
+npm run cap:run:android         # Build and run on connected device
 ```
 
 ## Architecture
@@ -132,6 +150,86 @@ In `PlayList.vue`, clicking a track icon:
 1. If the track is already loaded: toggles between play/pause
 2. If it's a different track: starts playing the new track
 3. Uses the `playOrPauseTrack()` function to handle state transitions
+
+## Cross-Platform Architecture (Capacitor)
+
+### Platform Detection & Capabilities
+
+The app uses capability detection to adapt features based on the platform:
+
+**Composables** (`src/composables/`):
+- `usePlatform()` - Detects current platform (web/iOS/Android) and provides helpers
+- `useCapabilities()` - Detects available platform capabilities (Bluetooth, file system, network discovery, etc.)
+
+**Platform Services** (`src/services/platform/`):
+- `bluetooth.service.ts` - Bluetooth LE device scanning and connection (native only)
+- `filesystem.service.ts` - Platform-aware file picking (web vs native)
+- `network.service.ts` - Backend discovery with mDNS/fallback strategies
+
+### Native Features
+
+**Bluetooth (Android/iOS)**:
+- Uses `@capacitor-community/bluetooth-le` plugin
+- Scan for BLE devices, connect/disconnect
+- UI shows device list with signal strength (RSSI)
+- Web displays informational message (not supported)
+
+**File Picker (Android/iOS)**:
+- Uses `@capawesome/capacitor-file-picker` plugin
+- Native file picker with audio file filtering
+- Web uses standard HTML5 file input
+- Displays file info (name, size) on native platforms
+
+**Network Discovery**:
+- Attempts auto-discovery of backend on app launch
+- Platform-specific strategies (mDNS, Bonjour, IP scanning)
+- Fallback to manual URL configuration
+
+### Mobile Optimizations
+
+**Styling** (`src/styles/mobile-enhancements.scss`):
+- Touch target sizes (44x44px minimum)
+- Safe area insets for notched devices
+- Disabled hover effects on touch devices
+- Mobile-specific spacing and font sizes
+
+**Permissions** (Android):
+- Bluetooth LE (BLUETOOTH_CONNECT, BLUETOOTH_SCAN)
+- File access (READ_MEDIA_AUDIO)
+- Network (ACCESS_NETWORK_STATE, ACCESS_WIFI_STATE)
+- Cleartext traffic allowed for local HTTP
+
+### Configuration
+
+**Capacitor Config** (`capacitor.config.ts`):
+- App ID: `com.hifibaby.ui`
+- Allow navigation to local network URLs
+- Splash screen and keyboard configuration
+- Android-specific settings (cleartext traffic)
+
+**Environment Variables** (`.env.development`, `.env.production`):
+- `VITE_APP_TITLE` - Application title
+- `VITE_API_BASE_URL` - Default API URL
+- `VITE_DEFAULT_BACKEND` - Fallback backend URL
+
+### Development Workflow
+
+1. Make changes to Vue components/services
+2. Run `npm run build:web` to build web assets
+3. Run `npx cap sync android` to copy to native project
+4. Open in Android Studio with `npx cap open android`
+5. Build and run on device/emulator
+
+### Platform-Specific UI
+
+Components adapt based on platform:
+- **Bluetooth Settings**: Shows scan button on native, info message on web
+- **Network Settings**: Shows auto-discovery on native, manual config on web
+- **Add Song Dialog**: Uses native file picker on mobile, web input on web
+- **Settings Modal**: Platform badge shows current platform
+
+## Notes for Claude
+
 - Use context7 to check-up-to-date docs needed for implementing new libraries or frameworks, or adding new features using them.
 - Use playwright mcp to open, test, get screenshots from browser to localhost:3000
 - Do not write a .md files each time we add a new feature / fonctionality
