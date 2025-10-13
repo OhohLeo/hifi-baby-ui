@@ -47,54 +47,165 @@
           </v-card-text>
         </v-card>
 
-        <!-- Info Message -->
-        <v-card variant="tonal" color="info" class="mb-4">
-          <v-card-text>
-            <v-icon start>mdi-information</v-icon>
-            Bluetooth device scanning and connection will be implemented in Phase 3.
-            For now, use Network settings to connect to your Hifi Baby device.
-          </v-card-text>
+        <!-- Scan Button -->
+        <v-btn
+          :loading="isScanning"
+          :disabled="!isInitialized"
+          color="accent"
+          block
+          size="large"
+          prepend-icon="mdi-radar"
+          class="mb-4"
+          @click="startScan"
+        >
+          {{ isScanning ? 'Scanning...' : 'Scan for Devices' }}
+        </v-btn>
+
+        <!-- Device List -->
+        <v-card v-if="devices.length > 0" variant="outlined">
+          <v-card-title class="text-subtitle-1">
+            Available Devices ({{ devices.length }})
+          </v-card-title>
+          <v-divider />
+          <v-list>
+            <v-list-item
+              v-for="device in devices"
+              :key="device.id"
+              :title="device.name"
+              :subtitle="`Signal: ${device.rssi} dBm | ${device.address}`"
+            >
+              <template #prepend>
+                <v-icon :color="device.isConnected ? 'success' : 'secondary'">
+                  {{ device.isConnected ? 'mdi-bluetooth-connect' : 'mdi-bluetooth' }}
+                </v-icon>
+              </template>
+              <template #append>
+                <v-btn
+                  v-if="!device.isConnected"
+                  variant="text"
+                  color="accent"
+                  :loading="connectingDeviceId === device.id"
+                  @click="connectToDevice(device.id)"
+                >
+                  Connect
+                </v-btn>
+                <v-btn
+                  v-else
+                  variant="text"
+                  color="error"
+                  @click="disconnectDevice(device.id)"
+                >
+                  Disconnect
+                </v-btn>
+              </template>
+            </v-list-item>
+          </v-list>
         </v-card>
 
-        <!-- Coming Soon Features -->
-        <v-list>
-          <v-list-subheader>Coming Soon</v-list-subheader>
-          <v-list-item prepend-icon="mdi-radar">
-            <v-list-item-title>Scan for Bluetooth Devices</v-list-item-title>
-            <v-list-item-subtitle>Discover Hifi Baby devices nearby</v-list-item-subtitle>
-          </v-list-item>
-          <v-list-item prepend-icon="mdi-bluetooth-connect">
-            <v-list-item-title>Connect to Device</v-list-item-title>
-            <v-list-item-subtitle>Establish Bluetooth connection</v-list-item-subtitle>
-          </v-list-item>
-          <v-list-item prepend-icon="mdi-bluetooth-settings">
-            <v-list-item-title>Manage Connections</v-list-item-title>
-            <v-list-item-subtitle>View and manage paired devices</v-list-item-subtitle>
-          </v-list-item>
-        </v-list>
+        <!-- Empty State -->
+        <v-card v-else-if="!isScanning && scanCompleted" variant="outlined" class="pa-8 text-center">
+          <v-icon size="64" color="secondary" class="mb-4">
+            mdi-bluetooth-off
+          </v-icon>
+          <p class="text-body-2 text-medium-emphasis">
+            No devices found. Press "Scan for Devices" to search again.
+          </p>
+        </v-card>
+
+        <!-- Help Section -->
+        <v-card variant="tonal" color="info" class="mt-4">
+          <v-card-text>
+            <div class="text-subtitle-2 mb-2">
+              <v-icon start>mdi-help-circle</v-icon>
+              Bluetooth Tips
+            </div>
+            <ul class="text-body-2">
+              <li>Make sure Bluetooth is enabled on your device</li>
+              <li>Keep your Hifi Baby device powered on and nearby</li>
+              <li>Scanning will last 10 seconds</li>
+              <li>You may need to grant Bluetooth permissions when scanning</li>
+            </ul>
+          </v-card-text>
+        </v-card>
       </div>
     </div>
   </v-container>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useCapabilities } from '@/composables/useCapabilities'
 import { usePlatform } from '@/composables/usePlatform'
+import { bluetoothService, type HifiBabyDevice } from '@/services/platform/bluetooth.service'
 
 const { isNative } = usePlatform()
 const { capabilities, detectAll } = useCapabilities()
+
+const isInitialized = ref(false)
+const isScanning = ref(false)
+const scanCompleted = ref(false)
+const devices = ref<HifiBabyDevice[]>([])
+const connectingDeviceId = ref<string | null>(null)
 
 const bluetoothStatus = computed(() => {
   if (!capabilities.bluetooth.supported) return 'Not supported'
   if (!capabilities.bluetooth.available) return 'Not available'
   if (capabilities.bluetooth.permission === 'denied') return 'Permission denied'
-  return 'Available'
+  if (isInitialized.value) return 'Ready'
+  return 'Initializing...'
 })
+
+async function startScan() {
+  isScanning.value = true
+  scanCompleted.value = false
+  bluetoothService.clearDevices()
+  devices.value = []
+
+  try {
+    const discoveredDevices = await bluetoothService.scan(10000)
+    devices.value = discoveredDevices
+    scanCompleted.value = true
+  } catch (error) {
+    console.error('Scan failed:', error)
+    scanCompleted.value = true
+  } finally {
+    isScanning.value = false
+  }
+}
+
+async function connectToDevice(deviceId: string) {
+  connectingDeviceId.value = deviceId
+  try {
+    const success = await bluetoothService.connect(deviceId)
+    if (success) {
+      devices.value = bluetoothService.getDevices()
+    }
+  } catch (error) {
+    console.error('Connection failed:', error)
+  } finally {
+    connectingDeviceId.value = null
+  }
+}
+
+async function disconnectDevice(deviceId: string) {
+  try {
+    await bluetoothService.disconnect(deviceId)
+    devices.value = bluetoothService.getDevices()
+  } catch (error) {
+    console.error('Disconnection failed:', error)
+  }
+}
 
 onMounted(async () => {
   if (isNative) {
     await detectAll()
+
+    if (capabilities.bluetooth.supported) {
+      isInitialized.value = await bluetoothService.initialize()
+      if (isInitialized.value) {
+        await bluetoothService.requestPermissions()
+      }
+    }
   }
 })
 </script>
