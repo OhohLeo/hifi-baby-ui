@@ -43,6 +43,9 @@ const audioService = {
   playTrack(trackID: string) {
     return apiClient.post(`/play/${trackID}`)
   },
+  setTrackPosition(position: number) {
+    return apiClient.post(`/play/position`, { position })
+  },
   pauseTrack() {
     return apiClient.post('/pause')
   },
@@ -71,6 +74,7 @@ const audioService = {
       params: { enable: isMuted }
     })
   },
+
 
   /**
    * Initialize API service with auto-discovery

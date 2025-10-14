@@ -55,11 +55,12 @@
           <v-slider
             v-model="currentPosition"
             :max="musicPlayer.track?.duration || 0"
-            readonly
             hide-details
             color="accent"
             track-color="surface-variant"
             thumb-color="accent"
+            @start="stopTimer"
+            @end="onPositionChange"
           />
         </v-col>
         <v-col
@@ -288,6 +289,16 @@ const increaseVolume = async () => {
 
 const decreaseVolume = async () => {
   await audioService.decreaseVolume()
+}
+
+const onPositionChange = async (newPosition: number) => {
+  if (musicPlayer.track) {
+    await audioService.setTrackPosition(Math.round(newPosition))
+    musicPlayer.position = newPosition
+    if (musicPlayer.isPlaying) {
+      startTimer()
+    }
+  }
 }
 </script>
 
