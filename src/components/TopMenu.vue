@@ -12,12 +12,12 @@
     <template #extension>
       <v-container>
         <v-tabs
+          v-if="!isSettingsActive"
           v-model="selectedTab"
           align-tabs="center"
           height="60"
           grow
           stacked
-          :hide-slider="!canDisplaySlider"
           @update:model-value="handleTabChange"
         >
           <v-tab
@@ -87,7 +87,7 @@
 import { ref, watch, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useTheme } from '@/composables/useTheme'
-import { useSettingsModal } from '@/composables/useSettingsModal'
+import { useSettingsView } from '@/composables/useSettingsView'
 import { useI18n } from 'vue-i18n'
 
 const { t, locale } = useI18n()
@@ -109,8 +109,8 @@ watch(locale, (newLocale) => {
 // Theme management - keep object intact for proper reactivity
 const theme = useTheme()
 
-// Settings modal management
-const settingsModal = useSettingsModal()
+// Settings view management
+const settingsView = useSettingsView()
 
 // Computed property for theme icon based on current theme state
 const themeIcon = computed(() => {
@@ -127,35 +127,15 @@ const tabs = computed(() => ({
   radios: { name: t('topMenu.radios'), icon: 'mdi-radio-tower', value: 'radios', disabled: true },
 }))
 
-// Initialize based on current route
-const isOnSettings = route.path === '/settings'
-const selectedTab = ref<string | null>(isOnSettings ? null : 'songs')
 const fabIcon = ref('mdi-music-note-plus')
 
-const canDisplayFab = ref(!isOnSettings)
-const canDisplaySlider = ref(!isOnSettings)
+const isSettingsActive = computed(() => settingsView.isSettingsOpen.value || route.path === '/settings')
 
-// Watch route changes to open settings modal and manage UI state
-watch(() => route.path, (newPath, oldPath) => {
-  if (newPath === '/settings') {
-    // Open settings modal and redirect back to previous page
-    settingsModal.openModal()
-    if (oldPath && oldPath !== '/settings') {
-      router.replace(oldPath)
-    } else {
-      router.replace('/')
-    }
-  }
-
-  // Update UI state based on route
-  const isSettings = newPath === '/settings'
-  canDisplayFab.value = !isSettings
-  canDisplaySlider.value = !isSettings
-  selectedTab.value = isSettings ? null : 'songs'
-})
+const selectedTab = ref<string | null>('songs')
+const canDisplayFab = computed(() => !isSettingsActive.value)
 
 function openSettings() {
-  settingsModal.openModal()
+  settingsView.openSettings()
 }
 
 function handleTabChange(tabValue: unknown) {

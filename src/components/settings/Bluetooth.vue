@@ -31,7 +31,7 @@
       <div v-else>
         <v-card variant="outlined" class="mb-4">
           <v-card-text>
-            <div class="d-flex align-center justify-space-between">
+            <div class="d-flex flex-column flex-sm-row align-sm-center justify-sm-space-between">
               <div>
                 <div class="text-subtitle-1 font-weight-medium">
                   Bluetooth Status
@@ -40,7 +40,7 @@
                   {{ bluetoothStatus }}
                 </div>
               </div>
-              <v-icon :color="capabilities.bluetooth.available ? 'success' : 'error'" size="large">
+              <v-icon :color="capabilities.bluetooth.available ? 'success' : 'error'" size="large" class="mt-2 mt-sm-0">
                 {{ capabilities.bluetooth.available ? 'mdi-bluetooth' : 'mdi-bluetooth-off' }}
               </v-icon>
             </div>

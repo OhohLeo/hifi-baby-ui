@@ -31,8 +31,8 @@
     <!-- Network Discovery Capability -->
     <v-card variant="outlined" class="mb-4" v-if="hasNetworkDiscovery">
       <v-card-text>
-        <div class="d-flex align-center justify-space-between">
-          <div>
+        <div class="d-flex flex-column flex-sm-row align-sm-center justify-sm-space-between">
+          <div class="mb-4 mb-sm-0">
             <div class="text-subtitle-1 font-weight-medium">
               Auto-Discovery
             </div>
@@ -44,6 +44,7 @@
             color="accent"
             variant="tonal"
             :loading="isDiscovering"
+            :block="isMobile"
             @click="attemptAutoDiscovery"
           >
             <v-icon start>mdi-magnify</v-icon>
@@ -63,7 +64,7 @@
         <p class="mb-4 text-body-2">
           Set the backend URL and test connectivity:
         </p>
-        <div class="d-flex gap-2">
+        <div class="d-flex flex-column flex-sm-row">
           <v-text-field
             v-model="baseURL"
             label="Backend URL"
@@ -72,11 +73,13 @@
             density="comfortable"
             clearable
             :disabled="isValidating"
+            class="mb-2 mb-sm-0 mr-sm-2"
           />
           <v-btn
             :color="testStatus.color"
             :loading="isValidating"
             size="large"
+            :block="isMobile"
             @click="validateBaseURL"
           >
             <v-icon start>
@@ -127,7 +130,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
+import { useDisplay } from 'vuetify'
 import audioService from '@/services/api'
 import localStorageService from '@/services/storage'
 import { networkService } from '@/services/platform/network.service'
@@ -136,6 +140,9 @@ import { usePlatform } from '@/composables/usePlatform'
 
 const { platform, isNative } = usePlatform()
 const { hasNetworkDiscovery, detectAll } = useCapabilities()
+const { mobile } = useDisplay()
+
+const isMobile = computed(() => mobile.value)
 
 const STATUS_SUCCESS = { color: 'success', icon: 'mdi-check-circle' }
 const STATUS_ERROR = { color: 'error', icon: 'mdi-alert-circle' }

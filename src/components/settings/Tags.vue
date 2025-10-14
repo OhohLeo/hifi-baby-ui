@@ -1,6 +1,6 @@
 <template>
-  <div>
+  <v-container>
     <h3>Tags Parameters</h3>
     <br />
-  </div>
+  </v-container>
 </template>
