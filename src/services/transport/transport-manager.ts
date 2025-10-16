@@ -209,8 +209,8 @@ export class TransportManager implements ITransport {
           if (connected) {
 return true
 }
-        } catch (error) {
-          console.warn(`Failed to connect to preferred transport: ${this.config.preferredTransport}`)
+        } catch {
+          // Failed to connect to preferred transport
         }
       }
     }
@@ -223,15 +223,13 @@ return true
       try {
         const connected = await this.connectToTransport(type)
         if (connected) {
-          console.log(`Auto-connected to ${type} transport`)
           return true
         }
-      } catch (error) {
-        console.warn(`Failed to connect to ${type} transport:`, error)
+      } catch {
+        // Failed to connect to this transport, try next
       }
     }
 
-    console.error('Failed to auto-connect to any transport')
     return false
   }
 
@@ -249,8 +247,8 @@ return true
           available: connection !== null,
           connection: connection || undefined
         })
-      } catch (error) {
-        console.error(`Discovery failed for ${type}:`, error)
+      } catch {
+        // Discovery failed for this transport
         results.push({
           type,
           available: false
@@ -298,8 +296,6 @@ return true
       }
       return false
     } catch (error) {
-      console.error(`Failed to connect to ${type} transport:`, error)
-
       // Try failover
       if (this.config.autoFailover) {
         await this.tryFailover(type)
@@ -314,7 +310,7 @@ return true
    */
   async switchTransport(type: TransportType): Promise<boolean> {
     if (this.activeTransport?.getType() === type) {
-      console.warn('Already connected to', type)
+      // Already connected to this transport
       return true
     }
 
@@ -325,8 +321,6 @@ return true
    * Try to failover to another transport
    */
   private async tryFailover(failedType: TransportType): Promise<boolean> {
-    console.log(`Attempting failover from ${failedType}`)
-
     const otherTypes = Array.from(this.transports.keys())
       .filter(t => t !== failedType)
       .sort((a, b) => TRANSPORT_PRIORITY[b] - TRANSPORT_PRIORITY[a])
@@ -335,15 +329,13 @@ return true
       try {
         const connected = await this.connectToTransport(type)
         if (connected) {
-          console.log(`Failover successful to ${type}`)
           return true
         }
-      } catch (error) {
-        console.warn(`Failover to ${type} failed:`, error)
+      } catch {
+        // Failover to this transport failed, try next
       }
     }
 
-    console.error('All failover attempts failed')
     return false
   }
 
@@ -475,8 +467,8 @@ return true
       listeners.forEach((callback) => {
         try {
           callback(data)
-        } catch (error) {
-          console.error(`Error in ${event} event listener:`, error)
+        } catch {
+          // Error in event listener
         }
       })
     }
@@ -486,7 +478,6 @@ return true
    * Handle transport connected event
    */
   private handleTransportConnected(type: TransportType, data: unknown): void {
-    console.log(`Transport ${type} connected`)
     this.emit('connected', data)
   }
 
@@ -494,8 +485,6 @@ return true
    * Handle transport disconnected event
    */
   private handleTransportDisconnected(type: TransportType, data: unknown): void {
-    console.log(`Transport ${type} disconnected`)
-
     // If this was the active transport, try failover
     if (this.activeTransport?.getType() === type && this.config.autoFailover) {
       this.tryFailover(type)

@@ -137,7 +137,7 @@ export class BluetoothService {
       await BleClient.connect(
         deviceId,
         (disconnectedDeviceId) => {
-          console.log(`Device ${disconnectedDeviceId} disconnected`)
+          // Device disconnected
           const device = this.devices.find(d => d.id === disconnectedDeviceId)
           if (device) {
             device.isConnected = false

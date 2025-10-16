@@ -216,7 +216,7 @@ export function useConnection(): UseConnectionReturn {
   function getWiFiURL(): string | undefined {
     const wifiTransport = transportManager.getTransport('wifi')
     if (wifiTransport && 'getBaseURL' in wifiTransport) {
-      return (wifiTransport as any).getBaseURL()
+      return (wifiTransport as { getBaseURL: () => string }).getBaseURL()
     }
     return undefined
   }

@@ -20,7 +20,7 @@ const audioService = {
   setBaseURL(newBaseURL: string) {
     const wifiTransport = transportManager.getTransport('wifi')
     if (wifiTransport && 'setBaseURL' in wifiTransport) {
-      (wifiTransport as any).setBaseURL(newBaseURL)
+      (wifiTransport as { setBaseURL: (url: string) => void }).setBaseURL(newBaseURL)
     }
   },
 
@@ -130,7 +130,7 @@ const audioService = {
   getBaseURL(): string {
     const wifiTransport = transportManager.getTransport('wifi')
     if (wifiTransport && 'getBaseURL' in wifiTransport) {
-      return (wifiTransport as any).getBaseURL()
+      return (wifiTransport as { getBaseURL: () => string }).getBaseURL()
     }
     return localStorageService.get<string>('baseURL') || 'http://localhost:3000/audio'
   },
@@ -213,14 +213,20 @@ const audioService = {
    * Listen to transport events
    */
   on(event: string, callback: (data: unknown) => void): void {
-    transportManager.on(event as any, callback)
+    const eventTypes = ['connected', 'disconnected', 'error', 'player-state-changed', 'tracks-changed', 'upload-progress']
+    if (eventTypes.includes(event)) {
+      transportManager.on(event as 'connected' | 'disconnected' | 'error' | 'player-state-changed' | 'tracks-changed' | 'upload-progress', callback)
+    }
   },
 
   /**
    * Remove event listener
    */
   off(event: string, callback: (data: unknown) => void): void {
-    transportManager.off(event as any, callback)
+    const eventTypes = ['connected', 'disconnected', 'error', 'player-state-changed', 'tracks-changed', 'upload-progress']
+    if (eventTypes.includes(event)) {
+      transportManager.off(event as 'connected' | 'disconnected' | 'error' | 'player-state-changed' | 'tracks-changed' | 'upload-progress', callback)
+    }
   }
 }
 

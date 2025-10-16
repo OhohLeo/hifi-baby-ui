@@ -37,8 +37,9 @@ export class FileSystemService {
       input.type = 'file'
       input.accept = 'audio/*,.mp3,.wav,.ogg,.flac,.m4a,.aac'
 
-      input.onchange = (event: any) => {
-        const file = event.target.files[0]
+      input.onchange = (event: Event) => {
+        const target = event.target as HTMLInputElement
+        const file = target.files?.[0]
         if (file) {
           resolve({
             file,

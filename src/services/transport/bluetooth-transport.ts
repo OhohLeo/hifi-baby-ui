@@ -15,7 +15,7 @@ import type {
   ConnectionInfo,
   UploadProgress
 } from './transport.interface'
-import { ConnectionError, CommandTimeoutError, UploadError } from './transport.interface'
+import { ConnectionError, UploadError } from './transport.interface'
 import type { TrackModel, MusicPlayerModel } from '@/models'
 import * as BLE from '../bluetooth/constants'
 import * as Protocol from '../bluetooth/protocol'
@@ -80,8 +80,7 @@ export class BluetoothTransport implements ITransport {
       await BleClient.initialize()
       this.isInitialized = true
       return true
-    } catch (error) {
-      console.error('Bluetooth initialization failed:', error)
+    } catch {
       return false
     }
   }
@@ -109,8 +108,7 @@ export class BluetoothTransport implements ITransport {
       // Connect to device
       await BleClient.connect(
         this.deviceId,
-        (disconnectedDeviceId) => {
-          console.log(`Device ${disconnectedDeviceId} disconnected`)
+        () => {
           this.handleDisconnection()
         },
         { timeout: BLE.CONNECTION_TIMEOUT }
@@ -206,8 +204,7 @@ export class BluetoothTransport implements ITransport {
       }
 
       return null
-    } catch (error) {
-      console.error('Bluetooth discovery failed:', error)
+    } catch {
       return null
     }
   }
@@ -414,7 +411,7 @@ export class BluetoothTransport implements ITransport {
         throw new Error(finalizeResponse.error || 'Upload finalization failed')
       }
 
-      console.log('Track uploaded successfully:', finalizeResponse.data.track)
+      // Track uploaded successfully
     } catch (error) {
       throw new UploadError('bluetooth', 'Upload failed', error as Error)
     }
@@ -553,8 +550,8 @@ export class BluetoothTransport implements ITransport {
           }
         }
       )
-    } catch (error) {
-      console.error('Failed to setup notifications:', error)
+    } catch {
+      // Failed to setup notifications
     }
   }
 
@@ -567,8 +564,8 @@ export class BluetoothTransport implements ITransport {
       listeners.forEach((callback) => {
         try {
           callback(data)
-        } catch (error) {
-          console.error(`Error in ${event} event listener:`, error)
+        } catch {
+          // Error in event listener
         }
       })
     }
@@ -602,8 +599,8 @@ export class BluetoothTransport implements ITransport {
     this.reconnectTimer = setTimeout(async () => {
       try {
         await this.connect()
-      } catch (error) {
-        console.error('Reconnection attempt failed:', error)
+      } catch {
+        // Reconnection attempt failed
       }
     }, this.config.reconnectInterval)
   }

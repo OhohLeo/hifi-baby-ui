@@ -346,7 +346,6 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useDisplay } from 'vuetify'
 import { useCapabilities } from '@/composables/useCapabilities'
 import { usePlatform } from '@/composables/usePlatform'
 import { useConnection } from '@/composables/useConnection'
@@ -355,14 +354,12 @@ import type { TransportType } from '@/services/transport/transport.interface'
 
 const { platform, isNative } = usePlatform()
 const { capabilities, detectAll, hasNetworkDiscovery } = useCapabilities()
-const { mobile } = useDisplay()
 
 // Connection composable
 const {
   isConnected,
   activeTransport,
   connectionInfo,
-  isConnecting,
   isDiscovering,
   discoverTransport,
   switchTransport,
@@ -487,8 +484,8 @@ async function attemptWiFiDiscovery() {
       baseURL.value = discovered
       await testWiFiConnection()
     }
-  } catch (error) {
-    console.error('WiFi discovery failed:', error)
+  } catch {
+    // Discovery failed, user can enter URL manually
   }
 }
 
@@ -510,7 +507,7 @@ async function testWiFiConnection() {
     testStatus.value = { color: 'success', icon: 'mdi-check-circle' }
     connectionMessage.value = `Successfully connected to ${baseURL.value}`
     connectionTested.value = true
-  } catch (error) {
+  } catch {
     testStatus.value = { color: 'error', icon: 'mdi-alert-circle' }
     connectionMessage.value = `Failed to connect to ${baseURL.value}. Please check the URL and try again.`
     connectionTested.value = true
