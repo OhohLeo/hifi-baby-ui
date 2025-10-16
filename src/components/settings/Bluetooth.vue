@@ -9,7 +9,9 @@
       variant="tonal"
       class="my-4"
     >
-      <v-icon start>mdi-information-outline</v-icon>
+      <v-icon start>
+        mdi-information-outline
+      </v-icon>
       Bluetooth management is only available on mobile devices.
       On the web, use Network settings to configure your connection.
     </v-alert>
@@ -23,13 +25,18 @@
         variant="tonal"
         class="my-4"
       >
-        <v-icon start>mdi-bluetooth-off</v-icon>
+        <v-icon start>
+          mdi-bluetooth-off
+        </v-icon>
         Bluetooth is not supported on this device.
       </v-alert>
 
       <!-- Bluetooth Available -->
       <div v-else>
-        <v-card variant="outlined" class="mb-4">
+        <v-card
+          variant="outlined"
+          class="mb-4"
+        >
           <v-card-text>
             <div class="d-flex flex-column flex-sm-row align-sm-center justify-sm-space-between">
               <div>
@@ -40,7 +47,11 @@
                   {{ bluetoothStatus }}
                 </div>
               </div>
-              <v-icon :color="capabilities.bluetooth.available ? 'success' : 'error'" size="large" class="mt-2 mt-sm-0">
+              <v-icon
+                :color="capabilities.bluetooth.available ? 'success' : 'error'"
+                size="large"
+                class="mt-2 mt-sm-0"
+              >
                 {{ capabilities.bluetooth.available ? 'mdi-bluetooth' : 'mdi-bluetooth-off' }}
               </v-icon>
             </div>
@@ -62,7 +73,10 @@
         </v-btn>
 
         <!-- Device List -->
-        <v-card v-if="devices.length > 0" variant="outlined">
+        <v-card
+          v-if="devices.length > 0"
+          variant="outlined"
+        >
           <v-card-title class="text-subtitle-1">
             Available Devices ({{ devices.length }})
           </v-card-title>
@@ -103,8 +117,16 @@
         </v-card>
 
         <!-- Empty State -->
-        <v-card v-else-if="!isScanning && scanCompleted" variant="outlined" class="pa-8 text-center">
-          <v-icon size="64" color="secondary" class="mb-4">
+        <v-card
+          v-else-if="!isScanning && scanCompleted"
+          variant="outlined"
+          class="pa-8 text-center"
+        >
+          <v-icon
+            size="64"
+            color="secondary"
+            class="mb-4"
+          >
             mdi-bluetooth-off
           </v-icon>
           <p class="text-body-2 text-medium-emphasis">
@@ -113,10 +135,16 @@
         </v-card>
 
         <!-- Help Section -->
-        <v-card variant="tonal" color="info" class="mt-4">
+        <v-card
+          variant="tonal"
+          color="info"
+          class="mt-4"
+        >
           <v-card-text>
             <div class="text-subtitle-2 mb-2">
-              <v-icon start>mdi-help-circle</v-icon>
+              <v-icon start>
+                mdi-help-circle
+              </v-icon>
               Bluetooth Tips
             </div>
             <ul class="text-body-2">
@@ -148,10 +176,18 @@ const devices = ref<HifiBabyDevice[]>([])
 const connectingDeviceId = ref<string | null>(null)
 
 const bluetoothStatus = computed(() => {
-  if (!capabilities.bluetooth.supported) return 'Not supported'
-  if (!capabilities.bluetooth.available) return 'Not available'
-  if (capabilities.bluetooth.permission === 'denied') return 'Permission denied'
-  if (isInitialized.value) return 'Ready'
+  if (!capabilities.bluetooth.supported) {
+return 'Not supported'
+}
+  if (!capabilities.bluetooth.available) {
+return 'Not available'
+}
+  if (capabilities.bluetooth.permission === 'denied') {
+return 'Permission denied'
+}
+  if (isInitialized.value) {
+return 'Ready'
+}
   return 'Initializing...'
 })
 

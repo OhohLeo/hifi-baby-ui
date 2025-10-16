@@ -1,8 +1,8 @@
 <template>
   <TopMenu />
-    <Settings v-if="settingsView.isSettingsOpen.value" />
-    <PlayList v-else />
-    <MusicPlayer />
+  <Settings v-if="settingsView.isSettingsOpen.value" />
+  <PlayList v-else />
+  <MusicPlayer />
 </template>
 
 <script lang="ts" setup>

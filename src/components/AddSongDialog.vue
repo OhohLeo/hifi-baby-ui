@@ -50,7 +50,10 @@
         </v-file-input>
 
         <!-- Native: Use custom picker button -->
-        <div v-else class="mb-4">
+        <div
+          v-else
+          class="mb-4"
+        >
           <v-btn
             block
             size="x-large"
@@ -63,8 +66,16 @@
           </v-btn>
 
           <!-- File info -->
-          <div v-if="selectedFile && fileInfo" class="mt-3">
-            <v-chip color="accent" size="small" label prepend-icon="mdi-music">
+          <div
+            v-if="selectedFile && fileInfo"
+            class="mt-3"
+          >
+            <v-chip
+              color="accent"
+              size="small"
+              label
+              prepend-icon="mdi-music"
+            >
               {{ fileInfo.name }}
             </v-chip>
             <span class="text-caption text-medium-emphasis ml-2">

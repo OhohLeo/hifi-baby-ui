@@ -27,3 +27,6 @@ pnpm-debug.log*
 
 # IA stuff
 .playwright-mcp
+
+#Ignore cursor AI rules
+.cursor/rules/codacy.mdc
