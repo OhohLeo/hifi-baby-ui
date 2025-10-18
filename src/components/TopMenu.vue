@@ -10,9 +10,8 @@
     </v-app-bar-title>
 
     <template #extension>
-      <v-container>
+      <v-container v-if="!isSettingsActive">
         <v-tabs
-          v-if="!isSettingsActive"
           v-model="selectedTab"
           align-tabs="center"
           height="60"
@@ -69,7 +68,7 @@
 
   <!-- Floating Action Button -->
   <v-fab
-    v-if="canDisplayFab"
+    v-if="!isSettingsActive"
     class="fab-button"
     color="accent"
     :icon="fabIcon"
@@ -132,7 +131,6 @@ const fabIcon = ref('mdi-music-note-plus')
 const isSettingsActive = computed(() => settingsView.isSettingsOpen.value || route.path === '/settings')
 
 const selectedTab = ref<string | null>('songs')
-const canDisplayFab = computed(() => !isSettingsActive.value)
 
 function openSettings() {
   settingsView.openSettings()
@@ -202,5 +200,10 @@ const openDialog = () => {
   bottom: 160px !important;
   right: 24px !important;
   z-index: 2000 !important;
+}
+
+/* Hide the toolbar extension container when it has no content */
+:deep(.v-toolbar__extension:empty) {
+  display: none;
 }
 </style>

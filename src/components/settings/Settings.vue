@@ -112,9 +112,8 @@ import { shallowRef, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDisplay } from 'vuetify'
 import { useSettingsView } from '@/composables/useSettingsView'
-import Network from '@/components/settings/Network.vue'
+import Connect from '@/components/settings/Connect.vue'
 import Audio from '@/components/settings/Audio.vue'
-import Bluetooth from '@/components/settings/Bluetooth.vue'
 import Tags from '@/components/settings/Tags.vue'
 import Interface from '@/components/settings/Interface.vue'
 
@@ -125,9 +124,8 @@ const { mobile } = useDisplay()
 const isMobile = computed(() => mobile.value)
 
 const menuItems = computed(() => [
-  { title: t('settings.network'), icon: 'mdi-wifi', component: Network },
+  { title: t('settings.connect'), icon: 'mdi-wifi', component: Connect },
   { title: t('settings.audio'), icon: 'mdi-volume-high', component: Audio },
-  { title: t('settings.bluetooth'), icon: 'mdi-bluetooth', component: Bluetooth },
   { title: t('settings.interface'), icon: 'mdi-overscan', component: Interface },
   { title: t('settings.tags'), icon: 'mdi-tag', component: Tags }
 ])

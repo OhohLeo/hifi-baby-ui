@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <h3>{{ $t('settings.network') }}</h3>
+    <h3>{{ $t('settings.connect') }}</h3>
 
     <!-- Platform Info -->
     <v-chip

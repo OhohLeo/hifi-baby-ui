@@ -31,7 +31,7 @@
   },
   "settings": {
     "title": "Settings",
-    "network": "Network",
+    "connect": "Connect",
     "audio": "Audio",
     "bluetooth": "Bluetooth",
     "interface": "Interface",

@@ -10,7 +10,7 @@ declare module 'vue' {
     AddSongDialog: typeof import('./components/AddSongDialog.vue')['default']
     AddTagDialog: typeof import('./components/AddTagDialog.vue')['default']
     Audio: typeof import('./components/settings/Audio.vue')['default']
-    Bluetooth: typeof import('./components/settings/Bluetooth.vue')['default']
+    Connect: typeof import('./components/settings/Connect.vue')['default']
     Interface: typeof import('./components/settings/Interface.vue')['default']
     MusicPlayer: typeof import('./components/MusicPlayer.vue')['default']
     Network: typeof import('./components/settings/Network.vue')['default']
