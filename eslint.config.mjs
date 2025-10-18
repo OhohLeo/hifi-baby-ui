@@ -106,6 +106,7 @@ export default [
       "*.config.ts",
       ".playwright-mcp/**",
       "coverage/**",
+      "android/**"
     ],
   },
 ];
