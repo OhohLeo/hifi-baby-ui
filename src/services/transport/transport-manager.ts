@@ -245,7 +245,7 @@ return true
         results.push({
           type,
           available: connection !== null,
-          connection: connection || undefined
+          connection: connection ?? undefined
         })
       } catch {
         // Discovery failed for this transport
@@ -502,7 +502,7 @@ return true
   }
 
   private getStoredBluetoothDeviceId(): string | undefined {
-    return localStorageService.get<string>('bluetoothDeviceId')
+    return localStorageService.get<string>('bluetoothDeviceId') ?? undefined
   }
 
   private storeConnection(type: TransportType, config: string): void {

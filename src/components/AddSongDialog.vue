@@ -219,19 +219,14 @@ const submit = async () => {
   successMessage.value = ''
 
   try {
-    const response = await audioService.addTrack(selectedFile.value)
-    if (response.status === 201) {
-      successMessage.value = t('addSongDialog.success')
-      await playlistStore.fetchTracks()
+    await audioService.addTrack(selectedFile.value)
+    successMessage.value = t('addSongDialog.success')
+    await playlistStore.fetchTracks()
 
-      // Close after a short delay to show success message
-      setTimeout(() => {
-        close()
-      }, 1500)
-    } else {
-      console.error(response)
-      message.value = t('addSongDialog.error')
-    }
+    // Close after a short delay to show success message
+    setTimeout(() => {
+      close()
+    }, 1500)
   } catch (error) {
     console.error(error)
     message.value = t('addSongDialog.errorConnection')

@@ -115,14 +115,15 @@ export class BluetoothTransport implements ITransport {
       )
 
       // Get device info
-      this.device = await BleClient.getDevice(this.deviceId)
+      const devices = await BleClient.getDevices([this.deviceId])
+      this.device = devices.length > 0 ? devices[0] : null
 
       this.status = 'connected'
       this.connectionInfo = {
         type: 'bluetooth',
         status: 'connected',
         address: this.deviceId,
-        name: this.device.name || BLE.DEFAULT_DEVICE_NAME
+        name: this.device ? this.device.name : BLE.DEFAULT_DEVICE_NAME
       }
 
       // Subscribe to notifications
@@ -382,7 +383,7 @@ export class BluetoothTransport implements ITransport {
           this.deviceId,
           BLE.TRACK_MANAGEMENT_SERVICE_UUID,
           BLE.UPLOAD_DATA_CHAR_UUID,
-          chunkData
+          new DataView(chunkData)
         )
 
         // Emit progress
@@ -477,7 +478,12 @@ export class BluetoothTransport implements ITransport {
     }
 
     const data = Protocol.encodeCommand(command)
-    await BleClient.write(this.deviceId, serviceUUID, characteristicUUID, data)
+    await BleClient.write(
+      this.deviceId,
+      serviceUUID,
+      characteristicUUID,
+      new DataView(data)
+    )
   }
 
   /**

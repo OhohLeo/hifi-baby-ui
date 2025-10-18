@@ -431,8 +431,8 @@ const bluetoothStatus = computed(() => {
 })
 
 // Methods
-async function onTransportChange(newTransport: TransportType) {
-  if (newTransport === activeTransport.value) {
+async function onTransportChange(newTransport: TransportType | null) {
+  if (!newTransport || newTransport === activeTransport.value) {
     return
   }
 

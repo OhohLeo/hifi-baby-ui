@@ -244,11 +244,17 @@ export function decodeResponse<T = unknown>(data: ArrayBuffer): BleResponse<T> {
  * Decode a JSON response from DataView
  */
 export function decodeResponseFromDataView<T = unknown>(dataView: DataView): BleResponse<T> {
-  const buffer = dataView.buffer.slice(
-    dataView.byteOffset,
-    dataView.byteOffset + dataView.byteLength
-  )
-  return decodeResponse<T>(buffer)
+  const decoder = new TextDecoder()
+  const json = decoder.decode(dataView)
+  try {
+    return JSON.parse(json) as BleResponse<T>
+  } catch (error) {
+    console.error('Failed to decode BLE response:', error)
+    return {
+      success: false,
+      error: 'Failed to decode response'
+    }
+  }
 }
 
 /**
@@ -290,7 +296,7 @@ function hashSessionId(sessionId: string): number {
 /**
  * Calculate SHA-256 checksum of file data
  */
-export async function calculateChecksum(data: ArrayBuffer): Promise<string> {
+export async function calculateChecksum(data: BufferSource): Promise<string> {
   const hashBuffer = await crypto.subtle.digest('SHA-256', data)
   const hashArray = Array.from(new Uint8Array(hashBuffer))
   const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')

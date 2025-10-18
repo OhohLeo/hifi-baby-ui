@@ -31,6 +31,7 @@ export type TransportStatus =
  * Transport event types
  */
 export type TransportEventType =
+  | 'connecting'
   | 'connected'
   | 'disconnected'
   | 'error'
