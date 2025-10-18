@@ -8,29 +8,6 @@
     <v-app-bar-title class="text-h6">
       <span class="app-title">Hifi Baby</span>
     </v-app-bar-title>
-
-    <template #extension>
-      <v-container v-if="!isSettingsActive">
-        <v-tabs
-          v-model="selectedTab"
-          align-tabs="center"
-          height="60"
-          grow
-          stacked
-          @update:model-value="handleTabChange"
-        >
-          <v-tab
-            v-for="(tab, key) in tabs"
-            :key="key"
-            :prepend-icon="tab.icon"
-            :text="tab.name"
-            :value="tab.value"
-            :disabled="tab.disabled"
-          />
-        </v-tabs>
-      </v-container>
-    </template>
-
     <v-spacer />
 
     <!-- Language Selector -->
@@ -65,34 +42,15 @@
       <v-icon>mdi-cog</v-icon>
     </v-btn>
   </v-app-bar>
-
-  <!-- Floating Action Button -->
-  <v-fab
-    v-if="!isSettingsActive"
-    class="fab-button"
-    color="accent"
-    :icon="fabIcon"
-    size="60"
-    app
-    location="bottom end"
-    aria-label="Add song"
-    @click="openDialog"
-  />
-
-  <AddSongDialog v-model:is-open="isDialogOpen" />
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { watch, computed} from 'vue'
 import { useTheme } from '@/composables/useTheme'
 import { useSettingsView } from '@/composables/useSettingsView'
 import { useI18n } from 'vue-i18n'
 
-const { t, locale } = useI18n()
-
-const route = useRoute()
-const router = useRouter()
+const {  locale } = useI18n()
 
 // Language management
 const locales = [
@@ -104,66 +62,18 @@ watch(locale, (newLocale) => {
   localStorage.setItem('locale', newLocale)
 })
 
-
-// Theme management - keep object intact for proper reactivity
+// Theme management
 const theme = useTheme()
-
-// Settings view management
-const settingsView = useSettingsView()
-
-// Computed property for theme icon based on current theme state
-const themeIcon = computed(() => {
-  return theme.isDark.value ? 'mdi-weather-sunny' : 'mdi-weather-night'
-})
-
-// Method to handle theme toggle action
+const themeIcon = computed(() => (theme.isDark.value ? 'mdi-weather-sunny' : 'mdi-weather-night'))
 function handleThemeToggle() {
   theme.toggleTheme()
 }
 
-const tabs = computed(() => ({
-  songs: { name: t('topMenu.songs'), icon: 'mdi-music', value: 'songs', disabled: false },
-  radios: { name: t('topMenu.radios'), icon: 'mdi-radio-tower', value: 'radios', disabled: true },
-}))
-
-const fabIcon = ref('mdi-music-note-plus')
-
-const isSettingsActive = computed(() => settingsView.isSettingsOpen.value || route.path === '/settings')
-
-const selectedTab = ref<string | null>('songs')
+// Settings view management
+const settingsView = useSettingsView()
 
 function openSettings() {
   settingsView.openSettings()
-}
-
-function handleTabChange(tabValue: unknown) {
-  // Only handle user interactions, not programmatic changes
-  if (tabValue === null || typeof tabValue !== 'string') {
-return
-}
-
-  updateFabIcon()
-
-  // Navigate to home when Songs tab is clicked from another page
-  if (tabValue === 'songs' && route.path !== '/') {
-    router.push('/')
-  }
-}
-
-const updateFabIcon = () => {
-  switch (selectedTab.value) {
-    case 'songs':
-      fabIcon.value = 'mdi-music-note-plus'
-      break
-    case 'radios':
-      fabIcon.value = 'mdi-radio'
-      break
-  }
-}
-
-const isDialogOpen = ref(false)
-const openDialog = () => {
-  isDialogOpen.value = true
 }
 </script>
 
@@ -176,7 +86,7 @@ const openDialog = () => {
 
   .theme-toggle {
     transition: all var(--transition-base);
-    margin-right:12px;
+    margin-right: 12px;
     &:hover {
       transform: rotate(180deg);
     }
@@ -195,15 +105,23 @@ const openDialog = () => {
   }
 }
 
-.fab-button {
-  position: fixed !important;
-  bottom: 160px !important;
-  right: 24px !important;
-  z-index: 2000 !important;
-}
-
 /* Hide the toolbar extension container when it has no content */
 :deep(.v-toolbar__extension:empty) {
   display: none;
+}
+
+.settings-view {
+  border-radius: var(--radius-2xl) !important;
+  width: 100%;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+// Ensure proper scrolling for modal content
+:deep(.v-card-text) {
+  max-height: 70vh;
+  overflow-y: auto;
 }
 </style>
