@@ -15,7 +15,10 @@
     "cap:sync": "npx cap sync",
     "cap:sync:android": "npx cap sync android",
     "cap:open:android": "npx cap open android",
-    "cap:run:android": "npx cap run android"
+    "cap:run:android": "npx cap run android",
+    "build:android:apk": "npm run build:web && npx cap sync android && cd android && ./gradlew build && cd ..",
+    "deploy:android:apk": "/home/lmartin/Android/Sdk/platform-tools/adb devices && /home/lmartin/Android/Sdk/platform-tools/adb install -r android/app/build/outputs/apk/debug/app-debug.apk",
+    "build-deploy:android:apk": "npm run build:android:apk && npm run deploy:android:apk"
   },
   "dependencies": {
     "@capacitor-community/bluetooth-le": "^7.2.0",
