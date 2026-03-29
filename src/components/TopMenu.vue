@@ -20,6 +20,7 @@
       <v-spacer />
 
       <v-btn
+        v-if="!isSettingsOpen"
         icon
         variant="text"
         class="search-toggle"
@@ -95,10 +96,18 @@
 import { watch, computed } from 'vue'
 import { useTheme } from '@/composables/useTheme'
 import { usePlaylistSearch } from '@/composables/usePlaylistSearch'
+import { useSettingsView } from '@/composables/useSettingsView'
 import { useI18n } from 'vue-i18n'
 
+const { isSettingsOpen } = useSettingsView()
 const { locale } = useI18n()
 const { searchQuery, searchVisible, toggleSearch, closeSearch } = usePlaylistSearch()
+
+watch(isSettingsOpen, (open) => {
+  if (open) {
+    closeSearch()
+  }
+})
 
 const locales = [
   { title: 'EN', value: 'en' },

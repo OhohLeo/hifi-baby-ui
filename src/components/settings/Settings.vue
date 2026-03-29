@@ -1,69 +1,63 @@
 <template>
-  <v-card class="settings-view">
-    <v-card-title class="text-h5 pa-4 d-flex align-center">
-      <v-icon
-        class="mr-3"
-        size="large"
-      >
-        mdi-cog
-      </v-icon>
-      {{ $t('settings.title') }}
-      <v-spacer />
-      <v-btn
-        variant="text"
-        @click="handleCancel"
-      >
-        {{ $t('settings.cancel') }}
-      </v-btn>
-      <v-btn
-        color="accent"
-        variant="flat"
-        @click="handleValidate"
-      >
-        {{ $t('settings.validate') }}
-      </v-btn>
-    </v-card-title>
-
-    <v-divider />
-
+  <v-card
+    class="settings-view"
+    variant="flat"
+  >
     <v-card-text
-      class="pa-0"
+      class="pa-0 settings-scroll-area"
       :style="{ 'min-height': isMobile ? 'calc(100vh - 128px)' : '500px' }"
     >
-      <v-container fluid>
-        <v-row>
-          <!-- Desktop Menu -->
-          <v-col
-            v-if="!isMobile"
-            cols="12"
-            md="3"
+      <div
+        class="settings-layout"
+        :class="{ 'settings-layout--mobile': isMobile }"
+      >
+        <!-- Desktop sidebar -->
+        <aside
+          v-if="!isMobile"
+          class="settings-nav"
+        >
+          <v-list
+            density="comfortable"
+            class="settings-nav__list"
+            nav
           >
-            <v-list density="compact">
-              <v-list-item
-                v-for="item in menuItems"
-                :key="item.title"
-                :active="selectedSetting?.title === item.title"
-                class="cursor-pointer"
-                @click="selectSetting(item)"
-              >
-                <template #prepend>
-                  <v-icon>{{ item.icon }}</v-icon>
-                </template>
-                <v-list-item-title>{{ item.title }}</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-col>
+            <v-list-item
+              v-for="item in menuItems"
+              :key="item.title"
+              :class="{ 'settings-nav__item--active': selectedSetting?.title === item.title }"
+              class="settings-nav__item"
+              rounded="0"
+              variant="text"
+              @click="selectSetting(item)"
+            >
+              <template #prepend>
+                <v-icon>{{ item.icon }}</v-icon>
+              </template>
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
 
-          <v-divider
-            v-if="!isMobile"
-            vertical
-          />
+          <div class="settings-nav__footer">
+            <div class="settings-nav__about text-caption text-medium-emphasis px-3 pb-2">
+              <div class="font-weight-medium text-high-emphasis">
+                {{ $t('settings.aboutTitle') }}
+              </div>
+              <div>{{ $t('settings.aboutTagline') }}</div>
+            </div>
+          </div>
+        </aside>
 
-          <!-- Mobile Menu -->
-          <v-col
+        <v-divider
+          v-if="!isMobile"
+          vertical
+          class="settings-layout__divider"
+        />
+
+        <div class="settings-main">
+          <!-- Mobile section picker -->
+          <div
             v-if="isMobile"
-            cols="12"
-            class="pb-0"
+            class="settings-main__picker px-4 pt-4 pb-2"
           >
             <v-select
               v-model="selectedSetting"
@@ -90,19 +84,16 @@
                 />
               </template>
             </v-select>
-          </v-col>
+          </div>
 
-          <v-col
-            cols="12"
-            md="9"
-          >
+          <div class="settings-panel-body px-4 px-sm-6 pt-2">
             <component
               :is="selectedSetting?.component"
               v-if="selectedSetting"
             />
-          </v-col>
-        </v-row>
-      </v-container>
+          </div>
+        </div>
+      </div>
     </v-card-text>
   </v-card>
 </template>
@@ -111,14 +102,12 @@
 import { shallowRef, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDisplay } from 'vuetify'
-import { useSettingsView } from '@/composables/useSettingsView'
 import Connect from '@/components/settings/Connect.vue'
 import Audio from '@/components/settings/Audio.vue'
 import Tags from '@/components/settings/Tags.vue'
 import Interface from '@/components/settings/Interface.vue'
 
 const { t } = useI18n()
-const settingsView = useSettingsView()
 const { mobile } = useDisplay()
 
 const isMobile = computed(() => mobile.value)
@@ -130,36 +119,114 @@ const menuItems = computed(() => [
   { title: t('settings.tags'), icon: 'mdi-tag', component: Tags }
 ])
 
-// Set Network as default
 const selectedSetting = shallowRef(menuItems.value[0])
 
-// Function to select a setting
 function selectSetting(item) {
   selectedSetting.value = item
-}
-
-// Handle cancel - close modal without saving
-function handleCancel() {
-  settingsView.closeSettings()
-}
-
-// Handle validate - save and close modal
-function handleValidate() {
-  // TODO: Implement save logic for each setting component
-  settingsView.closeSettings()
 }
 </script>
 
 <style scoped lang="scss">
 .settings-view {
   border-radius: var(--radius-2xl) !important;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+  background: rgb(var(--v-theme-surface));
+  overflow: hidden;
 }
 
-.cursor-pointer {
-  cursor: pointer;
+.settings-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  width: 100%;
 }
 
-// Ensure proper scrolling for modal content
+@media (min-width: 960px) {
+  .settings-layout:not(.settings-layout--mobile) {
+    flex-direction: row;
+    align-items: stretch;
+    min-height: 360px;
+  }
+}
+
+.settings-nav {
+  flex: 0 0 220px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: 12px 0 0;
+}
+
+.settings-nav__list {
+  padding: 4px 8px 0 0;
+  flex: 1 1 auto;
+}
+
+.settings-nav__item {
+  margin-bottom: 2px;
+  border-left: 3px solid transparent;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
+
+  :deep(.v-list-item__overlay) {
+    opacity: 0 !important;
+  }
+
+  :deep(.v-list-item__underlay) {
+    opacity: 0 !important;
+  }
+}
+
+.settings-nav__item--active {
+  border-left-color: rgb(var(--v-theme-primary));
+  background: transparent !important;
+  color: rgb(var(--v-theme-primary)) !important;
+
+  :deep(.v-icon) {
+    color: rgb(var(--v-theme-primary)) !important;
+  }
+}
+
+.settings-nav__footer {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid rgba(var(--v-theme-on-surface), 0.08);
+}
+
+.settings-layout__divider {
+  flex-shrink: 0;
+  align-self: stretch;
+  margin: 0 !important;
+  border-color: rgba(var(--v-theme-on-surface), 0.12) !important;
+}
+
+.settings-main {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 960px) {
+  .settings-main {
+    padding: 12px 20px 0 8px;
+  }
+}
+
+.settings-panel-body {
+  width: 100%;
+  max-width: 520px;
+  margin-inline: 0;
+  padding-bottom: 100px;
+}
+
+@media (max-width: 959px) {
+  .settings-panel-body {
+    max-width: none;
+  }
+}
+
 :deep(.v-card-text) {
   max-height: 70vh;
   overflow-y: auto;

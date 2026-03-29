@@ -47,13 +47,68 @@
   },
   "settings": {
     "title": "Settings",
+    "aboutTitle": "Hifi Baby",
+    "aboutTagline": "Music for your home",
     "connect": "Connect",
     "audio": "Audio",
     "bluetooth": "Bluetooth",
     "interface": "Interface",
     "tags": "Tags",
     "cancel": "Cancel",
-    "validate": "Validate"
+    "validate": "Done",
+    "connectPanel": {
+      "connectionStatusTitle": "Connection status",
+      "statusLabel": "Status",
+      "typeLabel": "Type",
+      "deviceLabel": "Device",
+      "addressLabel": "Address",
+      "connectionTypeTitle": "Connection type",
+      "bluetooth": "Bluetooth",
+      "priority": "Priority",
+      "wifi": "Wi‑Fi",
+      "bluetoothConfigTitle": "Bluetooth configuration",
+      "btStatus": "Status",
+      "scanDevices": "Scan for devices",
+      "scanning": "Scanning…",
+      "availableDevices": "Available devices",
+      "signalDbm": "Signal: {rssi} dBm",
+      "connect": "Connect",
+      "connected": "Connected",
+      "noDevicesFound": "No devices found. Try scanning again.",
+      "wifiConfigTitle": "Wi‑Fi configuration",
+      "backendUrlLabel": "Server URL",
+      "backendUrlPlaceholder": "http://hifi-baby.local:3000/audio",
+      "autoDiscover": "Auto-discover",
+      "testConnection": "Test",
+      "connectionTipsTitle": "Connection tips",
+      "tipBluetooth": "Bluetooth: ensure Bluetooth is enabled and the device is nearby.",
+      "tipWifiNative": "Wi‑Fi: ensure your device is on the same network as your Hifi Baby server.",
+      "tipWeb": "Make sure your Hifi Baby backend is running and accessible.",
+      "tipMdns": "Try {url} for mDNS discovery.",
+      "tipDirectIp": "Or use a direct IP: {url}.",
+      "status": {
+        "disconnected": "Disconnected",
+        "connecting": "Connecting",
+        "connected": "Connected",
+        "error": "Error",
+        "reconnecting": "Reconnecting"
+      },
+      "errors": {
+        "invalidUrl": "Please enter a valid URL",
+        "connectSuccess": "Successfully connected to {url}",
+        "connectFailed": "Failed to connect to {url}. Check the URL and try again."
+      },
+      "transportNames": {
+        "wifi": "Wi‑Fi",
+        "bluetooth": "Bluetooth"
+      },
+      "bluetoothState": {
+        "notSupported": "Not supported",
+        "notAvailable": "Not available",
+        "connected": "Connected",
+        "ready": "Ready"
+      }
+    }
   },
   "addTagDialog": {
     "title": "Add Tag",

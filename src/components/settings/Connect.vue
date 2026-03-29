@@ -1,24 +1,13 @@
 <template>
-  <v-container>
-    <h3>{{ $t('settings.connect') }}</h3>
-
-    <!-- Platform Info -->
-    <v-chip
-      :color="isNative ? 'success' : 'info'"
-      variant="tonal"
-      size="small"
-      class="my-4"
-    >
-      <v-icon start>
-        {{ isNative ? 'mdi-cellphone' : 'mdi-web' }}
-      </v-icon>
-      {{ platform }} Platform
-    </v-chip>
-
+  <v-container
+    class="connect-root pa-0"
+    fluid
+  >
     <!-- Current Connection Status -->
     <v-card
       variant="outlined"
-      class="mb-4"
+      rounded="lg"
+      class="connect-card mb-4"
     >
       <v-card-title class="text-subtitle-1">
         <v-icon
@@ -27,29 +16,29 @@
         >
           {{ connectionStatusIcon }}
         </v-icon>
-        Connection Status
+        {{ $t('settings.connectPanel.connectionStatusTitle') }}
       </v-card-title>
       <v-divider />
       <v-card-text>
         <div class="d-flex flex-column gap-2">
           <div>
-            <strong>Status:</strong>
+            <strong>{{ $t('settings.connectPanel.statusLabel') }}:</strong>
             <v-chip
               :color="connectionStatusColor"
               size="small"
-              variant="tonal"
-              class="ml-2"
+              variant="flat"
+              :class="['ml-2', 'connect-status-chip', connectionStatusChipTone]"
             >
-              {{ connectionInfo.status }}
+              {{ connectionStatusLabel }}
             </v-chip>
           </div>
           <div v-if="isConnected">
-            <strong>Type:</strong>
+            <strong>{{ $t('settings.connectPanel.typeLabel') }}:</strong>
             <v-chip
               :color="activeTransport === 'bluetooth' ? 'success' : 'info'"
               size="small"
-              variant="tonal"
-              class="ml-2"
+              variant="flat"
+              :class="['ml-2', 'connect-status-chip', transportChipTone]"
             >
               <v-icon
                 start
@@ -57,14 +46,14 @@
               >
                 {{ activeTransport === 'bluetooth' ? 'mdi-bluetooth' : 'mdi-wifi' }}
               </v-icon>
-              {{ activeTransport }}
+              {{ transportDisplayName }}
             </v-chip>
           </div>
           <div v-if="connectionInfo.name">
-            <strong>Device:</strong> {{ connectionInfo.name }}
+            <strong>{{ $t('settings.connectPanel.deviceLabel') }}:</strong> {{ connectionInfo.name }}
           </div>
           <div v-if="connectionInfo.address">
-            <strong>Address:</strong> {{ connectionInfo.address }}
+            <strong>{{ $t('settings.connectPanel.addressLabel') }}:</strong> {{ connectionInfo.address }}
           </div>
         </div>
       </v-card-text>
@@ -74,10 +63,11 @@
     <v-card
       v-if="isNative && hasBluetoothSupport"
       variant="outlined"
-      class="mb-4"
+      rounded="lg"
+      class="connect-card mb-4"
     >
       <v-card-title class="text-subtitle-1">
-        Connection Type
+        {{ $t('settings.connectPanel.connectionTypeTitle') }}
       </v-card-title>
       <v-divider />
       <v-card-text>
@@ -86,7 +76,6 @@
           @update:model-value="onTransportChange"
         >
           <v-radio
-            label="Bluetooth (Priority)"
             value="bluetooth"
             color="success"
           >
@@ -98,20 +87,19 @@
                 >
                   mdi-bluetooth
                 </v-icon>
-                <span>Bluetooth</span>
+                <span>{{ $t('settings.connectPanel.bluetooth') }}</span>
                 <v-chip
                   size="x-small"
                   color="success"
                   variant="tonal"
                   class="ml-2"
                 >
-                  Priority
+                  {{ $t('settings.connectPanel.priority') }}
                 </v-chip>
               </div>
             </template>
           </v-radio>
           <v-radio
-            label="WiFi"
             value="wifi"
             color="info"
           >
@@ -123,7 +111,7 @@
                 >
                   mdi-wifi
                 </v-icon>
-                <span>WiFi</span>
+                <span>{{ $t('settings.connectPanel.wifi') }}</span>
               </div>
             </template>
           </v-radio>
@@ -135,7 +123,8 @@
     <v-card
       v-if="selectedTransport === 'bluetooth' && isNative && hasBluetoothSupport"
       variant="outlined"
-      class="mb-4"
+      rounded="lg"
+      class="connect-card mb-4"
     >
       <v-card-title class="text-subtitle-1">
         <v-icon
@@ -144,19 +133,20 @@
         >
           mdi-bluetooth
         </v-icon>
-        Bluetooth Configuration
+        {{ $t('settings.connectPanel.bluetoothConfigTitle') }}
       </v-card-title>
       <v-divider />
       <v-card-text>
         <!-- Bluetooth Status -->
         <div class="mb-4">
           <div class="text-subtitle-2 mb-2">
-            Status
+            {{ $t('settings.connectPanel.btStatus') }}
           </div>
           <v-chip
             :color="bluetoothStatus.color"
-            variant="tonal"
+            variant="flat"
             size="small"
+            class="connect-status-chip"
           >
             <v-icon
               start
@@ -181,20 +171,20 @@
           <v-icon start>
             mdi-radar
           </v-icon>
-          {{ isScanning ? 'Scanning...' : 'Scan for Devices' }}
+          {{ isScanning ? $t('settings.connectPanel.scanning') : $t('settings.connectPanel.scanDevices') }}
         </v-btn>
 
         <!-- Device List -->
         <div v-if="bluetoothDevices.length > 0">
           <div class="text-subtitle-2 mb-2">
-            Available Devices
+            {{ $t('settings.connectPanel.availableDevices') }}
           </div>
           <v-list density="compact">
             <v-list-item
               v-for="device in bluetoothDevices"
               :key="device.id"
               :title="device.name"
-              :subtitle="`Signal: ${device.rssi} dBm`"
+              :subtitle="$t('settings.connectPanel.signalDbm', { rssi: device.rssi })"
             >
               <template #prepend>
                 <v-icon :color="device.isConnected ? 'success' : 'secondary'">
@@ -210,15 +200,16 @@
                   :loading="connectingDeviceId === device.id"
                   @click="connectToBluetoothDevice(device.id)"
                 >
-                  Connect
+                  {{ $t('settings.connectPanel.connect') }}
                 </v-btn>
                 <v-chip
                   v-else
                   color="success"
                   size="small"
-                  variant="tonal"
+                  variant="flat"
+                  class="connect-status-chip"
                 >
-                  Connected
+                  {{ $t('settings.connectPanel.connected') }}
                 </v-chip>
               </template>
             </v-list-item>
@@ -229,7 +220,7 @@
           type="info"
           variant="tonal"
         >
-          No devices found. Try scanning again.
+          {{ $t('settings.connectPanel.noDevicesFound') }}
         </v-alert>
       </v-card-text>
     </v-card>
@@ -238,7 +229,8 @@
     <v-card
       v-if="selectedTransport === 'wifi' || !isNative || !hasBluetoothSupport"
       variant="outlined"
-      class="mb-4"
+      rounded="lg"
+      class="connect-card mb-4"
     >
       <v-card-title class="text-subtitle-1">
         <v-icon
@@ -247,7 +239,7 @@
         >
           mdi-wifi
         </v-icon>
-        WiFi Configuration
+        {{ $t('settings.connectPanel.wifiConfigTitle') }}
       </v-card-title>
       <v-divider />
       <v-card-text>
@@ -264,34 +256,43 @@
           <v-icon start>
             mdi-magnify
           </v-icon>
-          Auto-Discover
+          {{ $t('settings.connectPanel.autoDiscover') }}
         </v-btn>
 
-        <!-- Manual Configuration -->
-        <p class="mb-2 text-body-2">
-          Backend URL:
-        </p>
-        <div class="d-flex flex-column flex-sm-row gap-2">
-          <v-text-field
-            v-model="baseURL"
-            label="Backend URL"
-            placeholder="http://hifi-baby.local:3000/audio"
-            variant="outlined"
-            density="comfortable"
-            clearable
-            :disabled="isValidating"
-            class="flex-grow-1"
-          />
+        <!-- Manual configuration: label above field (clearer than floating label) -->
+        <div class="d-flex flex-column flex-sm-row gap-3 align-sm-start">
+          <div class="flex-grow-1 connect-url-block">
+            <label
+              class="text-body-2 text-medium-emphasis d-block mb-1"
+              for="connect-backend-url"
+            >
+              {{ $t('settings.connectPanel.backendUrlLabel') }}
+            </label>
+            <v-text-field
+              id="connect-backend-url"
+              v-model="baseURL"
+              :placeholder="$t('settings.connectPanel.backendUrlPlaceholder')"
+              variant="outlined"
+              density="comfortable"
+              hide-details
+              clearable
+              :disabled="isValidating"
+              class="connect-url-field connect-url-field--framed"
+            />
+          </div>
           <v-btn
-            :color="testStatus.color"
+            color="accent"
+            variant="outlined"
             :loading="isValidating"
             size="large"
+            :block="mobile"
+            class="connect-test-btn flex-shrink-0"
             @click="testWiFiConnection"
           >
             <v-icon start>
               {{ testStatus.icon }}
             </v-icon>
-            Test
+            {{ $t('settings.connectPanel.testConnection') }}
           </v-btn>
         </div>
 
@@ -309,34 +310,37 @@
       </v-card-text>
     </v-card>
 
-    <!-- Connection Tips -->
+    <!-- Connection Tips (subtle ghost style — does not compete with primary actions) -->
     <v-card
-      variant="tonal"
-      color="info"
-      class="mt-4"
+      variant="outlined"
+      rounded="lg"
+      class="connect-card connect-card--tips mt-4"
     >
       <v-card-text>
-        <div class="text-subtitle-2 mb-2">
-          <v-icon start>
-            mdi-help-circle
+        <div class="text-subtitle-2 mb-2 connect-tips__title">
+          <v-icon
+            class="connect-tips__icon"
+            size="20"
+          >
+            mdi-help-circle-outline
           </v-icon>
-          Connection Tips
+          {{ $t('settings.connectPanel.connectionTipsTitle') }}
         </div>
-        <ul class="text-body-2">
+        <ul class="text-body-2 connect-tips__list">
           <li v-if="isNative && hasBluetoothSupport">
-            <strong>Bluetooth:</strong> Ensure Bluetooth is enabled and device is nearby
+            {{ $t('settings.connectPanel.tipBluetooth') }}
           </li>
           <li v-if="isNative">
-            <strong>WiFi:</strong> Ensure your device is on the same network as your Hifi Baby server
+            {{ $t('settings.connectPanel.tipWifiNative') }}
           </li>
           <li v-if="!isNative">
-            Make sure your Hifi Baby backend is running and accessible
+            {{ $t('settings.connectPanel.tipWeb') }}
           </li>
           <li>
-            Try <code>http://hifi-baby.local:3000/audio</code> for mDNS discovery
+            {{ $t('settings.connectPanel.tipMdns', { url: 'http://hifi-baby.local:3000/audio' }) }}
           </li>
           <li>
-            Or use direct IP: <code>http://192.168.x.x:3000/audio</code>
+            {{ $t('settings.connectPanel.tipDirectIp', { url: 'http://192.168.x.x:3000/audio' }) }}
           </li>
         </ul>
       </v-card-text>
@@ -346,13 +350,17 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useDisplay } from 'vuetify'
 import { useCapabilities } from '@/composables/useCapabilities'
 import { usePlatform } from '@/composables/usePlatform'
 import { useConnection } from '@/composables/useConnection'
 import { bluetoothService, type HifiBabyDevice } from '@/services/platform/bluetooth.service'
 import type { TransportType } from '@/services/transport/transport.interface'
 
-const { platform, isNative } = usePlatform()
+const { t } = useI18n()
+const { mobile } = useDisplay()
+const { isNative } = usePlatform()
 const { capabilities, detectAll, hasNetworkDiscovery } = useCapabilities()
 
 // Connection composable
@@ -389,6 +397,35 @@ const hasBluetoothSupport = computed(() =>
   capabilities.bluetooth.supported && capabilities.bluetooth.available
 )
 
+const connectionStatusLabel = computed(() =>
+  t(`settings.connectPanel.status.${connectionInfo.value.status}`)
+)
+
+/** Ensures label uses theme “on-*” foreground for flat chips (better contrast). */
+const connectionStatusChipTone = computed(() => {
+  const s = connectionInfo.value.status
+  if (s === 'connected') {
+    return 'connect-status-chip--on-success'
+  }
+  if (s === 'disconnected' || s === 'error') {
+    return 'connect-status-chip--on-error'
+  }
+  return 'connect-status-chip--on-warning'
+})
+
+const transportChipTone = computed(() =>
+  activeTransport.value === 'bluetooth'
+    ? 'connect-status-chip--on-success'
+    : 'connect-status-chip--on-info'
+)
+
+const transportDisplayName = computed(() => {
+  if (!activeTransport.value) {
+    return ''
+  }
+  return t(`settings.connectPanel.transportNames.${activeTransport.value}`)
+})
+
 const connectionStatusColor = computed(() => {
   switch (connectionInfo.value.status) {
     case 'connected':
@@ -397,9 +434,9 @@ const connectionStatusColor = computed(() => {
     case 'reconnecting':
       return 'warning'
     case 'error':
-      return 'error'
+    case 'disconnected':
     default:
-      return 'secondary'
+      return 'error'
   }
 })
 
@@ -419,15 +456,31 @@ const connectionStatusIcon = computed(() => {
 
 const bluetoothStatus = computed(() => {
   if (!capabilities.bluetooth.supported) {
-    return { color: 'error', icon: 'mdi-bluetooth-off', text: 'Not supported' }
+    return {
+      color: 'error',
+      icon: 'mdi-bluetooth-off',
+      text: t('settings.connectPanel.bluetoothState.notSupported')
+    }
   }
   if (!capabilities.bluetooth.available) {
-    return { color: 'error', icon: 'mdi-bluetooth-off', text: 'Not available' }
+    return {
+      color: 'error',
+      icon: 'mdi-bluetooth-off',
+      text: t('settings.connectPanel.bluetoothState.notAvailable')
+    }
   }
   if (isConnected.value && activeTransport.value === 'bluetooth') {
-    return { color: 'success', icon: 'mdi-bluetooth-connect', text: 'Connected' }
+    return {
+      color: 'success',
+      icon: 'mdi-bluetooth-connect',
+      text: t('settings.connectPanel.bluetoothState.connected')
+    }
   }
-  return { color: 'info', icon: 'mdi-bluetooth', text: 'Ready' }
+  return {
+    color: 'info',
+    icon: 'mdi-bluetooth',
+    text: t('settings.connectPanel.bluetoothState.ready')
+  }
 })
 
 // Methods
@@ -493,7 +546,7 @@ async function testWiFiConnection() {
   if (!baseURL.value) {
     testStatus.value = { color: 'error', icon: 'mdi-alert-circle' }
     connectionTested.value = true
-    connectionMessage.value = 'Please enter a valid URL'
+    connectionMessage.value = t('settings.connectPanel.errors.invalidUrl')
     return
   }
 
@@ -505,11 +558,11 @@ async function testWiFiConnection() {
     await connectToWiFi(baseURL.value)
 
     testStatus.value = { color: 'success', icon: 'mdi-check-circle' }
-    connectionMessage.value = `Successfully connected to ${baseURL.value}`
+    connectionMessage.value = t('settings.connectPanel.errors.connectSuccess', { url: baseURL.value })
     connectionTested.value = true
   } catch {
     testStatus.value = { color: 'error', icon: 'mdi-alert-circle' }
-    connectionMessage.value = `Failed to connect to ${baseURL.value}. Please check the URL and try again.`
+    connectionMessage.value = t('settings.connectPanel.errors.connectFailed', { url: baseURL.value })
     connectionTested.value = true
   } finally {
     isValidating.value = false
@@ -523,7 +576,7 @@ onMounted(async () => {
   // Set initial transport based on current connection
   if (activeTransport.value) {
     selectedTransport.value = activeTransport.value
-  } else if (isNative && hasBluetoothSupport.value) {
+  } else if (isNative.value && hasBluetoothSupport.value) {
     selectedTransport.value = 'bluetooth'
   }
 
@@ -534,3 +587,74 @@ onMounted(async () => {
   }
 })
 </script>
+
+<style scoped lang="scss">
+.connect-card {
+  border-color: rgba(var(--v-theme-on-surface), 0.12) !important;
+}
+
+.connect-card--tips {
+  background: rgba(var(--v-theme-on-surface), 0.28) !important;
+  border: 1px solid rgba(var(--v-theme-primary), 0.35) !important;
+  box-shadow: none !important;
+}
+
+.connect-tips__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(var(--v-theme-on-surface), 0.9);
+}
+
+.connect-tips__icon {
+  color: rgb(var(--v-theme-primary));
+  flex-shrink: 0;
+}
+
+.connect-tips__list {
+  color: rgba(var(--v-theme-on-surface), 0.75);
+  padding-left: 1.1rem;
+}
+
+.connect-url-block {
+  min-width: 0;
+  width: 100%;
+}
+
+.connect-url-field--framed {
+  :deep(.v-field) {
+    border-width: 2px;
+  }
+}
+
+.connect-status-chip {
+  font-weight: 600;
+}
+
+.connect-status-chip--on-error {
+  color: rgb(var(--v-theme-on-error)) !important;
+}
+
+.connect-status-chip--on-success {
+  color: rgb(var(--v-theme-on-success)) !important;
+}
+
+.connect-status-chip--on-warning {
+  color: rgb(var(--v-theme-on-warning)) !important;
+}
+
+.connect-status-chip--on-info {
+  color: rgb(var(--v-theme-on-info)) !important;
+}
+
+/* Desktop: URL field uses available width; Test stays button-sized (thumb-friendly full width on mobile via block) */
+.connect-url-field {
+  min-width: 0;
+}
+
+.connect-test-btn {
+  @media (min-width: 600px) {
+    align-self: flex-start;
+  }
+}
+</style>

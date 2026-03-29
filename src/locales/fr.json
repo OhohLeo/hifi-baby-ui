@@ -47,13 +47,68 @@
   },
   "settings": {
     "title": "Paramètres",
+    "aboutTitle": "Hifi Baby",
+    "aboutTagline": "Musique pour la maison",
     "connect": "Connexion",
     "audio": "Audio",
     "bluetooth": "Bluetooth",
     "interface": "Interface",
     "tags": "Tags",
     "cancel": "Annuler",
-    "validate": "Valider"
+    "validate": "Valider",
+    "connectPanel": {
+      "connectionStatusTitle": "État de la connexion",
+      "statusLabel": "État",
+      "typeLabel": "Type",
+      "deviceLabel": "Appareil",
+      "addressLabel": "Adresse",
+      "connectionTypeTitle": "Type de connexion",
+      "bluetooth": "Bluetooth",
+      "priority": "Priorité",
+      "wifi": "Wi‑Fi",
+      "bluetoothConfigTitle": "Configuration Bluetooth",
+      "btStatus": "État",
+      "scanDevices": "Rechercher des appareils",
+      "scanning": "Recherche…",
+      "availableDevices": "Appareils disponibles",
+      "signalDbm": "Signal : {rssi} dBm",
+      "connect": "Connecter",
+      "connected": "Connecté",
+      "noDevicesFound": "Aucun appareil trouvé. Réessayez une recherche.",
+      "wifiConfigTitle": "Configuration Wi‑Fi",
+      "backendUrlLabel": "URL du serveur",
+      "backendUrlPlaceholder": "http://hifi-baby.local:3000/audio",
+      "autoDiscover": "Découverte automatique",
+      "testConnection": "Tester",
+      "connectionTipsTitle": "Conseils de connexion",
+      "tipBluetooth": "Bluetooth : activez le Bluetooth et rapprochez l’appareil.",
+      "tipWifiNative": "Wi‑Fi : votre appareil doit être sur le même réseau que le serveur Hifi Baby.",
+      "tipWeb": "Vérifiez que le serveur Hifi Baby est démarré et accessible.",
+      "tipMdns": "Essayez {url} pour la découverte mDNS.",
+      "tipDirectIp": "Ou utilisez une IP directe : {url}.",
+      "status": {
+        "disconnected": "Déconnecté",
+        "connecting": "Connexion…",
+        "connected": "Connecté",
+        "error": "Erreur",
+        "reconnecting": "Reconnexion…"
+      },
+      "errors": {
+        "invalidUrl": "Veuillez saisir une URL valide",
+        "connectSuccess": "Connexion réussie à {url}",
+        "connectFailed": "Échec de la connexion à {url}. Vérifiez l’URL et réessayez."
+      },
+      "transportNames": {
+        "wifi": "Wi‑Fi",
+        "bluetooth": "Bluetooth"
+      },
+      "bluetoothState": {
+        "notSupported": "Non pris en charge",
+        "notAvailable": "Indisponible",
+        "connected": "Connecté",
+        "ready": "Prêt"
+      }
+    }
   },
   "addTagDialog": {
     "title": "Ajouter un Tag",

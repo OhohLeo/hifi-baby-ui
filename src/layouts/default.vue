@@ -1,8 +1,11 @@
 <template>
   <div class="default-layout">
     <TopMenu />
-    <div class="default-layout__content">
-      <Settings v-if="settingsView.isSettingsOpen.value" />
+    <div
+      class="default-layout__content"
+      :class="{ 'default-layout__content--settings': isSettingsOpen }"
+    >
+      <Settings v-if="isSettingsOpen" />
       <PlayList v-else />
     </div>
     <div class="app-bottom-chrome">
@@ -20,7 +23,7 @@ import Settings from '@/components/settings/Settings.vue'
 import AppBottomNav from '@/components/AppBottomNav.vue'
 import { useSettingsView } from '@/composables/useSettingsView'
 
-const settingsView = useSettingsView()
+const { isSettingsOpen } = useSettingsView()
 </script>
 
 <style scoped lang="scss">
@@ -34,6 +37,17 @@ const settingsView = useSettingsView()
   flex: 1 1 auto;
   min-height: 0;
   padding-bottom: calc(var(--bottom-chrome-total) + env(safe-area-inset-bottom, 0px));
+}
+
+/* Keeps the settings sheet from stretching uncomfortably wide on desktop */
+.default-layout__content--settings {
+  @media (min-width: 960px) {
+    width: 90%;
+    max-width: 1000px;
+    margin-inline: auto;
+    padding-inline: 16px;
+    box-sizing: border-box;
+  }
 }
 
 .app-bottom-chrome {

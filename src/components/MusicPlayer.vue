@@ -3,7 +3,7 @@
     class="music-player-footer"
     role="contentinfo"
   >
-    <!-- Slim full-width progress at top of dock -->
+    <!-- Full-width progress (slightly thicker for easier scrubbing) -->
     <div class="mini-player__bar">
       <v-slider
         v-model="currentPosition"
@@ -13,8 +13,8 @@
         color="accent"
         track-color="surface-variant"
         thumb-color="accent"
-        track-size="4"
-        thumb-size="12"
+        track-size="6"
+        thumb-size="14"
         rounded
         @start="stopTimer"
         @end="onPositionChange"
@@ -25,8 +25,8 @@
       </div>
     </div>
 
-    <div class="mini-player__body px-4 pb-2 pt-1 d-flex align-center justify-space-between">
-      <div class="mini-player__title min-w-0 flex-grow-1 pr-3">
+    <div class="mini-player__body">
+      <div class="mini-player__track-col">
         <transition
           name="fade"
           mode="out-in"
@@ -52,7 +52,8 @@
         </transition>
       </div>
 
-      <div class="mini-player__controls d-flex align-center flex-shrink-0 ga-2">
+      <!-- Centered transport controls (Spotify-style) -->
+      <div class="mini-player__controls-center">
         <v-btn
           color="accent"
           icon
@@ -127,6 +128,12 @@
           </v-list>
         </v-menu>
       </div>
+
+      <!-- Balances layout so center controls stay visually centered -->
+      <div
+        class="mini-player__track-spacer"
+        aria-hidden="true"
+      />
     </div>
   </div>
 </template>
@@ -264,14 +271,13 @@ const onPositionChange = async (newPosition: number) => {
 
   :deep(.v-slider-track__background),
   :deep(.v-slider-track__fill) {
-    height: 4px !important;
+    height: 6px !important;
     border-radius: 999px !important;
   }
 
-  // Hide default thumb for a cleaner bar; seek still works via track interaction
   :deep(.v-slider-thumb) {
-    width: 10px !important;
-    height: 10px !important;
+    width: 14px !important;
+    height: 14px !important;
     opacity: 0.95;
   }
 }
@@ -284,6 +290,44 @@ const onPositionChange = async (newPosition: number) => {
 .time-tick {
   font-variant-numeric: tabular-nums;
   min-width: 2rem;
+}
+
+.mini-player__body {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 52px;
+  padding: 8px 12px 10px;
+}
+
+.mini-player__track-col {
+  flex: 1 1 33%;
+  min-width: 0;
+  max-width: 42%;
+  z-index: 1;
+}
+
+.mini-player__controls-center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 2;
+}
+
+.mini-player__track-spacer {
+  flex: 1 1 33%;
+  min-width: 0;
+  pointer-events: none;
+}
+
+@media (max-width: 400px) {
+  .mini-player__track-col {
+    max-width: 36%;
+  }
 }
 
 .track-info .track-name {
