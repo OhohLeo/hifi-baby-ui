@@ -8,9 +8,9 @@ export class AddSongDialogPage {
   readonly fileInput: Locator
   readonly uploadButton: Locator
   readonly cancelButton: Locator
-  /** v-alert type="error" → Vuetify adds .v-alert--type-error */
+  /** v-alert type="error" with class upload-error */
   readonly errorAlert: Locator
-  /** v-alert type="success" → Vuetify adds .v-alert--type-success */
+  /** v-alert type="success" with class upload-success */
   readonly successAlert: Locator
 
   constructor(page: Page) {
@@ -20,8 +20,8 @@ export class AddSongDialogPage {
     this.fileInput = this.dialog.locator('input[type="file"]')
     this.uploadButton = this.dialog.getByRole('button', { name: 'Upload' })
     this.cancelButton = this.dialog.getByRole('button', { name: 'Cancel' })
-    this.errorAlert = this.dialog.locator('.v-alert--type-error')
-    this.successAlert = this.dialog.locator('.v-alert--type-success')
+    this.errorAlert = this.dialog.locator('.upload-error')
+    this.successAlert = this.dialog.locator('.upload-success')
   }
 
   async isVisible(): Promise<boolean> {

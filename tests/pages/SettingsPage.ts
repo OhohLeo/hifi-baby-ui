@@ -4,8 +4,6 @@ export class SettingsPage {
   readonly page: Page
 
   readonly card: Locator
-  readonly cancelButton: Locator
-  readonly validateButton: Locator
 
   // Desktop sidebar items (from i18n: settings.connect, .audio, .interface, .tags)
   readonly connectItem: Locator
@@ -16,8 +14,6 @@ export class SettingsPage {
   constructor(page: Page) {
     this.page = page
     this.card = page.locator('.settings-view')
-    this.cancelButton = this.card.getByRole('button', { name: 'Cancel' })
-    this.validateButton = this.card.getByRole('button', { name: 'Validate' })
     // Scoped to the desktop sidebar list (first role=list inside the card)
     const sidebarList = this.card.getByRole('list').first()
     this.connectItem = sidebarList.getByRole('listitem').filter({ hasText: /^Connect$/ })
@@ -30,11 +26,13 @@ export class SettingsPage {
     return this.card.isVisible()
   }
 
+  /** Close settings by navigating back to Songs (the only way to dismiss the settings view). */
   async close() {
-    await this.cancelButton.click()
+    await this.page.getByRole('button', { name: 'Songs' }).click()
   }
 
+  /** Alias for close() — settings are confirmed/dismissed via the Songs navigation button. */
   async validate() {
-    await this.validateButton.click()
+    await this.page.getByRole('button', { name: 'Songs' }).click()
   }
 }

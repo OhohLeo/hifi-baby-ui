@@ -92,7 +92,7 @@
           v-if="message"
           type="error"
           variant="tonal"
-          class="mb-0"
+          class="mb-0 upload-error"
         >
           {{ message }}
         </v-alert>
@@ -101,7 +101,7 @@
           v-if="successMessage"
           type="success"
           variant="tonal"
-          class="mb-0"
+          class="mb-0 upload-success"
         >
           {{ successMessage }}
         </v-alert>

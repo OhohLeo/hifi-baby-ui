@@ -141,15 +141,17 @@ test.describe('MusicPlayer — more menu', () => {
   })
 
   test('more menu contains Stop, Mute, Volume down, Volume up', async ({ page }) => {
+    // Stop and Mute are now standalone toolbar buttons; Volume up/down live in the Volume dropdown.
     const app = new AppPage(page)
     await app.goto()
-    await app.player.openMoreMenu()
 
-    const menu = page.locator('.player-more-menu')
-    await expect(menu.getByText('Stop')).toBeVisible()
-    await expect(menu.getByText('Mute')).toBeVisible()
-    await expect(menu.getByText('Volume down')).toBeVisible()
-    await expect(menu.getByText('Volume up')).toBeVisible()
+    await expect(app.player.stopButton).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Mute' })).toBeVisible()
+
+    await app.player.volumeButton.click()
+    const volumeMenu = page.locator('.music-player__volume-menu')
+    await expect(volumeMenu.getByText('Volume up')).toBeVisible()
+    await expect(volumeMenu.getByText('Volume down')).toBeVisible()
   })
 
   test('clicking Stop sends POST /stop and shows "No track playing"', async ({ page }) => {
@@ -234,24 +236,3 @@ test.describe('MusicPlayer — more menu', () => {
   })
 })
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Skip next
-// ─────────────────────────────────────────────────────────────────────────────
-test.describe('MusicPlayer — skip next', () => {
-  test('skip next button is enabled when tracks exist', async ({ page }) => {
-    await setupDefaultMocks(page, [TRACK_A], PLAYING_STATE_A)
-    await mockPlayerControls(page)
-
-    const app = new AppPage(page)
-    await app.goto()
-    await expect(app.player.skipNextButton).toBeEnabled()
-  })
-
-  test('skip next button is disabled when playlist is empty', async ({ page }) => {
-    await setupDefaultMocks(page, [], STOPPED_STATE)
-
-    const app = new AppPage(page)
-    await app.goto()
-    await expect(app.player.skipNextButton).toBeDisabled()
-  })
-})

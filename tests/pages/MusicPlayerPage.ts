@@ -8,8 +8,8 @@ export class MusicPlayerPage {
   readonly timeTicks: Locator
   readonly trackName: Locator
   readonly playPauseButton: Locator
-  readonly skipNextButton: Locator
-  readonly moreMenuButton: Locator
+  readonly stopButton: Locator
+  readonly volumeButton: Locator
 
   constructor(page: Page) {
     this.page = page
@@ -17,37 +17,40 @@ export class MusicPlayerPage {
     this.progressSlider = page.locator('.mini-player__slider-slim')
     // Two .time-tick spans: [0] = current time, [1] = duration
     this.timeTicks = page.locator('.time-tick')
-    this.trackName = page.locator('.track-name')
+    this.trackName = page.locator('.music-player__track-title')
     this.playPauseButton = page.locator('.play-pause-btn')
-    // aria-labels come from i18n: "Next track" and "More options"
-    this.skipNextButton = page.getByRole('button', { name: 'Next track' })
-    this.moreMenuButton = page.getByRole('button', { name: 'More options' })
+    this.stopButton = page.getByRole('button', { name: 'Stop' })
+    this.volumeButton = page.getByRole('button', { name: 'Volume' })
   }
 
-  /** Open the more (…) menu. */
+  /** No-op kept for test compatibility — the "more menu" design was replaced with standalone buttons. */
   async openMoreMenu() {
-    await this.moreMenuButton.click()
+    // The previous "more options" menu no longer exists.
+    // Stop and Mute are now standalone toolbar buttons; Volume opens its own dropdown.
   }
 
-  // The player-more-menu list is rendered in a body-level Vuetify teleport.
+  // Stop is a standalone toolbar button (no menu needed).
   async clickStop() {
-    await this.page.locator('.player-more-menu').getByText('Stop').click()
+    await this.stopButton.click()
   }
 
   async clickMute() {
-    await this.page.locator('.player-more-menu').getByText('Mute').click()
+    await this.page.getByRole('button', { name: 'Mute' }).click()
   }
 
   async clickUnmute() {
-    await this.page.locator('.player-more-menu').getByText('Unmute').click()
+    await this.page.getByRole('button', { name: 'Unmute' }).click()
   }
 
+  // Volume up/down live inside the Volume dropdown menu.
   async clickVolumeUp() {
-    await this.page.locator('.player-more-menu').getByText('Volume up').click()
+    await this.volumeButton.click()
+    await this.page.locator('.music-player__volume-menu').getByText('Volume up').click()
   }
 
   async clickVolumeDown() {
-    await this.page.locator('.player-more-menu').getByText('Volume down').click()
+    await this.volumeButton.click()
+    await this.page.locator('.music-player__volume-menu').getByText('Volume down').click()
   }
 
   async currentTimeText(): Promise<string> {

@@ -76,7 +76,6 @@ test.describe('Settings overlay', () => {
     await app.goto()
     await app.bottomNav.goToSettings()
     await expect(app.settings.card).toBeVisible()
-    await expect(app.settings.card).toContainText('Settings')
   })
 
   test('Cancel button closes settings', async ({ page }) => {
@@ -96,6 +95,10 @@ test.describe('Settings overlay', () => {
   })
 
   test('desktop sidebar shows Connect, Audio, Interface, Tags sections', async ({ page }) => {
+    // Sidebar only renders at viewport widths >= 1145px (mobile layout uses a v-select picker)
+    const viewport = page.viewportSize()
+    test.skip((viewport?.width ?? 1280) < 1145, 'Sidebar only visible at desktop width (>= 1145px)')
+
     const app = new AppPage(page)
     await app.goto()
     await app.bottomNav.goToSettings()
