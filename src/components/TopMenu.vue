@@ -216,14 +216,4 @@ function handleThemeToggle() {
 :deep(.v-toolbar__extension:empty) {
   display: none;
 }
-
-.settings-view {
-  border-radius: var(--radius-2xl) !important;
-  width: 100%;
-}
-
-:deep(.v-card-text) {
-  max-height: 70vh;
-  overflow-y: auto;
-}
 </style>

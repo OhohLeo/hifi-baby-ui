@@ -3,13 +3,14 @@
     class="connect-root pa-0 d-flex flex-column"
     fluid
   >
-    <!-- Current Connection Status -->
+    <!-- Connection status alone (Bluetooth flow only; Wi‑Fi merges status into the Wi‑Fi card) -->
     <v-card
+      v-if="showStandaloneStatusCard"
       variant="outlined"
       rounded="lg"
       class="connect-card"
     >
-      <v-card-title class="text-subtitle-1">
+      <v-card-title class="text-subtitle-1 font-weight-bold">
         <v-icon
           :color="connectionStatusColor"
           start
@@ -19,45 +20,8 @@
         {{ $t('settings.connectPanel.connectionStatusTitle') }}
       </v-card-title>
       <v-divider />
-      <v-card-text class="connect-connection-status">
-        <div class="connect-status-grid">
-          <strong class="connect-status-label">{{ $t('settings.connectPanel.statusLabel') }}:</strong>
-          <v-chip
-            :color="connectionStatusColor"
-            size="x-small"
-            variant="flat"
-            :class="['connect-status-chip', 'connect-status-chip--paired', connectionStatusChipTone]"
-          >
-            {{ connectionStatusLabel }}
-          </v-chip>
-
-          <template v-if="isConnected">
-            <strong class="connect-status-label">{{ $t('settings.connectPanel.typeLabel') }}:</strong>
-            <v-chip
-              :color="activeTransport === 'bluetooth' ? 'success' : 'info'"
-              size="x-small"
-              variant="flat"
-              :class="['connect-status-chip', 'connect-status-chip--paired', transportChipTone]"
-            >
-              <v-icon
-                start
-                size="14"
-              >
-                {{ activeTransport === 'bluetooth' ? 'mdi-bluetooth' : 'mdi-wifi' }}
-              </v-icon>
-              {{ transportDisplayName }}
-            </v-chip>
-          </template>
-
-          <template v-if="connectionInfo.name">
-            <strong class="connect-status-label">{{ $t('settings.connectPanel.deviceLabel') }}:</strong>
-            <span class="connect-status-value">{{ connectionInfo.name }}</span>
-          </template>
-          <template v-if="connectionInfo.address">
-            <strong class="connect-status-label">{{ $t('settings.connectPanel.addressLabel') }}:</strong>
-            <span class="connect-status-value">{{ connectionInfo.address }}</span>
-          </template>
-        </div>
+      <v-card-text class="pa-4">
+        <ConnectStatusSummary />
       </v-card-text>
     </v-card>
 
@@ -227,14 +191,14 @@
       </v-card-text>
     </v-card>
 
-    <!-- WiFi Configuration -->
+    <!-- Wi‑Fi configuration (merged with connection status on the same card) -->
     <v-card
-      v-if="selectedTransport === 'wifi' || !isNative || !hasBluetoothSupport"
+      v-if="showWifiSection"
       variant="outlined"
       rounded="lg"
       class="connect-card"
     >
-      <v-card-title class="text-subtitle-1">
+      <v-card-title class="text-subtitle-1 font-weight-bold">
         <v-icon
           color="info"
           start
@@ -245,6 +209,8 @@
       </v-card-title>
       <v-divider />
       <v-card-text>
+        <ConnectStatusSummary class="connect-status-summary--wifi-top mb-6" />
+
         <!-- Auto-discovery Button -->
         <v-btn
           v-if="hasNetworkDiscovery"
@@ -269,7 +235,7 @@
           >
             {{ $t('settings.connectPanel.backendUrlLabel') }}
           </label>
-          <div class="connect-backend-url__row d-flex flex-column flex-sm-row align-center">
+          <div class="connect-backend-url__row">
             <v-text-field
               id="connect-backend-url"
               v-model="baseURL"
@@ -279,7 +245,7 @@
               hide-details
               clearable
               :disabled="isValidating"
-              class="connect-url-field connect-url-field--framed flex-grow-1"
+              class="connect-url-field connect-url-field--framed"
             />
             <v-btn
               color="accent"
@@ -287,7 +253,7 @@
               :loading="isValidating"
               size="large"
               :block="mobile"
-              class="connect-test-btn flex-shrink-0"
+              class="connect-test-btn"
               @click="testWiFiConnection"
             >
               <v-icon start>
@@ -298,11 +264,11 @@
           </div>
         </div>
 
-        <!-- Connection Status -->
+        <!-- Test error only (success uses global-style snackbar feedback) -->
         <v-expand-transition>
           <v-alert
-            v-if="connectionTested"
-            :type="testStatus.color === 'success' ? 'success' : 'error'"
+            v-if="connectionTested && testStatus.color === 'error'"
+            type="error"
             variant="tonal"
             class="mt-2"
           >
@@ -311,6 +277,16 @@
         </v-expand-transition>
       </v-card-text>
     </v-card>
+
+    <v-snackbar
+      v-model="successSnackbar"
+      color="success"
+      location="bottom"
+      :timeout="3200"
+      rounded="lg"
+    >
+      {{ $t('settings.connectPanel.errors.connectSuccessFeedback') }}
+    </v-snackbar>
 
     <!-- Connection Tips (subtle ghost style — does not compete with primary actions) -->
     <v-card
@@ -387,6 +363,7 @@ const testStatus = ref({ color: 'primary', icon: 'mdi-play-circle' })
 const isValidating = ref(false)
 const connectionTested = ref(false)
 const connectionMessage = ref('')
+const successSnackbar = ref(false)
 
 // Bluetooth state
 const isScanning = ref(false)
@@ -399,34 +376,14 @@ const hasBluetoothSupport = computed(() =>
   capabilities.bluetooth.supported && capabilities.bluetooth.available
 )
 
-const connectionStatusLabel = computed(() =>
-  t(`settings.connectPanel.status.${connectionInfo.value.status}`)
+/** Native + Bluetooth: status-only card when configuring Bluetooth; Wi‑Fi merges status into its card */
+const showStandaloneStatusCard = computed(
+  () => isNative.value && hasBluetoothSupport.value && selectedTransport.value === 'bluetooth'
 )
 
-/** Ensures label uses theme “on-*” foreground for flat chips (better contrast). */
-const connectionStatusChipTone = computed(() => {
-  const s = connectionInfo.value.status
-  if (s === 'connected') {
-    return 'connect-status-chip--on-success'
-  }
-  if (s === 'disconnected' || s === 'error') {
-    return 'connect-status-chip--on-error'
-  }
-  return 'connect-status-chip--on-warning'
-})
-
-const transportChipTone = computed(() =>
-  activeTransport.value === 'bluetooth'
-    ? 'connect-status-chip--on-success'
-    : 'connect-status-chip--on-info'
+const showWifiSection = computed(
+  () => selectedTransport.value === 'wifi' || !isNative.value || !hasBluetoothSupport.value
 )
-
-const transportDisplayName = computed(() => {
-  if (!activeTransport.value) {
-    return ''
-  }
-  return t(`settings.connectPanel.transportNames.${activeTransport.value}`)
-})
 
 const connectionStatusColor = computed(() => {
   switch (connectionInfo.value.status) {
@@ -560,8 +517,9 @@ async function testWiFiConnection() {
     await connectToWiFi(baseURL.value)
 
     testStatus.value = { color: 'success', icon: 'mdi-check-circle' }
-    connectionMessage.value = t('settings.connectPanel.errors.connectSuccess', { url: baseURL.value })
+    connectionMessage.value = ''
     connectionTested.value = true
+    successSnackbar.value = true
   } catch {
     testStatus.value = { color: 'error', icon: 'mdi-alert-circle' }
     connectionMessage.value = t('settings.connectPanel.errors.connectFailed', { url: baseURL.value })
@@ -624,25 +582,49 @@ onMounted(async () => {
 
 .connect-backend-url {
   min-width: 0;
+  width: 100%;
 }
 
-.connect-backend-url .connect-url-field {
-  min-width: 0;
-}
-
-/* Extra space between Server URL field and Test (sm+ row layout) */
+/* Stack full-width field + button below md; side-by-side on wide screens (avoids squeezed URL at 600–959px) */
 .connect-backend-url__row {
-  column-gap: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  min-width: 0;
   row-gap: 0.75rem;
 }
 
-/* Test button full width when stacked; natural height aligned with field when in a row */
-.connect-backend-url .connect-test-btn {
+@media (min-width: 960px) {
+  .connect-backend-url__row {
+    flex-direction: row;
+    align-items: center;
+    column-gap: 1.25rem;
+    row-gap: 0;
+  }
+}
+
+.connect-url-field {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+}
+
+.connect-url-field :deep(.v-input) {
+  width: 100%;
+}
+
+.connect-url-field :deep(.v-field) {
+  width: 100%;
+}
+
+.connect-test-btn {
+  flex-shrink: 0;
   align-self: stretch;
 }
 
-@media (min-width: 600px) {
-  .connect-backend-url .connect-test-btn {
+@media (min-width: 960px) {
+  .connect-test-btn {
     align-self: center;
   }
 }
@@ -651,58 +633,5 @@ onMounted(async () => {
   :deep(.v-field) {
     border-width: 2px;
   }
-}
-
-.connect-status-grid {
-  display: grid;
-  grid-template-columns: max-content minmax(0, 1fr);
-  align-items: center;
-  column-gap: 0.75rem;
-  row-gap: 0.5rem;
-}
-
-.connect-status-label {
-  white-space: nowrap;
-}
-
-.connect-status-value {
-  min-width: 0;
-  word-break: break-word;
-}
-
-.connect-status-chip {
-  font-weight: 600;
-}
-
-/* Compact, equal-width badges for status + transport (column-aligned via grid) */
-.connect-status-chip--paired {
-  display: inline-flex;
-  justify-content: center;
-  justify-self: start;
-  min-width: 6.75rem;
-  max-width: 100%;
-  box-sizing: border-box;
-  font-weight: 600;
-}
-
-.connect-status-chip--on-error {
-  color: rgb(var(--v-theme-on-error)) !important;
-}
-
-.connect-status-chip--on-success {
-  color: rgb(var(--v-theme-on-success)) !important;
-}
-
-.connect-status-chip--on-warning {
-  color: rgb(var(--v-theme-on-warning)) !important;
-}
-
-.connect-status-chip--on-info {
-  color: rgb(var(--v-theme-on-info)) !important;
-}
-
-/* Desktop: URL field grows; Test stays content-sized (thumb-friendly full width on mobile via block) */
-.connect-url-field {
-  min-width: 0;
 }
 </style>

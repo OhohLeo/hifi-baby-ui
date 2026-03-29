@@ -24,6 +24,12 @@
   --glass-border: rgba(255, 255, 255, 0.12);
   // Slim mini-player + bottom navigation (56px); tune if layout changes
   --bottom-chrome-total: 140px;
+  // Settings panel: cap height so mini-player + bottom nav stay visible (fallback when flex % is ambiguous)
+  --settings-top-reserve: 88px;
+  --settings-panel-max-height: calc(
+    100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - var(--bottom-chrome-total) -
+      var(--settings-top-reserve)
+  );
   // Fixed search strip height (padding + field); must match TopMenu .search-below-bar
   --search-ribbon-height: 62px;
   --font-weight-light: 300;

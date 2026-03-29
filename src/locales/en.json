@@ -98,6 +98,7 @@
       "errors": {
         "invalidUrl": "Please enter a valid URL",
         "connectSuccess": "Successfully connected to {url}",
+        "connectSuccessFeedback": "Connected successfully.",
         "connectFailed": "Failed to connect to {url}. Check the URL and try again."
       },
       "transportNames": {

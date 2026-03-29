@@ -1,19 +1,17 @@
 <template>
   <v-card
-    class="settings-view"
+    class="settings-view text-body-1"
     variant="flat"
   >
-    <v-card-text
-      class="pa-0 settings-scroll-area"
-      :style="settingsScrollMinHeight"
-    >
+    <!-- Native div: avoids VCardText + useDisplay() racing on theme/resize (Vue patch __vnode null) -->
+    <div class="settings-scroll-area pa-0">
       <div
         class="settings-layout"
-        :class="{ 'settings-layout--mobile': isMobile }"
+        :class="{ 'settings-layout--mobile': isMobileLayout }"
       >
         <!-- Desktop sidebar -->
         <aside
-          v-if="!isMobile"
+          v-if="!isMobileLayout"
           class="settings-nav"
         >
           <v-list
@@ -33,13 +31,15 @@
               <template #prepend>
                 <v-icon>{{ item.icon }}</v-icon>
               </template>
-              <v-list-item-title>{{ item.title }}</v-list-item-title>
+              <v-list-item-title class="text-body-1">
+                {{ item.title }}
+              </v-list-item-title>
             </v-list-item>
           </v-list>
         </aside>
 
         <v-divider
-          v-if="!isMobile"
+          v-if="!isMobileLayout"
           vertical
           class="settings-layout__divider"
         />
@@ -47,7 +47,7 @@
         <div class="settings-main">
           <!-- Mobile section picker -->
           <div
-            v-if="isMobile"
+            v-if="isMobileLayout"
             class="settings-main__picker px-4 pt-4 pb-2"
           >
             <v-select
@@ -59,25 +59,28 @@
               variant="outlined"
               density="comfortable"
               hide-details
+              :menu-props="{ contentClass: 'settings-v-select-menu' }"
             >
+              <!-- Vuetify 3: slot `item` is already the raw row ({ title, icon, component }), not wrapped in .raw -->
               <template #selection="{ item }">
                 <v-icon
-                  :icon="item.raw.icon"
+                  v-if="item"
+                  :icon="item.icon"
                   class="mr-2"
                 />
-                <span>{{ item.raw.title }}</span>
+                <span class="text-body-1">{{ item?.title }}</span>
               </template>
               <template #item="{ props, item }">
                 <v-list-item
                   v-bind="props"
-                  :prepend-icon="item.raw.icon"
-                  :title="item.raw.title"
+                  :prepend-icon="item?.icon"
+                  :title="item?.title"
                 />
               </template>
             </v-select>
           </div>
 
-          <div class="settings-panel-body px-4 px-sm-6 pt-2">
+          <div class="settings-panel-body text-body-1 px-4 px-sm-6 pt-2">
             <component
               :is="selectedSetting?.component"
               v-if="selectedSetting"
@@ -85,28 +88,23 @@
           </div>
         </div>
       </div>
-    </v-card-text>
+    </div>
   </v-card>
 </template>
 
 <script setup>
-import { shallowRef, computed } from 'vue'
+import { shallowRef, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useDisplay } from 'vuetify'
+import { useMatchMaxWidth } from '@/composables/useMatchMaxWidth'
 import Connect from '@/components/settings/Connect.vue'
 import Audio from '@/components/settings/Audio.vue'
 import Tags from '@/components/settings/Tags.vue'
 import Interface from '@/components/settings/Interface.vue'
 
 const { t } = useI18n()
-const { mobile } = useDisplay()
 
-const isMobile = computed(() => mobile.value)
-
-/** Mobile: fill viewport for scroll; desktop: hug content so the layout can vertically center the panel */
-const settingsScrollMinHeight = computed(() =>
-  isMobile.value ? { minHeight: 'calc(100vh - 128px)' } : {}
-)
+// Same as Vuetify default `mobile` (width below lg / 1145px). Avoids useDisplay → updateSize racing Vue patch on theme toggle.
+const isMobileLayout = useMatchMaxWidth(1144)
 
 const menuItems = computed(() => [
   { title: t('settings.connect'), icon: 'mdi-wifi', component: Connect },
@@ -117,6 +115,16 @@ const menuItems = computed(() => [
 
 const selectedSetting = shallowRef(menuItems.value[0])
 
+watch(menuItems, (items) => {
+  if (!items.length) {
+    return
+  }
+  const stillValid = items.some((i) => i.title === selectedSetting.value?.title)
+  if (!stillValid) {
+    selectedSetting.value = items[0]
+  }
+})
+
 function selectSetting(item) {
   selectedSetting.value = item
 }
@@ -124,17 +132,22 @@ function selectSetting(item) {
 
 <style scoped lang="scss">
 .settings-view {
-  flex: 0 0 auto;
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: min(100%, var(--settings-panel-max-height));
   width: 100%;
   border-radius: var(--radius-2xl) !important;
   border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
   background: rgb(var(--v-theme-surface));
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .settings-layout {
   display: flex;
   flex-direction: column;
+  flex: 1 1 auto;
   min-height: 0;
   width: 100%;
 }
@@ -143,7 +156,8 @@ function selectSetting(item) {
   .settings-layout:not(.settings-layout--mobile) {
     flex-direction: row;
     align-items: stretch;
-    min-height: 360px;
+    min-height: 0;
+    flex: 1 1 auto;
   }
 }
 
@@ -151,7 +165,7 @@ function selectSetting(item) {
   flex: 0 0 220px;
   display: flex;
   flex-direction: column;
-  min-height: 100%;
+  min-height: 0;
   padding: 12px 0 0;
 }
 
@@ -162,10 +176,8 @@ function selectSetting(item) {
 
 .settings-nav__item {
   margin-bottom: 2px;
-  border-left: 3px solid transparent;
-  transition:
-    color 0.15s ease,
-    border-color 0.15s ease;
+  align-items: center;
+  transition: color 0.15s ease;
 
   :deep(.v-list-item__overlay) {
     opacity: 0 !important;
@@ -174,15 +186,27 @@ function selectSetting(item) {
   :deep(.v-list-item__underlay) {
     opacity: 0 !important;
   }
+
+  /* Vertically center icon + label (avoids icon sitting slightly high) */
+  :deep(.v-list-item__prepend) {
+    align-self: center;
+  }
+
+  :deep(.v-list-item__content) {
+    align-self: center;
+  }
+
+  :deep(.v-list-item-title) {
+    line-height: 1.5rem;
+  }
 }
 
 .settings-nav__item--active {
-  border-left-color: rgb(var(--v-theme-primary));
   background: transparent !important;
-  color: rgb(var(--v-theme-primary)) !important;
+  color: rgb(var(--v-theme-accent)) !important;
 
   :deep(.v-icon) {
-    color: rgb(var(--v-theme-primary)) !important;
+    color: rgb(var(--v-theme-accent)) !important;
   }
 }
 
@@ -196,8 +220,10 @@ function selectSetting(item) {
 .settings-main {
   flex: 1 1 auto;
   min-width: 0;
+  min-height: 0;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 @media (min-width: 960px) {
@@ -210,7 +236,7 @@ function selectSetting(item) {
   width: 100%;
   max-width: 520px;
   margin-inline: 0;
-  padding-bottom: clamp(48px, 12vh, 100px);
+  padding-bottom: 0;
 }
 
 @media (max-width: 959px) {
@@ -219,8 +245,63 @@ function selectSetting(item) {
   }
 }
 
-:deep(.v-card-text) {
-  max-height: min(85vh, 100%);
+.settings-scroll-area {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Match playlist track title typography (text-body-1) for all settings panel copy */
+.settings-panel-body {
+  :deep(.text-subtitle-1),
+  :deep(.text-subtitle-2),
+  :deep(.text-body-2),
+  :deep(.text-caption),
+  :deep(.text-overline) {
+    font-size: inherit !important;
+    line-height: inherit !important;
+    letter-spacing: 0.009375em !important;
+  }
+
+  :deep(.v-card-title) {
+    font-size: inherit !important;
+    line-height: inherit !important;
+    letter-spacing: 0.009375em !important;
+  }
+
+  :deep(h1),
+  :deep(h2),
+  :deep(h3),
+  :deep(h4),
+  :deep(h5),
+  :deep(h6) {
+    font-size: inherit !important;
+    line-height: inherit !important;
+  }
+
+  :deep(.v-label),
+  :deep(.v-field__input),
+  :deep(.v-input__details),
+  :deep(.v-messages),
+  :deep(.v-alert__content) {
+    font-size: inherit !important;
+  }
+
+  :deep(.v-btn .v-btn__content) {
+    font-size: inherit !important;
+  }
+}
+</style>
+
+<!-- Teleported v-select menu: scoped styles do not apply -->
+<style lang="scss">
+.settings-v-select-menu .v-list-item-title {
+  font-size: 1rem !important;
+  line-height: 1.5rem !important;
+  letter-spacing: 0.009375em !important;
 }
 </style>

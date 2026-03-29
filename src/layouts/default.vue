@@ -39,12 +39,16 @@ const { isSettingsOpen } = useSettingsView()
   padding-bottom: 8px;
 }
 
-/* Settings: center the panel vertically in the scroll area; horizontal cap on large screens */
+/* Settings: stay within the flex slot above bottom chrome; inner scroll for long forms */
 .default-layout__content--settings {
   display: flex;
   flex-direction: column;
+  align-items: stretch;
   justify-content: safe center;
-  padding-block: clamp(20px, 4vh, 48px);
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: 100%;
+  padding-block: clamp(12px, 2.5vh, 28px);
   box-sizing: border-box;
 
   @media (min-width: 960px) {
@@ -53,6 +57,17 @@ const { isSettingsOpen } = useSettingsView()
     margin-inline: auto;
     padding-inline: 16px;
   }
+}
+
+/* Constrain the settings card to the available column (MusicPlayer + bottom nav stay visible) */
+.default-layout__content--settings > * {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: min(100%, var(--settings-panel-max-height));
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .app-bottom-chrome {

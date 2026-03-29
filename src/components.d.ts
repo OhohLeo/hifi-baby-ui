@@ -16,6 +16,7 @@ declare module 'vue' {
     AppBottomNav: typeof import('./components/AppBottomNav.vue')['default']
     Audio: typeof import('./components/settings/Audio.vue')['default']
     Connect: typeof import('./components/settings/Connect.vue')['default']
+    ConnectStatusSummary: typeof import('./components/settings/ConnectStatusSummary.vue')['default']
     Interface: typeof import('./components/settings/Interface.vue')['default']
     MusicPlayer: typeof import('./components/MusicPlayer.vue')['default']
     PlayList: typeof import('./components/PlayList.vue')['default']
