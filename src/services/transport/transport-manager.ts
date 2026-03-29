@@ -95,6 +95,8 @@ export class TransportManager implements ITransport {
       autoReconnect: this.config.autoFailover
     })
     this.transports.set('wifi', wifiTransport)
+    // WiFi is the default active transport — app works immediately without explicit connect()
+    this.activeTransport = wifiTransport
 
     // Bluetooth only on native platforms
     if (Capacitor.isNativePlatform()) {
@@ -498,7 +500,9 @@ return true
   // ========================================================================
 
   private getStoredWiFiURL(): string {
-    return localStorageService.get<string>('baseURL') || 'http://hifi-baby.local:3000/audio'
+    return localStorageService.get<string>('baseURL')
+      || (import.meta.env.VITE_API_BASE_URL as string)
+      || 'http://hifi-baby.local:3000/audio'
   }
 
   private getStoredBluetoothDeviceId(): string | undefined {

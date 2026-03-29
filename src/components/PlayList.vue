@@ -245,7 +245,6 @@ import audioService from '../services/api'
 import { useSettingsView } from '@/composables/useSettingsView'
 import { usePlaylistSearch } from '@/composables/usePlaylistSearch'
 import { cleanTrackTitleForDisplay } from '@/utils/trackDisplay'
-import AddSongDialog from './AddSongDialog.vue'
 
 const { t } = useI18n()
 const settingsView = useSettingsView()

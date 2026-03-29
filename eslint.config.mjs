@@ -56,6 +56,14 @@ export default tseslint.config(
     plugins: { import: importPlugin },
   },
 
+  // Unit tests often define small inline `defineComponent` hosts for composables / VTU.
+  {
+    files: ["tests/unit/**/*.{ts,tsx}"],
+    rules: {
+      "vue/one-component-per-file": "off",
+    },
+  },
+
   {
     languageOptions: {
       globals: {
