@@ -16,8 +16,32 @@
 </template>
 
 <script lang="ts" setup>
+import { watch, onMounted, onUnmounted } from 'vue'
+import { usePlaylistSearch } from '@/composables/usePlaylistSearch'
 // Import global styles
 import './styles/settings.scss'
+
+const { searchVisible } = usePlaylistSearch()
+
+/** Extra v-main padding when the search line is open below the app bar. */
+function syncSearchRibbonLayout(visible: boolean) {
+  if (typeof document === 'undefined') {
+    return
+  }
+  document.documentElement.classList.toggle('search-ribbon-open', visible)
+  document.documentElement.style.setProperty(
+    '--search-ribbon-offset',
+    visible ? 'var(--search-ribbon-height, 62px)' : '0px'
+  )
+}
+
+onMounted(() => {
+  syncSearchRibbonLayout(searchVisible.value)
+})
+watch(searchVisible, syncSearchRibbonLayout)
+onUnmounted(() => {
+  syncSearchRibbonLayout(false)
+})
 </script>
 
 <style lang="scss">

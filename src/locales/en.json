@@ -1,9 +1,14 @@
 {
+  "bottomNav": {
+    "radiosComingSoon": "Coming soon"
+  },
   "topMenu": {
     "songs": "Songs",
     "radios": "Radios",
     "settings": "Settings",
-    "language": "Language"
+    "language": "Language",
+    "searchTracks": "Search tracks",
+    "closeSearch": "Close search"
   },
   "playlist": {
     "noSongs": "No songs yet",
@@ -15,7 +20,11 @@
     "confirmDelete": "Are you sure you want to delete this track? This action cannot be undone.",
     "search": "Search for a song...",
     "noResults": "No results found",
-    "tryDifferentQuery": "Try a different search query."
+    "tryDifferentQuery": "Try a different search query.",
+    "addMusic": "Add Music",
+    "trackMenu": "Track options",
+    "subtitleWithFormat": "Unknown artist · {format}",
+    "subtitleDefault": "Unknown artist · Library"
   },
   "addSongDialog": {
     "title": "Add New Song",
@@ -27,7 +36,14 @@
     "errorConnection": "Failed to upload the audio file. Please check your connection and try again."
   },
   "musicPlayer": {
-    "noTrackPlaying": "No track playing"
+    "noTrackPlaying": "No track playing",
+    "next": "Next track",
+    "more": "More options",
+    "stop": "Stop",
+    "mute": "Mute",
+    "unmute": "Unmute",
+    "volumeDown": "Volume down",
+    "volumeUp": "Volume up"
   },
   "settings": {
     "title": "Settings",

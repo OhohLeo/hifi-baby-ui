@@ -1,231 +1,155 @@
 <template>
-  <v-footer
-    app
+  <div
     class="music-player-footer"
     role="contentinfo"
   >
-    <v-container class="py-4">
-      <!-- Track Info -->
-      <v-row
-        align="center"
-        justify="center"
-        no-gutters
-        class="mb-3"
-      >
-        <v-col
-          cols="12"
-          class="text-center"
+    <!-- Slim full-width progress at top of dock -->
+    <div class="mini-player__bar">
+      <v-slider
+        v-model="currentPosition"
+        class="mini-player__slider-slim"
+        :max="musicPlayer.track?.duration || 0"
+        hide-details
+        color="accent"
+        track-color="surface-variant"
+        thumb-color="accent"
+        track-size="4"
+        thumb-size="12"
+        rounded
+        @start="stopTimer"
+        @end="onPositionChange"
+      />
+      <div class="mini-player__times px-4 d-flex justify-space-between">
+        <span class="text-caption text-medium-emphasis time-tick">{{ formattedCurrentTime }}</span>
+        <span class="text-caption text-medium-emphasis time-tick">{{ formattedDuration }}</span>
+      </div>
+    </div>
+
+    <div class="mini-player__body px-4 pb-2 pt-1 d-flex align-center justify-space-between">
+      <div class="mini-player__title min-w-0 flex-grow-1 pr-3">
+        <transition
+          name="fade"
+          mode="out-in"
         >
-          <transition
-            name="fade"
-            mode="out-in"
+          <div
+            :key="musicPlayer.track?.id"
+            class="track-info"
           >
-            <div
-              :key="musicPlayer.track?.id"
-              class="track-info"
+            <h3 class="text-body-1 track-name text-truncate mb-0 font-weight-semibold">
+              {{
+                musicPlayer.track
+                  ? displayTitle(musicPlayer.track.name)
+                  : $t('musicPlayer.noTrackPlaying')
+              }}
+            </h3>
+            <p
+              v-if="musicPlayer.track"
+              class="text-caption text-medium-emphasis text-truncate mb-0"
             >
-              <h3 class="text-h6 track-name mb-1">
-                {{ musicPlayer.track ? musicPlayer.track.name : $t('musicPlayer.noTrackPlaying') }}
-              </h3>
-              <p
-                v-if="musicPlayer.track?.format"
-                class="text-caption text-secondary"
-              >
-                {{ musicPlayer.track.format.toUpperCase() }}
-              </p>
-            </div>
-          </transition>
-        </v-col>
-      </v-row>
+              {{ $t('playlist.subtitleDefault') }}
+            </p>
+          </div>
+        </transition>
+      </div>
 
-      <!-- Progress Slider -->
-      <v-row
-        align="center"
-        justify="center"
-        no-gutters
-        class="mb-2"
-      >
-        <v-col
-          cols="auto"
-          class="text-caption text-secondary"
+      <div class="mini-player__controls d-flex align-center flex-shrink-0 ga-2">
+        <v-btn
+          color="accent"
+          icon
+          size="large"
+          variant="flat"
+          elevation="0"
+          :disabled="musicPlayer.isStopped"
+          :aria-label="musicPlayer.isPlaying ? 'Pause' : 'Play'"
+          class="play-pause-btn"
+          @click="togglePlayPause"
         >
-          {{ formattedCurrentTime }}
-        </v-col>
-        <v-col class="px-2">
-          <v-slider
-            v-model="currentPosition"
-            :max="musicPlayer.track?.duration || 0"
-            hide-details
-            color="accent"
-            track-color="surface-variant"
-            thumb-color="accent"
-            @start="stopTimer"
-            @end="onPositionChange"
-          />
-        </v-col>
-        <v-col
-          cols="auto"
-          class="text-caption text-secondary"
-        >
-          {{ formattedDuration }}
-        </v-col>
-      </v-row>
+          <v-icon size="28">
+            {{ musicPlayer.isPlaying ? 'mdi-pause' : 'mdi-play' }}
+          </v-icon>
+        </v-btn>
 
-      <!-- Playback Controls -->
-      <v-row
-        align="center"
-        justify="center"
-        no-gutters
-      >
-        <!-- Volume Down -->
-        <v-col
-          cols="auto"
-          class="d-none d-sm-flex"
+        <v-btn
+          icon
+          variant="text"
+          size="large"
+          :disabled="!canSkipNext"
+          :aria-label="$t('musicPlayer.next')"
+          class="control-btn"
+          @click="playNext"
         >
-          <v-btn
-            icon
-            variant="text"
-            size="large"
-            aria-label="Decrease volume"
-            class="control-btn"
-            @click="decreaseVolume"
+          <v-icon size="26">
+            mdi-skip-next
+          </v-icon>
+        </v-btn>
+
+        <v-menu location="top end">
+          <template #activator="{ props: menuProps }">
+            <v-btn
+              icon
+              variant="text"
+              size="large"
+              class="control-btn"
+              v-bind="menuProps"
+              :aria-label="$t('musicPlayer.more')"
+            >
+              <v-icon size="22">
+                mdi-dots-horizontal
+              </v-icon>
+            </v-btn>
+          </template>
+          <v-list
+            density="compact"
+            class="player-more-menu"
           >
-            <v-icon>mdi-volume-minus</v-icon>
-          </v-btn>
-        </v-col>
-
-        <!-- Mute -->
-        <v-col
-          cols="auto"
-          class="d-none d-sm-flex"
-        >
-          <v-btn
-            icon
-            variant="text"
-            size="large"
-            :aria-label="musicPlayer.isMuted ? 'Unmute' : 'Mute'"
-            class="control-btn"
-            @click="musicPlayer.toggleMute()"
-          >
-            <v-icon>
-              {{ musicPlayer.isMuted ? 'mdi-volume-off' : 'mdi-volume-high' }}
-            </v-icon>
-          </v-btn>
-        </v-col>
-
-        <!-- Stop -->
-        <v-col cols="auto">
-          <v-btn
-            icon
-            variant="text"
-            size="large"
-            aria-label="Stop"
-            class="control-btn"
-            :disabled="musicPlayer.isStopped"
-            @click="musicPlayer.stop()"
-          >
-            <v-icon>mdi-stop</v-icon>
-          </v-btn>
-        </v-col>
-
-        <!-- Play/Pause - Main Control -->
-        <v-col cols="auto">
-          <v-btn
-            icon
-            color="accent"
-            size="x-large"
-            variant="flat"
-            elevation="2"
-            :disabled="musicPlayer.isStopped"
-            :aria-label="musicPlayer.isPlaying ? 'Pause' : 'Play'"
-            class="play-pause-btn"
-            @click="togglePlayPause"
-          >
-            <v-icon size="32">
-              {{ musicPlayer.isPlaying ? 'mdi-pause' : 'mdi-play' }}
-            </v-icon>
-          </v-btn>
-        </v-col>
-
-        <!-- Volume Up -->
-        <v-col
-          cols="auto"
-          class="d-none d-sm-flex"
-        >
-          <v-btn
-            icon
-            variant="text"
-            size="large"
-            aria-label="Increase volume"
-            class="control-btn"
-            @click="increaseVolume"
-          >
-            <v-icon>mdi-volume-plus</v-icon>
-          </v-btn>
-        </v-col>
-
-        <!-- Mobile Volume Menu -->
-        <v-col
-          cols="auto"
-          class="d-sm-none"
-        >
-          <v-menu location="top">
-            <template #activator="{ props }">
-              <v-btn
-                icon
-                variant="text"
-                size="large"
-                v-bind="props"
-                aria-label="Volume controls"
-                class="control-btn"
-              >
-                <v-icon>
-                  {{ musicPlayer.isMuted ? 'mdi-volume-off' : 'mdi-volume-high' }}
-                </v-icon>
-              </v-btn>
-            </template>
-
-            <v-list class="volume-menu">
-              <v-list-item @click="musicPlayer.toggleMute()">
-                <template #prepend>
-                  <v-icon>
-                    {{ musicPlayer.isMuted ? 'mdi-volume-off' : 'mdi-volume-high' }}
-                  </v-icon>
-                </template>
-                <v-list-item-title>
-                  {{ musicPlayer.isMuted ? 'Unmute' : 'Mute' }}
-                </v-list-item-title>
-              </v-list-item>
-              <v-list-item @click="decreaseVolume">
-                <template #prepend>
-                  <v-icon>mdi-volume-minus</v-icon>
-                </template>
-                <v-list-item-title>Decrease Volume</v-list-item-title>
-              </v-list-item>
-              <v-list-item @click="increaseVolume">
-                <template #prepend>
-                  <v-icon>mdi-volume-plus</v-icon>
-                </template>
-                <v-list-item-title>Increase Volume</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
-        </v-col>
-      </v-row>
-    </v-container>
-  </v-footer>
+            <v-list-item
+              :title="$t('musicPlayer.stop')"
+              prepend-icon="mdi-stop"
+              :disabled="musicPlayer.isStopped"
+              @click="musicPlayer.stop()"
+            />
+            <v-divider class="my-1" />
+            <v-list-item
+              :title="musicPlayer.isMuted ? $t('musicPlayer.unmute') : $t('musicPlayer.mute')"
+              :prepend-icon="musicPlayer.isMuted ? 'mdi-volume-off' : 'mdi-volume-high'"
+              @click="musicPlayer.toggleMute()"
+            />
+            <v-list-item
+              :title="$t('musicPlayer.volumeDown')"
+              prepend-icon="mdi-volume-minus"
+              @click="decreaseVolume"
+            />
+            <v-list-item
+              :title="$t('musicPlayer.volumeUp')"
+              prepend-icon="mdi-volume-plus"
+              @click="increaseVolume"
+            />
+          </v-list>
+        </v-menu>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, watch, onUnmounted } from 'vue'
 import { useMusicPlayerStore } from '../stores/MusicPlayer'
+import { usePlaylistStore } from '../stores/PlayList'
 import audioService from '../services/api'
+import { cleanTrackTitleForDisplay } from '@/utils/trackDisplay'
 
 const musicPlayer = useMusicPlayerStore()
+const playlistStore = usePlaylistStore()
 const currentPosition = ref(0)
 const interval = ref<number | null>(null)
 
 musicPlayer.fetchCurrentTrack()
+
+function displayTitle(name: string) {
+  return cleanTrackTitleForDisplay(name)
+}
+
+const canSkipNext = computed(() => playlistStore.sortedTracks.length > 0)
 
 const formatTime = (seconds: number) => {
   if (isNaN(seconds) || seconds < 0) {
@@ -247,7 +171,7 @@ const stopTimer = () => {
 }
 
 const startTimer = () => {
-  stopTimer() // Ensure no multiple timers
+  stopTimer()
   interval.value = setInterval(() => {
     if (musicPlayer.track && currentPosition.value < musicPlayer.track.duration) {
       currentPosition.value++
@@ -283,6 +207,20 @@ const togglePlayPause = async () => {
   }
 }
 
+async function playNext() {
+  const list = playlistStore.sortedTracks
+  if (!list.length) {
+    return
+  }
+  const curId = musicPlayer.track?.id
+  const idx = list.findIndex(t => t.id === curId)
+  const nextIdx = idx >= 0 ? (idx + 1) % list.length : 0
+  const next = list[nextIdx]
+  if (next) {
+    await musicPlayer.play(next)
+  }
+}
+
 const increaseVolume = async () => {
   await audioService.increaseVolume()
 }
@@ -304,57 +242,93 @@ const onPositionChange = async (newPosition: number) => {
 
 <style scoped lang="scss">
 .music-player-footer {
+  flex: 0 0 auto;
+  width: 100%;
   backdrop-filter: blur(20px) saturate(180%);
-  border-top: 1px solid rgba(var(--v-theme-on-background), 0.08);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-top: 1px solid rgba(var(--v-theme-on-background), 0.1);
+  background: rgba(var(--v-theme-surface), 0.94);
 }
 
-.track-info {
-  .track-name {
-    font-weight: var(--font-weight-semibold);
-    letter-spacing: -0.01em;
-    margin-bottom: var(--spacing-xs);
+.mini-player__bar {
+  padding: 8px 0 0;
+}
+
+.mini-player__slider-slim {
+  margin: 0;
+  padding-inline: 0;
+
+  :deep(.v-input__control) {
+    min-height: 0;
   }
+
+  :deep(.v-slider-track__background),
+  :deep(.v-slider-track__fill) {
+    height: 4px !important;
+    border-radius: 999px !important;
+  }
+
+  // Hide default thumb for a cleaner bar; seek still works via track interaction
+  :deep(.v-slider-thumb) {
+    width: 10px !important;
+    height: 10px !important;
+    opacity: 0.95;
+  }
+}
+
+.mini-player__times {
+  margin-top: 2px;
+  padding-bottom: 2px;
+}
+
+.time-tick {
+  font-variant-numeric: tabular-nums;
+  min-width: 2rem;
+}
+
+.track-info .track-name {
+  letter-spacing: -0.01em;
+  line-height: 1.35;
+  color: rgba(var(--v-theme-on-surface), 0.98);
 }
 
 .control-btn {
+  border-radius: var(--radius-ui) !important;
   transition: all var(--transition-base);
 
   &:hover:not(:disabled) {
-    transform: scale(1.1);
-  }
-
-  &:active:not(:disabled) {
-    transform: scale(0.95);
+    transform: scale(1.06);
+    background: rgba(var(--v-theme-on-surface), 0.08) !important;
   }
 
   &:disabled {
-    opacity: 0.3;
+    opacity: 0.35;
   }
 }
 
 .play-pause-btn {
+  border-radius: var(--radius-ui) !important;
+  width: 48px !important;
+  height: 48px !important;
   transition: all var(--transition-base);
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 4px 14px rgba(41, 121, 255, 0.35) !important;
 
   &:hover:not(:disabled) {
-    transform: scale(1.15);
-    box-shadow: var(--shadow-xl);
-  }
-
-  &:active:not(:disabled) {
     transform: scale(1.05);
+    box-shadow: 0 6px 18px rgba(41, 121, 255, 0.45) !important;
   }
 
   &:disabled {
-    opacity: 0.3;
+    opacity: 0.35;
+    box-shadow: none !important;
   }
 }
 
-.volume-menu {
-  border-radius: var(--radius-lg);
+.player-more-menu {
+  border-radius: var(--radius-ui) !important;
+  min-width: 200px;
 }
 
-// Fade transition for track changes
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity var(--transition-base);
@@ -363,24 +337,5 @@ const onPositionChange = async (newPosition: number) => {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
-}
-
-// Responsive adjustments
-@media (max-width: 600px) {
-  .track-name {
-    font-size: 1rem !important;
-  }
-
-  .control-btn {
-    &:hover:not(:disabled) {
-      transform: scale(1.05);
-    }
-  }
-
-  .play-pause-btn {
-    &:hover:not(:disabled) {
-      transform: scale(1.1);
-    }
-  }
 }
 </style>

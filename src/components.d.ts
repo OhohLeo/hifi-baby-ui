@@ -13,6 +13,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AddSongDialog: typeof import('./components/AddSongDialog.vue')['default']
     AddTagDialog: typeof import('./components/AddTagDialog.vue')['default']
+    AppBottomNav: typeof import('./components/AppBottomNav.vue')['default']
     Audio: typeof import('./components/settings/Audio.vue')['default']
     Connect: typeof import('./components/settings/Connect.vue')['default']
     Interface: typeof import('./components/settings/Interface.vue')['default']

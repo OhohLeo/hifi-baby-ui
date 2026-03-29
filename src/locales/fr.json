@@ -1,9 +1,14 @@
 {
+  "bottomNav": {
+    "radiosComingSoon": "Bientôt disponible"
+  },
   "topMenu": {
     "songs": "Morceaux",
     "radios": "Radios",
     "settings": "Paramètres",
-    "language": "Langue"
+    "language": "Langue",
+    "searchTracks": "Rechercher des morceaux",
+    "closeSearch": "Fermer la recherche"
   },
   "playlist": {
     "noSongs": "Aucun morceau pour l'instant",
@@ -15,7 +20,11 @@
     "confirmDelete": "Êtes-vous sûr de vouloir supprimer ce morceau ? Cette action est irréversible.",
     "search": "Rechercher un morceau...",
     "noResults": "Aucun résultat trouvé",
-    "tryDifferentQuery": "Essayez une autre recherche."
+    "tryDifferentQuery": "Essayez une autre recherche.",
+    "addMusic": "Ajouter de la musique",
+    "trackMenu": "Options du morceau",
+    "subtitleWithFormat": "Artiste inconnu · {format}",
+    "subtitleDefault": "Artiste inconnu · Bibliothèque"
   },
   "addSongDialog": {
     "title": "Ajouter un nouveau morceau",
@@ -27,7 +36,14 @@
     "errorConnection": "Échec du téléversement du fichier audio. Veuillez vérifier votre connexion et réessayer."
   },
   "musicPlayer": {
-    "noTrackPlaying": "Aucun morceau en lecture"
+    "noTrackPlaying": "Aucun morceau en lecture",
+    "next": "Morceau suivant",
+    "more": "Plus d’options",
+    "stop": "Arrêter",
+    "mute": "Couper le son",
+    "unmute": "Réactiver le son",
+    "volumeDown": "Baisser le volume",
+    "volumeUp": "Augmenter le volume"
   },
   "settings": {
     "title": "Paramètres",

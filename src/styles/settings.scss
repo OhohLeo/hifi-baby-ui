@@ -16,8 +16,16 @@
 }
 
 :root {
-  // Typography Scale - Premium HiFi inspired
-  --font-sans: 'Roboto', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+  // Typography — Inter with native SF on Apple
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Segoe UI', sans-serif;
+
+  // Glassmorphism + layout chrome (dark mode)
+  --glass-bg: rgba(255, 255, 255, 0.06);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  // Slim mini-player + bottom navigation (56px); tune if layout changes
+  --bottom-chrome-total: 140px;
+  // Fixed search strip height (padding + field); must match TopMenu .search-below-bar
+  --search-ribbon-height: 62px;
   --font-weight-light: 300;
   --font-weight-regular: 400;
   --font-weight-medium: 500;
@@ -32,7 +40,8 @@
   --spacing-xl: 2rem;
   --spacing-2xl: 3rem;
 
-  // Border Radius - Modern and refined
+  // Border Radius - Modern and refined (12px UI surfaces)
+  --radius-ui: 12px;
   --radius-sm: 0.375rem;
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
@@ -56,6 +65,11 @@
 body {
   font-family: var(--font-sans);
   font-weight: var(--font-weight-regular);
+}
+
+// Search line below app bar: add space in main so content clears the fixed search strip
+html.search-ribbon-open .v-main {
+  padding-top: calc(var(--v-layout-top, 0px) + var(--search-ribbon-offset, 0px)) !important;
 }
 
 // Enhanced Vuetify Component Overrides

@@ -222,14 +222,6 @@
   }
 }
 
-// Music player footer mobile optimization
-@media (max-width: 600px) {
-  .music-player-footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 100;
-    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
-  }
-}
+// Music player stays inside .app-bottom-chrome (flex column with bottom nav).
+// Do NOT set position: fixed here — it removes the player from the flex flow and
+// stacks it over the tab bar, hiding controls on mobile.

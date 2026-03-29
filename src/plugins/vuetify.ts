@@ -31,23 +31,23 @@ const hifiLight: ThemeDefinition = {
   },
 }
 
-// Premium HiFi Dark Theme
+// Premium HiFi Dark Theme — charcoal shell, electric blue accent
 const hifiDark: ThemeDefinition = {
   dark: true,
   colors: {
-    background: '#000000',
-    surface: '#1C1C1E',
+    background: '#121212',
+    surface: '#1E1E1E',
     primary: '#F5F5F7',
     secondary: '#98989D',
-    accent: '#0A84FF',
+    accent: '#2979FF',
     error: '#FF453A',
-    info: '#0A84FF',
+    info: '#2979FF',
     success: '#32D74B',
     warning: '#FF9F0A',
     'on-background': '#F5F5F7',
     'on-surface': '#F5F5F7',
-    'surface-variant': '#2C2C2E',
-    'surface-bright': '#3A3A3C',
+    'surface-variant': '#2A2A2A',
+    'surface-bright': '#383838',
   },
 }
 

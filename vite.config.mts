@@ -46,10 +46,12 @@ export default defineConfig({
     }),
     Fonts({
       google: {
-        families: [ {
-          name: 'Roboto',
-          styles: 'wght@100;300;400;500;700;900',
-        }],
+        families: [
+          {
+            name: 'Inter',
+            styles: 'wght@400;500;600;700',
+          },
+        ],
       },
     }),
   ],
@@ -69,7 +71,7 @@ export default defineConfig({
     ],
   },
   server: {
-    port: 3000,
+    port: 3001,
     host: '0.0.0.0', // Allow access from mobile devices on same network
   },
   build: {

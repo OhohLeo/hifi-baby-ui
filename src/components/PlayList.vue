@@ -1,28 +1,7 @@
 <template>
   <div>
     <div>
-      <v-container>
-        <!-- Tabs moved from TopMenu -->
-        <v-tabs
-          v-if="!isSettingsActive"
-          v-model="selectedTab"
-          align-tabs="center"
-          height="60"
-          grow
-          stacked
-          class="mb-4"
-          @update:model-value="handleTabChange"
-        >
-          <v-tab
-            v-for="(tab, key) in tabs"
-            :key="key"
-            :prepend-icon="tab.icon"
-            :text="tab.name"
-            :value="tab.value"
-            :disabled="tab.disabled"
-          />
-        </v-tabs>
-
+      <v-container class="playlist-container">
         <v-row class="justify-center">
           <v-col
             cols="12"
@@ -31,146 +10,145 @@
             lg="8"
             xl="6"
           >
-            <!-- Empty State -->
-            <v-card
+            <div
               v-if="playlistStore.tracks.length === 0"
-              class="empty-state pa-8 text-center"
-              variant="flat"
+              class="empty-state-wrapper"
             >
-              <v-icon
-                size="64"
-                color="secondary"
-                class="mb-4"
-              >
-                mdi-music-note-off
-              </v-icon>
-              <h2 class="text-h5 mb-2">
-                {{ $t('playlist.noSongs') }}
-              </h2>
-              <p class="text-body-1 text-secondary mb-4">
-                {{ $t('playlist.addFirstTrack') }}
-              </p>
-            </v-card>
+              <div class="empty-state-glass pa-8 text-center">
+                <div
+                  class="empty-state-art"
+                  aria-hidden="true"
+                >
+                  <span class="empty-state-art__ring empty-state-art__ring--outer" />
+                  <span class="empty-state-art__ring empty-state-art__ring--inner" />
+                  <v-icon
+                    class="empty-state-art__note"
+                    size="80"
+                    color="accent"
+                  >
+                    mdi-music-note
+                  </v-icon>
+                </div>
+                <h2 class="text-h5 mb-2 font-weight-semibold">
+                  {{ $t('playlist.noSongs') }}
+                </h2>
+                <p class="text-body-2 text-medium-emphasis mb-6">
+                  {{ $t('playlist.addFirstTrack') }}
+                </p>
+                <v-btn
+                  color="accent"
+                  size="large"
+                  variant="flat"
+                  class="add-music-cta"
+                  @click="openAddSongDialog"
+                >
+                  {{ $t('playlist.addMusic') }}
+                </v-btn>
+              </div>
+            </div>
 
             <div v-else>
-              <!-- Search Input -->
-              <v-text-field
-                v-model="searchQuery"
-                :label="$t('playlist.search')"
-                prepend-inner-icon="mdi-magnify"
-                variant="outlined"
-                clearable
-                class="mb-4"
-              />
-
-              <!-- Track List -->
-              <v-list
+              <p
                 v-if="filteredTracks.length > 0"
-                class="track-list"
-                role="list"
-                aria-label="Song playlist"
+                class="text-caption text-medium-emphasis mb-3 text-uppercase letter-spacing-wider"
               >
-                <v-list-subheader class="text-overline">
-                  {{ filteredTracks.length }}
-                  {{ filteredTracks.length === 1 ? $t('playlist.song') : $t('playlist.songs') }}
-                </v-list-subheader>
+                {{ filteredTracks.length }}
+                {{ filteredTracks.length === 1 ? $t('playlist.song') : $t('playlist.songs') }}
+              </p>
 
-                <v-list-item
+              <div
+                v-if="filteredTracks.length > 0"
+                class="track-rows"
+                role="list"
+                :aria-label="$t('playlist.songs')"
+              >
+                <div
                   v-for="track in filteredTracks"
                   :key="track.id"
-                  :title="track.name"
-                  class="track-item elevation-1 mb-2"
-                  :class="{
-                    'track-active': musicPlayerStore.isCurrentTrack(track.id),
-                  }"
+                  class="track-row"
+                  :class="{ 'track-row--active': musicPlayerStore.isCurrentTrack(track.id) }"
                   role="listitem"
+                  tabindex="0"
+                  @click="onRowActivate(track.id)"
+                  @keydown.enter.prevent="onRowActivate(track.id)"
+                  @keydown.space.prevent="onRowActivate(track.id)"
                 >
-                  <template #prepend>
-                    <v-btn
-                      icon
-                      variant="text"
-                      size="small"
-                      :aria-label="
-                        musicPlayerStore.isCurrentTrack(track.id)
-                          ? musicPlayerStore.isPlaying
-                            ? 'Pause track'
-                            : 'Resume track'
-                          : 'Play track'
-                      "
-                      class="play-button"
-                      @click="playOrPauseTrack(track.id)"
+                  <div
+                    class="track-row__art"
+                    aria-hidden="true"
+                  >
+                    <v-icon
+                      size="26"
+                      color="accent"
+                      class="track-row__art-icon"
                     >
-                      <v-icon>
-                        {{
-                          musicPlayerStore.isCurrentTrack(track.id)
-                            ? musicPlayerStore.currentStateIcon
-                            : 'mdi-play-circle-outline'
-                        }}
-                      </v-icon>
-                    </v-btn>
-                  </template>
+                      mdi-album
+                    </v-icon>
+                  </div>
 
-                  <template #title>
-                    <span class="track-title">{{ track.name }}</span>
-                  </template>
-
-                  <template #subtitle>
-                    <span
-                      v-if="track.format"
-                      class="text-caption text-secondary"
-                    >
-                      {{ track.format.toUpperCase() }}
-                    </span>
-                  </template>
-
-                  <template #append>
-                    <div class="track-actions">
-                      <v-btn
-                        icon
-                        variant="text"
-                        size="small"
-                        :aria-label="$t('playlist.addTags')"
-                        class="mr-1"
-                        @click="openTagDialog(track.id)"
-                      >
-                        <v-icon size="small">
-                          mdi-tag-plus-outline
-                        </v-icon>
-                      </v-btn>
-
-                      <v-btn
-                        icon
-                        variant="text"
-                        size="small"
-                        :aria-label="`${$t('playlist.delete')} ${track.name}`"
-                        color="error"
-                        @click="removeTrack(track.id)"
-                      >
-                        <v-icon size="small">
-                          mdi-delete-outline
-                        </v-icon>
-                      </v-btn>
+                  <div class="track-row__text min-w-0">
+                    <div class="track-row__title text-body-1 text-high-emphasis text-truncate">
+                      {{ displayTrackTitle(track.name) }}
                     </div>
-                  </template>
-                </v-list-item>
-              </v-list>
-              <!-- No Search Results -->
+                    <div class="track-row__subtitle text-caption text-medium-emphasis text-truncate">
+                      {{ trackSubtitle(track) }}
+                    </div>
+                  </div>
+
+                  <v-menu location="bottom end">
+                    <template #activator="{ props: menuProps }">
+                      <v-btn
+                        icon
+                        variant="text"
+                        size="small"
+                        class="track-row__menu-btn"
+                        :aria-label="$t('playlist.trackMenu')"
+                        v-bind="menuProps"
+                        @click.stop
+                      >
+                        <v-icon size="20">
+                          mdi-dots-vertical
+                        </v-icon>
+                      </v-btn>
+                    </template>
+                    <v-list
+                      density="compact"
+                      class="track-row-menu"
+                    >
+                      <v-list-item
+                        :title="$t('playlist.addTags')"
+                        prepend-icon="mdi-tag-plus-outline"
+                        @click="openTagDialog(track.id)"
+                      />
+                      <v-divider class="my-1" />
+                      <v-list-item
+                        :title="$t('playlist.delete')"
+                        prepend-icon="mdi-delete-outline"
+                        base-color="error"
+                        @click="removeTrack(track.id)"
+                      />
+                    </v-list>
+                  </v-menu>
+                </div>
+              </div>
+
               <v-card
                 v-else
                 class="empty-state pa-8 text-center"
                 variant="flat"
+                :style="{ borderRadius: 'var(--radius-ui)' }"
               >
                 <v-icon
-                  size="64"
+                  size="56"
                   color="secondary"
                   class="mb-4"
                 >
                   mdi-magnify-close
                 </v-icon>
-                <h2 class="text-h5 mb-2">
+                <h2 class="text-h6 mb-2">
                   {{ $t('playlist.noResults') }}
                 </h2>
-                <p class="text-body-1 text-secondary mb-4">
+                <p class="text-body-2 text-medium-emphasis mb-0">
                   {{ $t('playlist.tryDifferentQuery') }}
                 </p>
               </v-card>
@@ -180,28 +158,32 @@
       </v-container>
     </div>
 
-    <!-- Floating Action Button -->
-    <v-fab
-      v-if="!isSettingsActive"
-      class="fab-button"
+    <v-btn
+      v-if="!isSettingsActive && playlistStore.tracks.length > 0"
+      class="fab-add"
       color="accent"
-      :icon="fabIcon"
-      size="60"
-      app
-      location="bottom end"
+      icon
+      size="large"
+      elevation="6"
       aria-label="Add song"
       @click="openAddSongDialog"
-    />
+    >
+      <v-icon size="28">
+        mdi-plus
+      </v-icon>
+    </v-btn>
 
     <AddSongDialog v-model:is-open="isAddSongDialogOpen" />
 
-    <!-- Tag Dialog -->
     <v-dialog
       v-model="isTagDialogOpen"
       max-width="500"
       transition="dialog-bottom-transition"
     >
-      <v-card class="dialog-card">
+      <v-card
+        class="dialog-card"
+        :style="{ borderRadius: 'var(--radius-ui)' }"
+      >
         <v-card-title class="text-h6 pa-6">
           <v-icon class="mr-2">
             mdi-tag-multiple
@@ -250,46 +232,59 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useRoute, useRouter } from 'vue-router'
 import { usePlaylistStore } from '../stores/PlayList'
 import {
   STATE_PLAY,
   STATE_PAUSE,
   useMusicPlayerStore,
 } from '../stores/MusicPlayer'
+import type { TrackModel } from '../models'
 import audioService from '../services/api'
 import { useSettingsView } from '@/composables/useSettingsView'
+import { usePlaylistSearch } from '@/composables/usePlaylistSearch'
+import { cleanTrackTitleForDisplay } from '@/utils/trackDisplay'
 import AddSongDialog from './AddSongDialog.vue'
 
 const { t } = useI18n()
-const route = useRoute()
-const router = useRouter()
 const settingsView = useSettingsView()
+const { searchQuery } = usePlaylistSearch()
 
 const playlistStore = usePlaylistStore()
 const musicPlayerStore = useMusicPlayerStore()
 
-const searchQuery = ref('')
+function displayTrackTitle(name: string) {
+  return cleanTrackTitleForDisplay(name)
+}
+
 const filteredTracks = computed(() => {
-  if (!searchQuery.value) {
+  const q = searchQuery.value.trim().toLowerCase()
+  if (!q) {
     return playlistStore.tracks
   }
   return playlistStore.tracks.filter(track =>
-    track.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+    track.name.toLowerCase().includes(q)
+    || displayTrackTitle(track.name).toLowerCase().includes(q)
   )
 })
 
 playlistStore.fetchTracks()
 
+function trackSubtitle(_track: TrackModel) {
+  return t('playlist.subtitleDefault')
+}
+
+function onRowActivate(trackID: string) {
+  void playOrPauseTrack(trackID)
+}
+
 const playOrPauseTrack = async (trackID: string) => {
   const track = playlistStore.tracks.find(
-    (t: { id: string }) => t.id === trackID
+    (tr: { id: string }) => tr.id === trackID
   )
   if (track) {
     if (musicPlayerStore.track?.id === track.id) {
-      // Selected music is currently playing or paused
       switch (musicPlayerStore.currentState) {
         case STATE_PLAY: {
           await musicPlayerStore.pause()
@@ -300,78 +295,34 @@ const playOrPauseTrack = async (trackID: string) => {
           return
         }
       }
-
       return
     }
-
     await musicPlayerStore.play(track)
   }
 }
 
 const removeTrack = async (trackID: string) => {
-  if (
-    confirm(t('playlist.confirmDelete'))
-  ) {
+  if (confirm(t('playlist.confirmDelete'))) {
     await audioService.removeTrack(trackID)
     playlistStore.fetchTracks()
     musicPlayerStore.fetchCurrentTrack()
   }
 }
 
-// Tag Dialog logic
 const isTagDialogOpen = ref(false)
 const message = ref('')
-const selectedTrackId = ref<string | null>(null)
 
-const openTagDialog = (trackID: string) => {
-  selectedTrackId.value = trackID
+const openTagDialog = (_trackID: string) => {
   isTagDialogOpen.value = true
   message.value = ''
 }
 
 const submitTag = () => {
-  // TODO: Implement tag functionality
   isTagDialogOpen.value = false
 }
 
-// Tabs and FAB logic moved from TopMenu.vue
-const tabs = computed(() => ({
-  songs: { name: t('topMenu.songs'), icon: 'mdi-music', value: 'songs', disabled: false },
-  radios: { name: t('topMenu.radios'), icon: 'mdi-radio-tower', value: 'radios', disabled: true },
-}))
-
-const fabIcon = ref('mdi-music-note-plus')
-
 const isSettingsActive = computed(() => settingsView.isSettingsOpen.value)
 
-const selectedTab = ref<string | null>('songs')
-
-function handleTabChange(tabValue: unknown) {
-  // Only handle user interactions, not programmatic changes
-  if (tabValue === null || typeof tabValue !== 'string') {
-    return
-  }
-
-  updateFabIcon()
-
-  // Navigate to home when Songs tab is clicked from another page
-  if (tabValue === 'songs' && route.path !== '/') {
-    router.push('/')
-  }
-}
-
-const updateFabIcon = () => {
-  switch (selectedTab.value) {
-    case 'songs':
-      fabIcon.value = 'mdi-music-note-plus'
-      break
-    case 'radios':
-      fabIcon.value = 'mdi-radio'
-      break
-  }
-}
-
-// Add Song Dialog logic
 const isAddSongDialogOpen = ref(false)
 const openAddSongDialog = () => {
   isAddSongDialogOpen.value = true
@@ -379,82 +330,193 @@ const openAddSongDialog = () => {
 </script>
 
 <style scoped lang="scss">
+.playlist-container {
+  padding-top: 0.5rem;
+}
+
+.letter-spacing-wider {
+  letter-spacing: 0.08em;
+}
+
+.empty-state-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: calc(100dvh - 8rem - var(--bottom-chrome-total));
+  padding-block: 1rem;
+}
+
+.empty-state-glass {
+  max-width: 28rem;
+  width: 100%;
+  border-radius: var(--radius-ui);
+  background: var(--glass-bg);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  transition:
+    box-shadow var(--transition-base),
+    border-color var(--transition-base);
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.18);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+  }
+}
+
+.empty-state-art {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 8rem;
+  height: 8rem;
+  margin: 0 auto 1.25rem;
+}
+
+.empty-state-art__ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+}
+
+.empty-state-art__ring--outer {
+  inset: 0;
+  opacity: 0.9;
+}
+
+.empty-state-art__ring--inner {
+  inset: 1rem;
+  opacity: 0.5;
+  background: radial-gradient(circle, rgba(41, 121, 255, 0.12) 0%, transparent 70%);
+  border-color: rgba(41, 121, 255, 0.2);
+}
+
+.empty-state-art__note {
+  position: relative;
+  z-index: 1;
+  opacity: 0.92;
+}
+
+.add-music-cta {
+  font-weight: var(--font-weight-semibold) !important;
+  letter-spacing: 0.01em;
+  min-width: 10rem;
+  border-radius: var(--radius-ui) !important;
+}
+
 .empty-state {
-  opacity: 0.8;
-  transition: all var(--transition-base);
-
-  &:hover {
-    opacity: 1;
-  }
+  opacity: 0.9;
+  transition: opacity var(--transition-base);
+  max-width: 28rem;
+  margin-inline: auto;
 }
 
-.track-list {
-  background: transparent !important;
+.track-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.track-item {
-  background: rgb(var(--v-theme-surface)) !important;
-  margin-bottom: var(--spacing-sm);
-  transition: all var(--transition-base) !important;
-  border: 2px solid transparent;
+.track-row {
+  display: grid;
+  grid-template-columns: 48px 1fr 40px;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px 8px 8px;
+  border-radius: var(--radius-ui);
+  background: rgba(var(--v-theme-on-surface), 0.05);
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.06);
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
 
   &:hover {
-    transform: translateX(8px);
-    border-color: rgb(var(--v-theme-accent));
+    background: rgba(var(--v-theme-on-surface), 0.08);
+    border-color: rgba(var(--v-theme-on-surface), 0.1);
   }
 
-  &.track-active {
-    border-color: rgb(var(--v-theme-accent));
-    background: rgb(var(--v-theme-surface-variant)) !important;
+  &:focus-visible {
+    outline: 2px solid rgb(var(--v-theme-accent));
+    outline-offset: 2px;
+  }
 
-    .track-title {
+  &--active {
+    background: rgba(var(--v-theme-accent), 0.12);
+    border-color: rgba(var(--v-theme-accent), 0.35);
+
+    .track-row__title {
       color: rgb(var(--v-theme-accent));
       font-weight: var(--font-weight-semibold);
     }
   }
 }
 
-.track-title {
-  font-weight: var(--font-weight-medium);
-  transition: color var(--transition-fast);
-}
-
-.track-actions {
+.track-row__art {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-ui);
+  flex-shrink: 0;
   display: flex;
-  gap: var(--spacing-xs);
   align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    145deg,
+    rgba(var(--v-theme-accent), 0.2) 0%,
+    rgba(var(--v-theme-on-surface), 0.12) 100%
+  );
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
 }
 
-.play-button {
-  transition: all var(--transition-base);
+.track-row__art-icon {
+  opacity: 0.9;
+}
 
-  &:hover {
-    transform: scale(1.2);
+.track-row__menu-btn {
+  opacity: 0.65;
+
+  .track-row:hover & {
+    opacity: 1;
   }
+}
+
+.track-row-menu {
+  border-radius: var(--radius-ui) !important;
+  min-width: 200px;
 }
 
 .dialog-card {
-  border-radius: var(--radius-2xl) !important;
+  border-radius: var(--radius-ui) !important;
 }
 
-.fab-button {
+.fab-add {
   position: fixed !important;
-  bottom: 160px !important;
-  right: 24px !important;
-  z-index: 2000 !important;
+  right: 20px !important;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + var(--bottom-chrome-total) + 12px) !important;
+  z-index: 2010 !important;
+  width: 56px !important;
+  height: 56px !important;
+  border-radius: var(--radius-ui) !important;
+  box-shadow:
+    0 8px 24px rgba(41, 121, 255, 0.45),
+    0 2px 8px rgba(0, 0, 0, 0.35) !important;
 }
 
-// Responsive adjustments
 @media (max-width: 600px) {
-  .track-item {
-    &:hover {
-      transform: translateX(4px);
-    }
+  .track-row {
+    grid-template-columns: 44px 1fr 36px;
+    gap: 10px;
+    padding: 6px 8px 6px 6px;
   }
 
-  .track-actions {
-    flex-direction: column;
-    gap: 0;
+  .track-row__art {
+    width: 44px;
+    height: 44px;
   }
 }
 </style>
