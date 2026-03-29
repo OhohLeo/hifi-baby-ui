@@ -1,12 +1,15 @@
 <template>
   <v-app>
-    <v-main>
+    <v-main class="app-main-shell">
       <router-view v-slot="{ Component, route }">
         <transition
           :name="(route.meta.transition as string) || 'fade'"
           mode="out-in"
         >
-          <div :key="route.path">
+          <div
+            :key="route.path"
+            class="route-view-flex"
+          >
             <component :is="Component" />
           </div>
         </transition>
@@ -45,6 +48,23 @@ onUnmounted(() => {
 </script>
 
 <style lang="scss">
+// Fill the shell under the fixed app bar so nested layouts can use column flex + scroll
+// (avoids relying on position:fixed for the mini-player, which breaks when an ancestor
+// creates a new containing block — common on tablets/mobile with transforms / compositing).
+.app-main-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1 1 auto;
+}
+
+.route-view-flex {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
 // Page transitions
 .fade-enter-active,
 .fade-leave-active {

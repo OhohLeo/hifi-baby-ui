@@ -16,11 +16,6 @@
 </template>
 
 <script lang="ts" setup>
-import TopMenu from '@/components/TopMenu.vue'
-import MusicPlayer from '@/components/MusicPlayer.vue'
-import PlayList from '@/components/PlayList.vue'
-import Settings from '@/components/settings/Settings.vue'
-import AppBottomNav from '@/components/AppBottomNav.vue'
 import { useSettingsView } from '@/composables/useSettingsView'
 
 const { isSettingsOpen } = useSettingsView()
@@ -30,36 +25,43 @@ const { isSettingsOpen } = useSettingsView()
 .default-layout {
   display: flex;
   flex-direction: column;
-  min-height: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .default-layout__content {
   flex: 1 1 auto;
   min-height: 0;
-  padding-bottom: calc(var(--bottom-chrome-total) + env(safe-area-inset-bottom, 0px));
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  /* Bottom chrome is in-flow below; keep a little breathing room above it */
+  padding-bottom: 8px;
 }
 
-/* Keeps the settings sheet from stretching uncomfortably wide on desktop */
+/* Settings: center the panel vertically in the scroll area; horizontal cap on large screens */
 .default-layout__content--settings {
+  display: flex;
+  flex-direction: column;
+  justify-content: safe center;
+  padding-block: clamp(20px, 4vh, 48px);
+  box-sizing: border-box;
+
   @media (min-width: 960px) {
     width: 90%;
     max-width: 1000px;
     margin-inline: auto;
     padding-inline: 16px;
-    box-sizing: border-box;
   }
 }
 
 .app-bottom-chrome {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  /* Above v-main scrolling content and Vuetify overlays that sit at ~1000 */
+  position: relative;
   z-index: 2004;
   display: flex;
+  flex: 0 0 auto;
   flex-direction: column;
-  min-height: 0;
+  width: 100%;
   background: rgb(var(--v-theme-surface));
   box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.25);
 }

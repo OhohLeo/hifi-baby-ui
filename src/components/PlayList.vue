@@ -87,9 +87,19 @@
                   </div>
 
                   <div class="track-row__text min-w-0">
-                    <div class="track-row__title text-body-1 text-high-emphasis text-truncate">
-                      {{ displayTrackTitle(track.name) }}
-                    </div>
+                    <v-tooltip
+                      location="top"
+                      :text="displayTrackTitle(track.name)"
+                    >
+                      <template #activator="{ props: tooltipProps }">
+                        <div
+                          v-bind="tooltipProps"
+                          class="track-row__title text-body-1 text-high-emphasis"
+                        >
+                          {{ displayTrackTitle(track.name) }}
+                        </div>
+                      </template>
+                    </v-tooltip>
                     <div class="track-row__subtitle text-caption text-medium-emphasis text-truncate">
                       {{ trackSubtitle(track) }}
                     </div>
@@ -454,6 +464,15 @@ const openAddSongDialog = () => {
       font-weight: var(--font-weight-semibold);
     }
   }
+}
+
+.track-row__title {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: default;
 }
 
 .track-row__art {

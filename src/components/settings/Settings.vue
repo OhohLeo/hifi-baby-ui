@@ -5,7 +5,7 @@
   >
     <v-card-text
       class="pa-0 settings-scroll-area"
-      :style="{ 'min-height': isMobile ? 'calc(100vh - 128px)' : '500px' }"
+      :style="settingsScrollMinHeight"
     >
       <div
         class="settings-layout"
@@ -36,15 +36,6 @@
               <v-list-item-title>{{ item.title }}</v-list-item-title>
             </v-list-item>
           </v-list>
-
-          <div class="settings-nav__footer">
-            <div class="settings-nav__about text-caption text-medium-emphasis px-3 pb-2">
-              <div class="font-weight-medium text-high-emphasis">
-                {{ $t('settings.aboutTitle') }}
-              </div>
-              <div>{{ $t('settings.aboutTagline') }}</div>
-            </div>
-          </div>
         </aside>
 
         <v-divider
@@ -112,6 +103,11 @@ const { mobile } = useDisplay()
 
 const isMobile = computed(() => mobile.value)
 
+/** Mobile: fill viewport for scroll; desktop: hug content so the layout can vertically center the panel */
+const settingsScrollMinHeight = computed(() =>
+  isMobile.value ? { minHeight: 'calc(100vh - 128px)' } : {}
+)
+
 const menuItems = computed(() => [
   { title: t('settings.connect'), icon: 'mdi-wifi', component: Connect },
   { title: t('settings.audio'), icon: 'mdi-volume-high', component: Audio },
@@ -128,6 +124,8 @@ function selectSetting(item) {
 
 <style scoped lang="scss">
 .settings-view {
+  flex: 0 0 auto;
+  width: 100%;
   border-radius: var(--radius-2xl) !important;
   border: 1px solid rgba(var(--v-theme-on-surface), 0.08);
   background: rgb(var(--v-theme-surface));
@@ -188,12 +186,6 @@ function selectSetting(item) {
   }
 }
 
-.settings-nav__footer {
-  margin-top: auto;
-  padding-top: 16px;
-  border-top: 1px solid rgba(var(--v-theme-on-surface), 0.08);
-}
-
 .settings-layout__divider {
   flex-shrink: 0;
   align-self: stretch;
@@ -218,7 +210,7 @@ function selectSetting(item) {
   width: 100%;
   max-width: 520px;
   margin-inline: 0;
-  padding-bottom: 100px;
+  padding-bottom: clamp(48px, 12vh, 100px);
 }
 
 @media (max-width: 959px) {
@@ -228,7 +220,7 @@ function selectSetting(item) {
 }
 
 :deep(.v-card-text) {
-  max-height: 70vh;
+  max-height: min(85vh, 100%);
   overflow-y: auto;
 }
 </style>

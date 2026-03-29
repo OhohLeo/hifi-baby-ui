@@ -1,13 +1,13 @@
 <template>
   <v-container
-    class="connect-root pa-0"
+    class="connect-root pa-0 d-flex flex-column"
     fluid
   >
     <!-- Current Connection Status -->
     <v-card
       variant="outlined"
       rounded="lg"
-      class="connect-card mb-4"
+      class="connect-card"
     >
       <v-card-title class="text-subtitle-1">
         <v-icon
@@ -19,42 +19,44 @@
         {{ $t('settings.connectPanel.connectionStatusTitle') }}
       </v-card-title>
       <v-divider />
-      <v-card-text>
-        <div class="d-flex flex-column gap-2">
-          <div>
-            <strong>{{ $t('settings.connectPanel.statusLabel') }}:</strong>
-            <v-chip
-              :color="connectionStatusColor"
-              size="small"
-              variant="flat"
-              :class="['ml-2', 'connect-status-chip', connectionStatusChipTone]"
-            >
-              {{ connectionStatusLabel }}
-            </v-chip>
-          </div>
-          <div v-if="isConnected">
-            <strong>{{ $t('settings.connectPanel.typeLabel') }}:</strong>
+      <v-card-text class="connect-connection-status">
+        <div class="connect-status-grid">
+          <strong class="connect-status-label">{{ $t('settings.connectPanel.statusLabel') }}:</strong>
+          <v-chip
+            :color="connectionStatusColor"
+            size="x-small"
+            variant="flat"
+            :class="['connect-status-chip', 'connect-status-chip--paired', connectionStatusChipTone]"
+          >
+            {{ connectionStatusLabel }}
+          </v-chip>
+
+          <template v-if="isConnected">
+            <strong class="connect-status-label">{{ $t('settings.connectPanel.typeLabel') }}:</strong>
             <v-chip
               :color="activeTransport === 'bluetooth' ? 'success' : 'info'"
-              size="small"
+              size="x-small"
               variant="flat"
-              :class="['ml-2', 'connect-status-chip', transportChipTone]"
+              :class="['connect-status-chip', 'connect-status-chip--paired', transportChipTone]"
             >
               <v-icon
                 start
-                size="small"
+                size="14"
               >
                 {{ activeTransport === 'bluetooth' ? 'mdi-bluetooth' : 'mdi-wifi' }}
               </v-icon>
               {{ transportDisplayName }}
             </v-chip>
-          </div>
-          <div v-if="connectionInfo.name">
-            <strong>{{ $t('settings.connectPanel.deviceLabel') }}:</strong> {{ connectionInfo.name }}
-          </div>
-          <div v-if="connectionInfo.address">
-            <strong>{{ $t('settings.connectPanel.addressLabel') }}:</strong> {{ connectionInfo.address }}
-          </div>
+          </template>
+
+          <template v-if="connectionInfo.name">
+            <strong class="connect-status-label">{{ $t('settings.connectPanel.deviceLabel') }}:</strong>
+            <span class="connect-status-value">{{ connectionInfo.name }}</span>
+          </template>
+          <template v-if="connectionInfo.address">
+            <strong class="connect-status-label">{{ $t('settings.connectPanel.addressLabel') }}:</strong>
+            <span class="connect-status-value">{{ connectionInfo.address }}</span>
+          </template>
         </div>
       </v-card-text>
     </v-card>
@@ -64,7 +66,7 @@
       v-if="isNative && hasBluetoothSupport"
       variant="outlined"
       rounded="lg"
-      class="connect-card mb-4"
+      class="connect-card"
     >
       <v-card-title class="text-subtitle-1">
         {{ $t('settings.connectPanel.connectionTypeTitle') }}
@@ -124,7 +126,7 @@
       v-if="selectedTransport === 'bluetooth' && isNative && hasBluetoothSupport"
       variant="outlined"
       rounded="lg"
-      class="connect-card mb-4"
+      class="connect-card"
     >
       <v-card-title class="text-subtitle-1">
         <v-icon
@@ -230,7 +232,7 @@
       v-if="selectedTransport === 'wifi' || !isNative || !hasBluetoothSupport"
       variant="outlined"
       rounded="lg"
-      class="connect-card mb-4"
+      class="connect-card"
     >
       <v-card-title class="text-subtitle-1">
         <v-icon
@@ -259,15 +261,15 @@
           {{ $t('settings.connectPanel.autoDiscover') }}
         </v-btn>
 
-        <!-- Manual configuration: label above field (clearer than floating label) -->
-        <div class="d-flex flex-column flex-sm-row gap-3 align-sm-start">
-          <div class="flex-grow-1 connect-url-block">
-            <label
-              class="text-body-2 text-medium-emphasis d-block mb-1"
-              for="connect-backend-url"
-            >
-              {{ $t('settings.connectPanel.backendUrlLabel') }}
-            </label>
+        <!-- Manual configuration: label full width; input and Test share one row (aligned) -->
+        <div class="connect-backend-url">
+          <label
+            class="text-body-2 text-medium-emphasis d-block mb-1"
+            for="connect-backend-url"
+          >
+            {{ $t('settings.connectPanel.backendUrlLabel') }}
+          </label>
+          <div class="connect-backend-url__row d-flex flex-column flex-sm-row align-center">
             <v-text-field
               id="connect-backend-url"
               v-model="baseURL"
@@ -277,23 +279,23 @@
               hide-details
               clearable
               :disabled="isValidating"
-              class="connect-url-field connect-url-field--framed"
+              class="connect-url-field connect-url-field--framed flex-grow-1"
             />
+            <v-btn
+              color="accent"
+              variant="outlined"
+              :loading="isValidating"
+              size="large"
+              :block="mobile"
+              class="connect-test-btn flex-shrink-0"
+              @click="testWiFiConnection"
+            >
+              <v-icon start>
+                {{ testStatus.icon }}
+              </v-icon>
+              {{ $t('settings.connectPanel.testConnection') }}
+            </v-btn>
           </div>
-          <v-btn
-            color="accent"
-            variant="outlined"
-            :loading="isValidating"
-            size="large"
-            :block="mobile"
-            class="connect-test-btn flex-shrink-0"
-            @click="testWiFiConnection"
-          >
-            <v-icon start>
-              {{ testStatus.icon }}
-            </v-icon>
-            {{ $t('settings.connectPanel.testConnection') }}
-          </v-btn>
         </div>
 
         <!-- Connection Status -->
@@ -314,7 +316,7 @@
     <v-card
       variant="outlined"
       rounded="lg"
-      class="connect-card connect-card--tips mt-4"
+      class="connect-card connect-card--tips"
     >
       <v-card-text>
         <div class="text-subtitle-2 mb-2 connect-tips__title">
@@ -589,6 +591,10 @@ onMounted(async () => {
 </script>
 
 <style scoped lang="scss">
+.connect-root {
+  gap: 1.75rem;
+}
+
 .connect-card {
   border-color: rgba(var(--v-theme-on-surface), 0.12) !important;
 }
@@ -616,9 +622,29 @@ onMounted(async () => {
   padding-left: 1.1rem;
 }
 
-.connect-url-block {
+.connect-backend-url {
   min-width: 0;
-  width: 100%;
+}
+
+.connect-backend-url .connect-url-field {
+  min-width: 0;
+}
+
+/* Extra space between Server URL field and Test (sm+ row layout) */
+.connect-backend-url__row {
+  column-gap: 1.25rem;
+  row-gap: 0.75rem;
+}
+
+/* Test button full width when stacked; natural height aligned with field when in a row */
+.connect-backend-url .connect-test-btn {
+  align-self: stretch;
+}
+
+@media (min-width: 600px) {
+  .connect-backend-url .connect-test-btn {
+    align-self: center;
+  }
 }
 
 .connect-url-field--framed {
@@ -627,7 +653,35 @@ onMounted(async () => {
   }
 }
 
+.connect-status-grid {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  align-items: center;
+  column-gap: 0.75rem;
+  row-gap: 0.5rem;
+}
+
+.connect-status-label {
+  white-space: nowrap;
+}
+
+.connect-status-value {
+  min-width: 0;
+  word-break: break-word;
+}
+
 .connect-status-chip {
+  font-weight: 600;
+}
+
+/* Compact, equal-width badges for status + transport (column-aligned via grid) */
+.connect-status-chip--paired {
+  display: inline-flex;
+  justify-content: center;
+  justify-self: start;
+  min-width: 6.75rem;
+  max-width: 100%;
+  box-sizing: border-box;
   font-weight: 600;
 }
 
@@ -647,14 +701,8 @@ onMounted(async () => {
   color: rgb(var(--v-theme-on-info)) !important;
 }
 
-/* Desktop: URL field uses available width; Test stays button-sized (thumb-friendly full width on mobile via block) */
+/* Desktop: URL field grows; Test stays content-sized (thumb-friendly full width on mobile via block) */
 .connect-url-field {
   min-width: 0;
-}
-
-.connect-test-btn {
-  @media (min-width: 600px) {
-    align-self: flex-start;
-  }
 }
 </style>

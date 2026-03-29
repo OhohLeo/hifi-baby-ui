@@ -39,16 +39,18 @@
     "noTrackPlaying": "No track playing",
     "next": "Next track",
     "more": "More options",
+    "play": "Play",
+    "pause": "Pause",
+    "transportControls": "Playback",
     "stop": "Stop",
     "mute": "Mute",
     "unmute": "Unmute",
     "volumeDown": "Volume down",
-    "volumeUp": "Volume up"
+    "volumeUp": "Volume up",
+    "volumeLevel": "Volume"
   },
   "settings": {
     "title": "Settings",
-    "aboutTitle": "Hifi Baby",
-    "aboutTagline": "Music for your home",
     "connect": "Connect",
     "audio": "Audio",
     "bluetooth": "Bluetooth",
