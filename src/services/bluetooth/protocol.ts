@@ -45,13 +45,6 @@ export interface PositionCommand {
   position: number // seconds
 }
 
-/**
- * Position response (Read from Track Position characteristic)
- */
-export interface PositionResponse {
-  position: number // seconds
-}
-
 // ============================================================================
 // Volume Control
 // ============================================================================
@@ -141,19 +134,6 @@ export interface UploadFinalizeResponse {
 // Upload Data
 // ============================================================================
 
-/**
- * Binary chunk format for Upload Data characteristic
- * [0-3]   uint32 session_id_hash
- * [4-7]   uint32 chunk_index
- * [8-11]  uint32 chunk_size
- * [12-end] binary data
- */
-export interface UploadChunkHeader {
-  sessionIdHash: number
-  chunkIndex: number
-  chunkSize: number
-}
-
 // ============================================================================
 // Track Delete
 // ============================================================================
@@ -163,51 +143,6 @@ export interface UploadChunkHeader {
  */
 export interface TrackDeleteCommand {
   track_id: string
-}
-
-// ============================================================================
-// Statistics Queries
-// ============================================================================
-
-/**
- * Statistics query parameters
- */
-export interface StatisticsQuery {
-  since: string // RFC3339 format
-  top_nb?: number // For most listened query
-}
-
-/**
- * Listened track entry
- */
-export interface ListenedTrack {
-  track_name: string
-  at: string // ISO 8601 timestamp
-  during: number // seconds
-}
-
-/**
- * Listened tracks response
- */
-export interface ListenedTracksResponse {
-  tracks: ListenedTrack[]
-}
-
-/**
- * Most listened track entry
- */
-export interface MostListenedTrack {
-  track_name: string
-  since: string // ISO 8601 timestamp
-  during: number // total seconds
-  count: number
-}
-
-/**
- * Most listened tracks response
- */
-export interface MostListenedTracksResponse {
-  tracks: MostListenedTrack[]
 }
 
 // ============================================================================
@@ -221,23 +156,6 @@ export function encodeCommand(command: unknown): ArrayBuffer {
   const json = JSON.stringify(command)
   const encoder = new TextEncoder()
   return encoder.encode(json).buffer
-}
-
-/**
- * Decode a JSON response from ArrayBuffer
- */
-export function decodeResponse<T = unknown>(data: ArrayBuffer): BleResponse<T> {
-  const decoder = new TextDecoder()
-  const json = decoder.decode(data)
-  try {
-    return JSON.parse(json) as BleResponse<T>
-  } catch (error) {
-    console.error('Failed to decode BLE response:', error)
-    return {
-      success: false,
-      error: 'Failed to decode response'
-    }
-  }
 }
 
 /**
@@ -330,11 +248,3 @@ export function isSuccessResponse<T>(
   return response.success && response.data !== undefined
 }
 
-/**
- * Type guard to check if response is an error
- */
-export function isErrorResponse<T>(
-  response: BleResponse<T>
-): response is BleResponse<T> & { success: false; error: string } {
-  return !response.success && response.error !== undefined
-}

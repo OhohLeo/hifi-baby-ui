@@ -6,7 +6,7 @@ import { reactive, computed, type ComputedRef } from 'vue'
 import { Capacitor } from '@capacitor/core'
 import type { Capabilities, CapabilityState } from '@/types/capabilities'
 
-export interface UseCapabilitiesReturn {
+interface UseCapabilitiesReturn {
   platform: string
   isNative: boolean
   isWeb: boolean

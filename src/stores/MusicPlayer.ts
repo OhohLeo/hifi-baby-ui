@@ -2,10 +2,10 @@ import { defineStore } from 'pinia'
 import type { MusicPlayerModel, TrackModel } from '../models'
 import audioService from '../services/api' // Assurez-vous que le chemin d'importation est correct
 
-export const
-  STATE_PLAY = "play",
-  STATE_PAUSE = "pause",
-  STATE_STOP = "stop"
+const STATE_STOP = "stop"
+
+export const STATE_PLAY = "play"
+export const STATE_PAUSE = "pause"
 
 export const useMusicPlayerStore = defineStore('musicPlayer', {
   state: () => ({

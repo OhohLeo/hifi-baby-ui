@@ -40,15 +40,6 @@ export type TransportEventType =
   | 'upload-progress'
 
 /**
- * Transport event data
- */
-export interface TransportEvent {
-  type: TransportEventType
-  data?: unknown
-  error?: Error
-}
-
-/**
  * Connection info for each transport type
  */
 export interface ConnectionInfo {
@@ -224,43 +215,8 @@ export interface ITransport {
 }
 
 // ============================================================================
-// Transport Factory
+// Transport discovery
 // ============================================================================
-
-/**
- * Transport factory configuration
- */
-export interface TransportConfig {
-  /**
-   * Transport type
-   */
-  type: TransportType
-
-  /**
-   * Connection string (URL for WiFi, device ID for Bluetooth)
-   */
-  connection?: string
-
-  /**
-   * Auto-connect on initialization
-   */
-  autoConnect?: boolean
-
-  /**
-   * Enable auto-reconnect
-   */
-  autoReconnect?: boolean
-
-  /**
-   * Reconnect interval in ms
-   */
-  reconnectInterval?: number
-
-  /**
-   * Connection timeout in ms
-   */
-  connectionTimeout?: number
-}
 
 /**
  * Transport discovery result
@@ -280,7 +236,7 @@ export interface TransportDiscoveryResult {
 /**
  * Custom error for transport operations
  */
-export class TransportError extends Error {
+class TransportError extends Error {
   constructor(
     message: string,
     public code: string,

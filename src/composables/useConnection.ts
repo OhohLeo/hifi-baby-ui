@@ -13,7 +13,7 @@ import type {
   TransportDiscoveryResult
 } from '@/services/transport/transport.interface'
 
-export interface UseConnectionReturn {
+interface UseConnectionReturn {
   // State
   isConnected: ComputedRef<boolean>
   activeTransport: Ref<TransportType | null>

@@ -5,7 +5,7 @@
 import { Capacitor } from '@capacitor/core'
 import { FilePicker } from '@capawesome/capacitor-file-picker'
 
-export interface FilePickerResult {
+interface FilePickerResult {
   file: File | null
   path?: string
   name: string
@@ -14,7 +14,7 @@ export interface FilePickerResult {
   data?: string // base64 data for native
 }
 
-export class FileSystemService {
+class FileSystemService {
   /**
    * Pick an audio file using platform-appropriate picker
    */

@@ -29,7 +29,7 @@ const TRANSPORT_PRIORITY: Record<TransportType, number> = {
 /**
  * Transport manager configuration
  */
-export interface TransportManagerConfig {
+interface TransportManagerConfig {
   /**
    * Preferred transport type (overrides priority)
    */
@@ -551,12 +551,3 @@ export function getTransportManager(config?: TransportManagerConfig): TransportM
   return transportManagerInstance
 }
 
-/**
- * Reset transport manager (useful for testing)
- */
-export function resetTransportManager(): void {
-  if (transportManagerInstance) {
-    transportManagerInstance.dispose()
-    transportManagerInstance = null
-  }
-}

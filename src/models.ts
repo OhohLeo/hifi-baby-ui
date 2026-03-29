@@ -13,18 +13,3 @@ export interface MusicPlayerModel {
   position: number
 }
 
-export interface TimeParameters {
-  startAt: string
-  endAt: string
-}
-
-export interface AssignedParameters {
-  assignedTo: string
-}
-
-export interface Tag {
-  id: string
-  name: string
-  type: string
-  parameters: TimeParameters | AssignedParameters
-}

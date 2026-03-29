@@ -5,13 +5,13 @@
 import { Capacitor } from '@capacitor/core'
 import localStorageService from '@/services/storage'
 
-export interface ConnectionConfig {
+interface ConnectionConfig {
   baseURL: string
   discoveryMethod: 'manual' | 'mdns' | 'bluetooth'
   isConnected: boolean
 }
 
-export class NetworkService {
+class NetworkService {
   private config: ConnectionConfig = {
     baseURL: 'http://hifi-baby.local:3000/audio',
     discoveryMethod: 'manual',

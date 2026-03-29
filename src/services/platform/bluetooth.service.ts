@@ -13,7 +13,7 @@ export interface HifiBabyDevice {
   isConnected: boolean
 }
 
-export class BluetoothService {
+class BluetoothService {
   private devices: HifiBabyDevice[] = []
   private isScanning = false
   private isInitialized = false

@@ -23,7 +23,7 @@ import * as Protocol from '../bluetooth/protocol'
 /**
  * Bluetooth transport configuration
  */
-export interface BluetoothTransportConfig {
+interface BluetoothTransportConfig {
   deviceId?: string
   deviceName?: string
   timeout?: number

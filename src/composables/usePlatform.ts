@@ -6,7 +6,7 @@ import { Capacitor } from '@capacitor/core'
 import { computed, type ComputedRef } from 'vue'
 import type { PlatformType } from '@/types/capabilities'
 
-export interface UsePlatformReturn {
+interface UsePlatformReturn {
   platform: PlatformType
   isWeb: ComputedRef<boolean>
   isIOS: ComputedRef<boolean>

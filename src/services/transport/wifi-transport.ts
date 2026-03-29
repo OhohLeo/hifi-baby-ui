@@ -21,7 +21,7 @@ import { networkService } from '@/services/platform/network.service'
 /**
  * WiFi transport configuration
  */
-export interface WiFiTransportConfig {
+interface WiFiTransportConfig {
   baseURL?: string
   timeout?: number
   autoReconnect?: boolean

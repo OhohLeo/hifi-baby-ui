@@ -4,11 +4,11 @@ const AUDIO_EXTENSION = /\.(mp3|flac|m4a|wav|aac|ogg|opus|aiff|wma)$/i
 /** Remove leading track index prefixes: "01 - ", "01. ", "12 – ", etc. */
 const LEADING_INDEX = /^\s*\d+(\s*[-–—.]\s*|\.\s+)/
 
-export function stripAudioExtension(filename: string): string {
+function stripAudioExtension(filename: string): string {
   return filename.replace(AUDIO_EXTENSION, '')
 }
 
-export function stripLeadingTrackIndex(name: string): string {
+function stripLeadingTrackIndex(name: string): string {
   let s = name.trim()
   for (let i = 0; i < 5; i++) {
     const next = s.replace(LEADING_INDEX, '').trim()
