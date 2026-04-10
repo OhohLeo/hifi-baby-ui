@@ -15,8 +15,8 @@ export class PlayListPage {
   // Search no-results state
   readonly searchNoResults: Locator
 
-  // FAB
-  readonly fabAddButton: Locator
+  /** Icon button in the playlist header when tracks exist (opens add-song dialog). */
+  readonly headerAddButton: Locator
 
   constructor(page: Page) {
     this.page = page
@@ -26,7 +26,7 @@ export class PlayListPage {
     this.trackRowsContainer = page.locator('.track-rows')
     this.songCountLabel = page.locator('.text-caption.text-medium-emphasis').first()
     this.searchNoResults = page.locator('.empty-state')
-    this.fabAddButton = page.locator('.fab-add')
+    this.headerAddButton = page.locator('.playlist-header-row__add')
   }
 
   /** All track rows in the list. */

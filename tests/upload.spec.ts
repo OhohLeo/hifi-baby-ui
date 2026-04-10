@@ -26,24 +26,24 @@ test.describe('AddSongDialog — open and close', () => {
     await setupDefaultMocks(page, [TRACK_A], STOPPED_STATE)
   })
 
-  test('clicking the FAB opens the dialog', async ({ page }) => {
+  test('clicking the playlist header add button opens the dialog', async ({ page }) => {
     const app = new AppPage(page)
     await app.goto()
-    await app.playlist.fabAddButton.click()
+    await app.playlist.headerAddButton.click()
     await expect(app.addSongDialog.dialog).toBeVisible()
   })
 
   test('dialog title reads "Add New Song"', async ({ page }) => {
     const app = new AppPage(page)
     await app.goto()
-    await app.playlist.fabAddButton.click()
+    await app.playlist.headerAddButton.click()
     await expect(app.addSongDialog.dialog).toContainText('Add New Song')
   })
 
   test('clicking Cancel closes the dialog', async ({ page }) => {
     const app = new AppPage(page)
     await app.goto()
-    await app.playlist.fabAddButton.click()
+    await app.playlist.headerAddButton.click()
     await expect(app.addSongDialog.dialog).toBeVisible()
     await app.addSongDialog.cancel()
     await expect(app.addSongDialog.dialog).not.toBeVisible()
@@ -52,14 +52,14 @@ test.describe('AddSongDialog — open and close', () => {
   test('Upload button is disabled when no file is selected', async ({ page }) => {
     const app = new AppPage(page)
     await app.goto()
-    await app.playlist.fabAddButton.click()
+    await app.playlist.headerAddButton.click()
     await expect(app.addSongDialog.uploadButton).toBeDisabled()
   })
 
   test('supported formats hint is shown', async ({ page }) => {
     const app = new AppPage(page)
     await app.goto()
-    await app.playlist.fabAddButton.click()
+    await app.playlist.headerAddButton.click()
     await expect(app.addSongDialog.dialog).toContainText('Supported formats')
   })
 })
@@ -76,7 +76,7 @@ test.describe('AddSongDialog — successful upload', () => {
   test('attaching a file enables the Upload button', async ({ page }) => {
     const app = new AppPage(page)
     await app.goto()
-    await app.playlist.fabAddButton.click()
+    await app.playlist.headerAddButton.click()
     await app.addSongDialog.fileInput.setInputFiles([FAKE_AUDIO_FILE])
     await expect(app.addSongDialog.uploadButton).toBeEnabled()
   })
@@ -87,7 +87,7 @@ test.describe('AddSongDialog — successful upload', () => {
 
     const app = new AppPage(page)
     await app.goto()
-    await app.playlist.fabAddButton.click()
+    await app.playlist.headerAddButton.click()
     await app.addSongDialog.fileInput.setInputFiles([FAKE_AUDIO_FILE])
     await app.addSongDialog.submit()
 
@@ -100,7 +100,7 @@ test.describe('AddSongDialog — successful upload', () => {
 
     const app = new AppPage(page)
     await app.goto()
-    await app.playlist.fabAddButton.click()
+    await app.playlist.headerAddButton.click()
     await app.addSongDialog.fileInput.setInputFiles([FAKE_AUDIO_FILE])
     await app.addSongDialog.submit()
 
@@ -121,7 +121,7 @@ test.describe('AddSongDialog — failed upload', () => {
   test('server error shows an error alert', async ({ page }) => {
     const app = new AppPage(page)
     await app.goto()
-    await app.playlist.fabAddButton.click()
+    await app.playlist.headerAddButton.click()
     await app.addSongDialog.fileInput.setInputFiles([FAKE_AUDIO_FILE])
     await app.addSongDialog.submit()
 
@@ -131,7 +131,7 @@ test.describe('AddSongDialog — failed upload', () => {
   test('dialog stays open after a failed upload', async ({ page }) => {
     const app = new AppPage(page)
     await app.goto()
-    await app.playlist.fabAddButton.click()
+    await app.playlist.headerAddButton.click()
     await app.addSongDialog.fileInput.setInputFiles([FAKE_AUDIO_FILE])
     await app.addSongDialog.submit()
 

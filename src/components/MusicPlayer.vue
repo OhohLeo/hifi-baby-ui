@@ -3,8 +3,8 @@
     class="music-player-footer"
     role="contentinfo"
   >
-    <div class="mini-player__bar">
-      <div class="mini-player__progress-wrap">
+    <div class="music-player__inner">
+      <div class="music-player__title-row">
         <transition
           name="fade"
           mode="out-in"
@@ -28,107 +28,88 @@
             </v-tooltip>
           </div>
         </transition>
+      </div>
 
-        <v-slider
-          v-model="currentPosition"
-          class="mini-player__slider-slim"
-          :max="musicPlayer.track?.duration || 0"
-          hide-details
-          color="accent"
-          track-color="surface-variant"
-          thumb-color="accent"
-          track-size="4"
-          thumb-size="10"
-          rounded
-          @start="stopTimer"
-          @end="onPositionChange"
-        />
-        <div class="mini-player__times d-flex justify-space-between">
+      <div
+        class="music-player__controls-band"
+        role="toolbar"
+        :aria-label="$t('musicPlayer.transportControls')"
+      >
+        <div class="music-player__left-group">
+          <v-btn
+            color="accent"
+            icon
+            size="large"
+            variant="flat"
+            elevation="0"
+            :disabled="musicPlayer.isStopped"
+            :aria-label="musicPlayer.isPlaying ? $t('musicPlayer.pause') : $t('musicPlayer.play')"
+            class="play-pause-btn"
+            @click="togglePlayPause"
+          >
+            <v-icon size="28">
+              {{ musicPlayer.isPlaying ? 'mdi-pause' : 'mdi-play' }}
+            </v-icon>
+          </v-btn>
+        </div>
+
+        <div class="music-player__center-slider">
+          <v-slider
+            v-model="currentPosition"
+            class="music-player__position-slider mini-player__slider-slim"
+            density="compact"
+            :max="musicPlayer.track?.duration || 0"
+            hide-details
+            color="accent"
+            track-color="surface-variant"
+            thumb-color="accent"
+            track-size="4"
+            thumb-size="10"
+            rounded
+            @start="stopTimer"
+            @end="onPositionChange"
+          />
+        </div>
+
+        <div class="music-player__center-times mini-player__times d-flex justify-space-between">
           <span class="text-caption text-medium-emphasis time-tick">{{ formattedCurrentTime }}</span>
           <span class="text-caption text-medium-emphasis time-tick">{{ formattedDuration }}</span>
         </div>
-      </div>
-    </div>
 
-    <div
-      class="mini-player__controls"
-      role="toolbar"
-      :aria-label="$t('musicPlayer.transportControls')"
-    >
-      <v-btn
-        color="accent"
-        icon
-        size="large"
-        variant="flat"
-        elevation="0"
-        :disabled="musicPlayer.isStopped"
-        :aria-label="musicPlayer.isPlaying ? $t('musicPlayer.pause') : $t('musicPlayer.play')"
-        class="play-pause-btn"
-        @click="togglePlayPause"
-      >
-        <v-icon size="28">
-          {{ musicPlayer.isPlaying ? 'mdi-pause' : 'mdi-play' }}
-        </v-icon>
-      </v-btn>
-
-      <v-btn
-        icon
-        variant="text"
-        size="large"
-        :disabled="musicPlayer.isStopped"
-        :aria-label="$t('musicPlayer.stop')"
-        class="control-btn"
-        @click="musicPlayer.stop()"
-      >
-        <v-icon size="26">
-          mdi-stop
-        </v-icon>
-      </v-btn>
-
-      <v-btn
-        icon
-        variant="text"
-        size="large"
-        class="control-btn"
-        :aria-label="musicPlayer.isMuted ? $t('musicPlayer.unmute') : $t('musicPlayer.mute')"
-        @click="musicPlayer.toggleMute()"
-      >
-        <v-icon size="26">
-          {{ musicPlayer.isMuted ? 'mdi-volume-off' : 'mdi-volume-high' }}
-        </v-icon>
-      </v-btn>
-
-      <v-menu location="top">
-        <template #activator="{ props: menuProps }">
+        <div class="music-player__right-group">
           <v-btn
-            v-bind="menuProps"
             icon
             variant="text"
             size="large"
             class="control-btn"
-            :aria-label="$t('musicPlayer.volumeLevel')"
+            :aria-label="musicPlayer.isMuted ? $t('musicPlayer.unmute') : $t('musicPlayer.mute')"
+            @click="musicPlayer.toggleMute()"
           >
             <v-icon size="26">
-              mdi-volume-medium
+              {{ musicPlayer.isMuted ? 'mdi-volume-off' : 'mdi-volume-high' }}
             </v-icon>
           </v-btn>
-        </template>
-        <v-list
-          density="compact"
-          class="music-player__volume-menu"
-        >
-          <v-list-item
-            :title="$t('musicPlayer.volumeUp')"
-            prepend-icon="mdi-volume-plus"
-            @click="onVolumeUp"
+
+          <v-slider
+            v-model="volumeSliderModel"
+            class="music-player__volume-slider mini-player__slider-slim"
+            density="compact"
+            :disabled="musicPlayer.isMuted"
+            :max="100"
+            :step="10"
+            hide-details
+            color="accent"
+            track-color="surface-variant"
+            thumb-color="accent"
+            track-size="4"
+            thumb-size="10"
+            rounded
+            :aria-label="$t('musicPlayer.volumeLevel')"
+            @start="onVolumeSlideStart"
+            @end="onVolumeSlideEnd"
           />
-          <v-list-item
-            :title="$t('musicPlayer.volumeDown')"
-            prepend-icon="mdi-volume-minus"
-            @click="onVolumeDown"
-          />
-        </v-list>
-      </v-menu>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -145,6 +126,13 @@ const musicPlayer = useMusicPlayerStore()
 const currentPosition = ref(0)
 const interval = ref<ReturnType<typeof setInterval> | null>(null)
 
+const VOLUME_SLIDER_STEP = 10
+
+const volumeSliderModel = ref(
+  Math.round(musicPlayer.volume * 100 / VOLUME_SLIDER_STEP) * VOLUME_SLIDER_STEP
+)
+const volumeSlideStart = ref(volumeSliderModel.value)
+
 musicPlayer.fetchCurrentTrack()
 
 function displayTitle(name: string) {
@@ -159,12 +147,35 @@ const trackTitleDisplay = computed(() =>
 
 const trackTitleTooltip = computed(() => trackTitleDisplay.value)
 
-const onVolumeUp = async () => {
-  await audioService.increaseVolume()
+watch(
+  () => musicPlayer.volume,
+  v => {
+    const snapped = Math.round(v * 100 / VOLUME_SLIDER_STEP) * VOLUME_SLIDER_STEP
+    volumeSliderModel.value = Math.min(100, Math.max(0, snapped))
+  }
+)
+
+function onVolumeSlideStart() {
+  volumeSlideStart.value = volumeSliderModel.value
 }
 
-const onVolumeDown = async () => {
-  await audioService.decreaseVolume()
+async function onVolumeSlideEnd() {
+  const startStep = Math.round(volumeSlideStart.value / VOLUME_SLIDER_STEP)
+  const endStep = Math.round(volumeSliderModel.value / VOLUME_SLIDER_STEP)
+  const diff = endStep - startStep
+  if (diff === 0) {
+    return
+  }
+  const count = Math.abs(diff)
+  const goUp = diff > 0
+  for (let i = 0; i < count; i++) {
+    if (goUp) {
+      await audioService.increaseVolume()
+    } else {
+      await audioService.decreaseVolume()
+    }
+  }
+  await musicPlayer.updateVolume(volumeSliderModel.value / 100)
 }
 
 const formatTime = (seconds: number) => {
@@ -244,31 +255,23 @@ const onPositionChange = async (newPosition: number) => {
   background: rgba(var(--v-theme-surface), 0.94);
 }
 
-.mini-player__controls {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px));
-}
-
-.mini-player__bar {
-  display: flex;
-  justify-content: center;
-  padding: 8px 0 4px;
-}
-
-.mini-player__progress-wrap {
+.music-player__inner {
   width: 100%;
-  max-width: 600px;
+  max-width: 800px;
   margin-inline: auto;
-  padding-inline: 16px;
+  padding-inline: 12px;
+  box-sizing: border-box;
+}
+
+.music-player__title-row {
+  display: flex;
+  justify-content: center;
+  padding: 6px 0 0;
   box-sizing: border-box;
 }
 
 .music-player__track-title-wrap {
   width: 100%;
-  margin-bottom: 6px;
   text-align: center;
 }
 
@@ -281,9 +284,104 @@ const onPositionChange = async (newPosition: number) => {
   cursor: default;
 }
 
-.music-player__volume-menu {
-  border-radius: var(--radius-ui) !important;
-  min-width: 200px;
+.music-player__controls-band {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-rows: auto auto;
+  align-items: center;
+  column-gap: 12px;
+  row-gap: 2px;
+  padding: 6px 0 calc(10px + env(safe-area-inset-bottom, 0px));
+  box-sizing: border-box;
+}
+
+.music-player__left-group {
+  display: flex;
+  grid-column: 1;
+  grid-row: 1;
+  align-items: center;
+  align-self: center;
+  gap: 4px;
+}
+
+.music-player__center-slider {
+  grid-column: 2;
+  grid-row: 1;
+  display: flex;
+  align-items: center;
+  align-self: center;
+  min-width: 0;
+  min-height: 0;
+}
+
+.music-player__center-times {
+  grid-column: 2;
+  grid-row: 2;
+  margin-top: 0;
+}
+
+.music-player__right-group {
+  display: flex;
+  grid-column: 3;
+  grid-row: 1;
+  align-items: center;
+  align-self: center;
+  flex-shrink: 0;
+  gap: 4px;
+  min-width: 0;
+  max-width: 160px;
+}
+
+.music-player__position-slider,
+.music-player__volume-slider {
+  flex: 1 1 auto;
+  width: 100%;
+  margin: 0;
+  padding-inline: 0;
+
+  :deep(.v-input__control) {
+    min-height: 0;
+  }
+
+  :deep(.v-field) {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
+
+.music-player__volume-slider {
+  flex: 1 1 88px;
+  min-width: 72px;
+  max-width: 120px;
+}
+
+@media (max-width: 719px) {
+  .music-player__controls-band {
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto auto;
+  }
+
+  .music-player__left-group {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .music-player__right-group {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+    max-width: min(200px, 55vw);
+  }
+
+  .music-player__center-slider {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .music-player__center-times {
+    grid-column: 1 / -1;
+    grid-row: 3;
+  }
 }
 
 .mini-player__slider-slim {
@@ -292,6 +390,14 @@ const onPositionChange = async (newPosition: number) => {
 
   :deep(.v-input__control) {
     min-height: 0;
+  }
+
+  :deep(.v-input--density-compact) {
+    --v-input-control-height: 32px;
+  }
+
+  :deep(.v-slider.v-input) {
+    flex: 1 1 auto;
   }
 
   :deep(.v-slider-track__background),
@@ -308,8 +414,7 @@ const onPositionChange = async (newPosition: number) => {
 }
 
 .mini-player__times {
-  margin-top: 2px;
-  padding-bottom: 4px;
+  padding-bottom: 2px;
 }
 
 .time-tick {

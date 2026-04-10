@@ -148,7 +148,9 @@ function handleThemeToggle() {
   align-items: center;
   gap: 4px;
   padding: 8px 12px 10px;
-  max-width: 100%;
+  width: 100%;
+  max-width: 800px;
+  margin-inline: auto;
 }
 
 .search-below-bar__field {

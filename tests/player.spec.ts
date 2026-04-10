@@ -132,43 +132,20 @@ test.describe('MusicPlayer — paused state', () => {
 })
 
 // ─────────────────────────────────────────────────────────────────────────────
-// More menu controls
+// Footer mute & volume slider
 // ─────────────────────────────────────────────────────────────────────────────
-test.describe('MusicPlayer — more menu', () => {
+test.describe('MusicPlayer — footer volume', () => {
   test.beforeEach(async ({ page }) => {
     await setupDefaultMocks(page, [TRACK_A], PLAYING_STATE_A)
     await mockPlayerControls(page)
   })
 
-  test('more menu contains Stop, Mute, Volume down, Volume up', async ({ page }) => {
-    // Stop and Mute are now standalone toolbar buttons; Volume up/down live in the Volume dropdown.
+  test('footer shows Mute and volume slider', async ({ page }) => {
     const app = new AppPage(page)
     await app.goto()
 
-    await expect(app.player.stopButton).toBeVisible()
     await expect(page.getByRole('button', { name: 'Mute' })).toBeVisible()
-
-    await app.player.volumeButton.click()
-    const volumeMenu = page.locator('.music-player__volume-menu')
-    await expect(volumeMenu.getByText('Volume up')).toBeVisible()
-    await expect(volumeMenu.getByText('Volume down')).toBeVisible()
-  })
-
-  test('clicking Stop sends POST /stop and shows "No track playing"', async ({ page }) => {
-    let stopCalled = false
-    await page.route(`${API}/stop`, async (route) => {
-      stopCalled = true
-      await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
-    })
-
-    const app = new AppPage(page)
-    await app.goto()
-    await app.player.openMoreMenu()
-    await app.player.clickStop()
-
-    expect(stopCalled).toBe(true)
-    await expect(app.player.trackName).toHaveText('No track playing')
-    await expect(app.player.playPauseButton).toBeDisabled()
+    await expect(app.player.volumeSlider).toBeVisible()
   })
 
   test('clicking Mute sends POST /volume/mute?enable=true', async ({ page }) => {
@@ -203,36 +180,6 @@ test.describe('MusicPlayer — more menu', () => {
     await app.player.clickUnmute()
 
     expect(muteParam).toBe('false')
-  })
-
-  test('clicking Volume up sends POST /volume/up', async ({ page }) => {
-    let volumeUpCalled = false
-    await page.route(`${API}/volume/up`, async (route) => {
-      volumeUpCalled = true
-      await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
-    })
-
-    const app = new AppPage(page)
-    await app.goto()
-    await app.player.openMoreMenu()
-    await app.player.clickVolumeUp()
-
-    expect(volumeUpCalled).toBe(true)
-  })
-
-  test('clicking Volume down sends POST /volume/down', async ({ page }) => {
-    let volumeDownCalled = false
-    await page.route(`${API}/volume/down`, async (route) => {
-      volumeDownCalled = true
-      await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' })
-    })
-
-    const app = new AppPage(page)
-    await app.goto()
-    await app.player.openMoreMenu()
-    await app.player.clickVolumeDown()
-
-    expect(volumeDownCalled).toBe(true)
   })
 })
 

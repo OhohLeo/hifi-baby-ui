@@ -50,10 +50,10 @@ test.describe('Playlist — empty state', () => {
     await expect(page.locator('.add-song-card')).toBeVisible()
   })
 
-  test('FAB button is NOT shown when track list is empty', async ({ page }) => {
+  test('header add button is NOT shown when track list is empty', async ({ page }) => {
     const app = new AppPage(page)
     await app.goto()
-    await expect(app.playlist.fabAddButton).not.toBeVisible()
+    await expect(app.playlist.headerAddButton).not.toBeAttached()
   })
 
   test('track list container is not rendered', async ({ page }) => {
@@ -100,11 +100,11 @@ test.describe('Playlist — track list display', () => {
     await expect(app.playlist.songCountLabel).toContainText('Song', { ignoreCase: true })
   })
 
-  test('FAB add button is visible when tracks exist', async ({ page }) => {
+  test('header add button is visible when tracks exist', async ({ page }) => {
     const app = new AppPage(page)
     await app.goto()
-    await expect(app.playlist.fabAddButton).toBeVisible()
-    await expect(app.playlist.fabAddButton).toHaveAttribute('aria-label', 'Add song')
+    await expect(app.playlist.headerAddButton).toBeVisible()
+    await expect(app.playlist.headerAddButton).toHaveAttribute('aria-label', 'Add Music')
   })
 
   test('each track row has a menu-dots button with correct aria-label', async ({ page }) => {

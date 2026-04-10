@@ -2,7 +2,7 @@
   <v-dialog
     v-model="dialog"
     max-width="600"
-    transition="dialog-bottom-transition"
+    transition="dialog-transition"
     @update:model-value="close"
   >
     <v-card class="add-song-card">

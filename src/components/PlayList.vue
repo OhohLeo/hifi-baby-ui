@@ -48,13 +48,36 @@
             </div>
 
             <div v-else>
-              <p
-                v-if="filteredTracks.length > 0"
-                class="text-caption text-medium-emphasis mb-3 text-uppercase letter-spacing-wider"
+              <div
+                v-if="!isSettingsActive"
+                class="playlist-header-row"
               >
-                {{ filteredTracks.length }}
-                {{ filteredTracks.length === 1 ? $t('playlist.song') : $t('playlist.songs') }}
-              </p>
+                <p
+                  v-if="filteredTracks.length > 0"
+                  class="playlist-header-row__count text-caption text-medium-emphasis mb-0 text-uppercase letter-spacing-wider"
+                >
+                  {{ filteredTracks.length }}
+                  {{ filteredTracks.length === 1 ? $t('playlist.song') : $t('playlist.songs') }}
+                </p>
+                <span
+                  v-else
+                  class="playlist-header-row__spacer"
+                  aria-hidden="true"
+                />
+                <v-btn
+                  color="accent"
+                  variant="flat"
+                  size="small"
+                  icon
+                  class="playlist-header-row__add"
+                  :aria-label="$t('playlist.addMusic')"
+                  @click="openAddSongDialog"
+                >
+                  <v-icon size="22">
+                    mdi-plus
+                  </v-icon>
+                </v-btn>
+              </div>
 
               <div
                 v-if="filteredTracks.length > 0"
@@ -167,21 +190,6 @@
         </v-row>
       </v-container>
     </div>
-
-    <v-btn
-      v-if="!isSettingsActive && playlistStore.tracks.length > 0"
-      class="fab-add"
-      color="accent"
-      icon
-      size="large"
-      elevation="6"
-      aria-label="Add song"
-      @click="openAddSongDialog"
-    >
-      <v-icon size="28">
-        mdi-plus
-      </v-icon>
-    </v-btn>
 
     <AddSongDialog v-model:is-open="isAddSongDialogOpen" />
 
@@ -427,7 +435,7 @@ const openAddSongDialog = () => {
 .track-rows {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 12px;
 }
 
 .track-row {
@@ -512,17 +520,27 @@ const openAddSongDialog = () => {
   border-radius: var(--radius-ui) !important;
 }
 
-.fab-add {
-  position: fixed !important;
-  right: 20px !important;
-  bottom: calc(env(safe-area-inset-bottom, 0px) + var(--bottom-chrome-total) + 12px) !important;
-  z-index: 2010 !important;
-  width: 56px !important;
-  height: 56px !important;
+.playlist-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+  min-height: 36px;
+}
+
+.playlist-header-row__count {
+  min-width: 0;
+}
+
+.playlist-header-row__spacer {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.playlist-header-row__add {
+  flex-shrink: 0;
   border-radius: var(--radius-ui) !important;
-  box-shadow:
-    0 8px 24px rgba(41, 121, 255, 0.45),
-    0 2px 8px rgba(0, 0, 0, 0.35) !important;
 }
 
 @media (max-width: 600px) {
